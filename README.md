@@ -1,2 +1,2 @@
 # SISFIE
-Sistema de Inscrições
+Sistema de Fichas de Inscrições Eletrônicas.
