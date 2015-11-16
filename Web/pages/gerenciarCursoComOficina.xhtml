@@ -1,0 +1,771 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui"
+	template="/templates/template.xhtml">
+
+	<ui:define name="body">
+		<script type="text/javascript">
+			$ = jQuery;
+			function minimizar(){
+				widgetApoio.toggle();
+				widgetGrades.toggle();
+			}
+
+			function minimizarGrades(){
+				widgetGrades.toggle();
+			}
+		</script>
+
+		<h:form prependId="false" id="form">
+			<p:fieldset legend="Montar Grades" id="fieldGerenciarCursoComOficina">
+
+				<h:panelGrid columns="3" border="0" columnClasses="coluna20,coluna80" width="100%">
+					<h:outputLabel value="Curso" styleClass="icoObrigatorio" />
+					<p:autoComplete dropdown="true" queryDelay="500"
+						value="#{gerenciarCursoComOficinaBean.curso}" minQueryLength="2" id="curso" size="60"
+						completeMethod="#{gerenciarCursoComOficinaBean.completeCurso}" forceSelection="true" var="listaCurso" itemLabel="#{listaCurso.cursoData}"
+						itemValue="#{listaCurso.id}" converter="cursoConverter">
+						<p:ajax event="itemSelect" process="@this" oncomplete="minimizar();" listener="#{gerenciarCursoComOficinaBean.carregarListas}"
+							update="gridPrincipal" />
+					</p:autoComplete>
+				</h:panelGrid>
+				<br />
+				<h:panelGrid id="gridPrincipal" width="100%" style="text-align: center;">
+					<h:panelGrid width="100%" rendered="#{gerenciarCursoComOficinaBean.curso != null and gerenciarCursoComOficinaBean.curso.id  != null}">
+						<p:panel header="Informação do Curso" toggleable="true" toggleSpeed="500">
+							<h:panelGrid columns="4" border="0" columnClasses="coluna25,coluna25,coluna25,coluna25" width="100%" style="text-align: left;" id="gridInformacao">
+								<h:outputLabel value="Curso:" />
+								<h:outputLabel value="#{gerenciarCursoComOficinaBean.curso.titulo}" />
+								<h:outputLabel value="Local:" />
+								<h:outputLabel value="#{gerenciarCursoComOficinaBean.curso.localizacao.descricao}" />
+	
+								<h:outputLabel value="Data Realização Inicío:" />
+								<h:outputLabel value="#{gerenciarCursoComOficinaBean.curso.dtRealizacaoInicio}">
+									<f:convertDateTime pattern="dd/MM/yyyy" />
+								</h:outputLabel>
+								<h:outputLabel value="Data Realização Fim:" />
+								<h:outputLabel value="#{gerenciarCursoComOficinaBean.curso.dtRealizacaoFim}">
+									<f:convertDateTime pattern="dd/MM/yyyy" />
+								</h:outputLabel>
+	
+								<h:outputLabel value="Data Inscrição Inicío:" />
+								<h:outputLabel value="#{gerenciarCursoComOficinaBean.curso.dtInicioInscricao}">
+									<f:convertDateTime pattern="dd/MM/yyyy" />
+								</h:outputLabel>
+								<h:outputLabel value="Data Inscrição Fim:" />
+								<h:outputLabel value="#{gerenciarCursoComOficinaBean.curso.dtTerminoInscricao}">
+									<f:convertDateTime pattern="dd/MM/yyyy" />
+								</h:outputLabel>
+	
+								<h:outputLabel value="Número do Projeto:" />
+								<h:outputLabel value="#{gerenciarCursoComOficinaBean.curso.codigo}" converter="numeroProjetoConverter"/>
+								<h:outputLabel value="Gestor:" />
+								<h:outputLabel value="#{gerenciarCursoComOficinaBean.curso.usuario.nome}" />
+							</h:panelGrid>
+							<br />
+							<p:toolbar>
+								<p:toolbarGroup align="left">
+									<p:commandButton value="Clonar Apoio" onclick="clonarApoioPop.show();" />
+								</p:toolbarGroup>
+							</p:toolbar>
+						</p:panel>
+						
+						<p:panel id="panelApoio" header="Apoio" toggleable="true" toggleSpeed="500" widgetVar="widgetApoio">
+							<p:tabView activeIndex="#{gerenciarCursoComOficinaBean.activeIndex}" cache="false" id="tabview" style="text-align: left;">
+								<p:tab title="Horários" id="panelHorario" >
+									<h:panelGrid columns="2" id="panelCadastroHorario" border="1" columnClasses="coluna20,coluna80" width="100%">
+										<h:outputLabel value="Descrição:" styleClass="icoObrigatorio" />
+										<p:inputText value="#{gerenciarCursoComOficinaBean.horario.desHorario}"
+											id="descricaoHorario" size="80" maxlength="255"/>
+										
+										<h:outputLabel value="Data/hora início:" styleClass="icoObrigatorio" />
+										<h:panelGrid columns="2" border="0" columnClasses="coluna30,coluna70" width="100%" id="gridDataHoraInicio">
+											<p:calendar mindate="#{gerenciarCursoComOficinaBean.hoje}" locale="pt" pattern="dd/MM/yyyy HH:mm" id="dataHoraInicio"
+												navigator="true" maxlength="10" size="20" readOnlyInputText="true" 
+												value="#{gerenciarCursoComOficinaBean.horario.datHoraInicio}" mode="popup" showOn="button">
+												<p:ajax update="gridDatHoraFim" process="@this" event="valueChange" listener="#{gerenciarCursoComOficinaBean.sugerirDataHoras}" global="false"/>
+											</p:calendar>
+											<p:commandLink process="@this" title="Limpar" update="gridDataHoraInicio">
+												<h:graphicImage name="icone-limpar.png" library="design/imagem" />
+												<f:setPropertyActionListener target="#{gerenciarCursoComOficinaBean.horario.datHoraInicio}" value="" />
+											</p:commandLink>
+										</h:panelGrid>
+										
+										<h:outputLabel value="Data/hora Fim:" styleClass="icoObrigatorio" />
+										<h:panelGrid columns="2" border="0" columnClasses="coluna30,coluna70" width="100%" id="gridDatHoraFim">
+											<p:calendar mindate="#{gerenciarCursoComOficinaBean.dataFimMinima}"
+												locale="pt" pattern="dd/MM/yyyy HH:mm" id="datHoraFim"
+												navigator="true" maxlength="10" size="20" readOnlyInputText="true" 
+												value="#{gerenciarCursoComOficinaBean.horario.datHoraFim}" mode="popup" showOn="button"/>
+											<p:commandLink process="@this" title="Limpar" update="gridDatHoraFim">
+												<h:graphicImage name="icone-limpar.png" library="design/imagem" />
+												<f:setPropertyActionListener target="#{gerenciarCursoComOficinaBean.horario.datHoraFim}" value="" />
+											</p:commandLink>
+										</h:panelGrid>
+									</h:panelGrid>
+									<br />
+									<div align="center">
+										<p:commandButton value="Salvar" process="panelHorario" update="panelCadastroHorario,listaHorario,:form:tabview" ajax="true" action="#{gerenciarCursoComOficinaBean.salvarHorario}"/>
+										<p:spacer width="10" />
+										<p:commandButton value="Limpar" process="@this" update="panelCadastroHorario" ajax="true" action="#{gerenciarCursoComOficinaBean.limparHorario}" />
+									</div>
+									<br />
+									<h:panelGrid width="100%" id="gridHorario">
+										<p:dataTable paginatorAlwaysVisible="false" paginatorPosition="bottom" emptyMessage="Nenhum Horário Cadastrado!"
+											var="lista" value="#{gerenciarCursoComOficinaBean.listaHorarios}" style="width:100%" id="listaHorario"
+											rowStyleClass="#{empty rowIx or rowIx mod 2 ne 0 ? 'linhaImpar' : 'linhaPar'}" rowIndexVar="rowIx"
+											paginator="true" rows="5" rowsPerPageTemplate="#{gerenciarCursoComOficinaBean.paginacao}"
+											rendered="#{!empty gerenciarCursoComOficinaBean.listaHorarios}">
+				
+											<f:facet name="header">
+												<h:outputLabel value="Lista de Horários" />
+											</f:facet>
+											<p:column headerText="Descrição" sortBy="#{lista.desHorario}" filterBy="#{lista.desHorario}" filterMatchMode="contains"
+												style="width:50%">
+												<h:outputLabel value="#{lista.desHorario}" />
+											</p:column>
+											<p:column headerText="Data/hora início" sortBy="#{lista.datHoraInicioFormat}" filterBy="#{lista.datHoraInicioFormat}" filterMatchMode="contains" 
+												style="width:20%">
+												<h:outputLabel value="#{lista.datHoraInicioFormat}" />
+											</p:column>
+											<p:column headerText="Data/hora Fim" sortBy="#{lista.datHoraFimFormat}" filterBy="#{lista.datHoraFimFormat}" filterMatchMode="contains" 
+												style="width:20%">
+												<h:outputLabel value="#{lista.datHoraFimFormat}" />
+											</p:column>
+											<p:column style="width:10%;text-align:center;">
+												<f:facet name="header">
+													<h:outputLabel value="Ações" />
+												</f:facet>
+												<p:commandLink title="Editar" style="padding:5px !important;" ajax="true"
+													update=":form:tabview:panelCadastroHorario,:form:tabview:gridHorario" process="@this,:form:tabview:panelCadastroHorario,:form:tabview:gridHorario" 
+														action="#{gerenciarCursoComOficinaBean.loadHorario}">
+													<h:graphicImage library="design/imagem" name="icone-editar.png" />
+													<f:setPropertyActionListener target="#{gerenciarCursoComOficinaBean.horario}" value="#{lista}" />
+												</p:commandLink>
+												<p:commandLink title="Excluir" process=":form:tabview:panelCadastroHorario,:form:tabview:gridHorario"
+													oncomplete="confirmationHorario.show()">
+													<h:graphicImage library="design/imagem" name="icone-excluir.png" />
+													<f:setPropertyActionListener target="#{gerenciarCursoComOficinaBean.horario}" value="#{lista}" />
+												</p:commandLink>
+											</p:column>
+										</p:dataTable>
+									</h:panelGrid>
+								</p:tab>
+								<p:tab title="Turmas" id="panelTurma" rendered="#{!empty gerenciarCursoComOficinaBean.listaHorarios}">
+									<h:panelGrid columns="2" id="panelCadastroTurma" border="1" columnClasses="coluna20,coluna80" width="100%">
+										<h:outputLabel value="Descrição:" styleClass="icoObrigatorio" />
+										<p:inputText value="#{gerenciarCursoComOficinaBean.turma.descricao}" id="descricaoTurma" size="50" maxlength="255" />
+										
+										<h:outputLabel value="Ativo?" />
+										<p:selectOneRadio id="options" value="#{gerenciarCursoComOficinaBean.turma.flgAtivo}">
+											<f:selectItem itemLabel="Sim" itemValue="true" />
+											<f:selectItem itemLabel="Não" itemValue="false" />
+										</p:selectOneRadio>
+									</h:panelGrid>
+									<br />
+									<div align="center">
+										<p:commandButton value="Salvar" process="panelTurma" update="panelCadastroTurma,panelGridListaTurma" ajax="true" action="#{gerenciarCursoComOficinaBean.salvarTurma}"/>
+										<p:spacer width="10" />
+										<p:commandButton value="Limpar" process="panelTurma" update="panelCadastroTurma" ajax="true" action="#{gerenciarCursoComOficinaBean.limparTurma}"/>
+									</div>
+									<br />
+									<h:panelGrid id="panelGridListaTurma" width="100%">
+										<p:dataTable paginatorAlwaysVisible="false" paginatorPosition="bottom" emptyMessage="Nenhum Turma Cadastrada!"
+											var="listaTurma" value="#{gerenciarCursoComOficinaBean.listaTurmas}" style="width:100%" id="listaTurma"
+											rowStyleClass="#{empty rowIx or rowIx mod 2 ne 0 ? 'linhaImpar' : 'linhaPar'}" rowIndexVar="rowIx"
+											paginator="true" rows="5" rowsPerPageTemplate="#{gerenciarCursoComOficinaBean.paginacao}"
+											rendered="#{!empty gerenciarCursoComOficinaBean.listaTurmas}" >
+											
+											<f:facet name="header">
+												<h:outputLabel value="Lista de Turmas" />
+											</f:facet>
+											<p:column headerText="Descrição" sortBy="#{listaTurma.descricao}" filterBy="#{listaTurma.descricao}" filterMatchMode="contains" style="width:50%">
+												<h:outputLabel value="#{listaTurma.descricao}" />
+											</p:column>
+											<p:column headerText="Ativo" sortBy="#{listaTurma.flgAtivo}" style="width:10%">
+												<h:outputLabel value="#{listaTurma.ativoFormat}" />
+											</p:column>
+											<p:column style="width:10%;text-align:center;">
+												<f:facet name="header">
+													<h:outputLabel value="Ações" />
+												</f:facet>
+												<p:commandLink title="Editar" style="padding:5px !important;" ajax="true"
+													update=":form:tabview:panelCadastroTurma,:form:tabview:panelGridListaTurma" process=":form:tabview:panelCadastroTurma,:form:tabview:panelGridListaTurma" 
+														action="#{gerenciarCursoComOficinaBean.loadTurma}">
+													<h:graphicImage library="design/imagem" name="icone-editar.png" />
+													<f:setPropertyActionListener target="#{gerenciarCursoComOficinaBean.turma}" value="#{listaTurma}" />
+												</p:commandLink>
+												<p:commandLink title="Excluir" process=":form:tabview:panelCadastroTurma,:form:tabview:panelGridListaTurma"
+													oncomplete="confirmationTurma.show()">
+													<h:graphicImage library="design/imagem" name="icone-excluir.png" />
+													<f:setPropertyActionListener target="#{gerenciarCursoComOficinaBean.turma}" value="#{listaTurma}" />
+												</p:commandLink>
+											</p:column>
+										</p:dataTable>
+									</h:panelGrid>
+								</p:tab>
+								<p:tab title="Salas" id="panelSala" >
+									<h:panelGrid columns="2" id="panelCadastroSala" border="1" columnClasses="coluna20,coluna80" width="100%">
+										<h:outputLabel value="Sala:" styleClass="icoObrigatorio" />
+										<p:inputText value="#{gerenciarCursoComOficinaBean.sala.nomSala}" id="sala" size="50" maxlength="255"/>
+										
+										<h:outputLabel value="Capacidade:" styleClass="icoObrigatorio" />
+										<p:inputMask mask="9?999999999999999" placeHolder="" value="#{gerenciarCursoComOficinaBean.sala.numCapacidade}" 
+											id="capacidade" size="50" maxlength="255"/>
+										
+										<h:outputLabel value="Localização:" styleClass="icoObrigatorio" />
+										<p:inputText value="#{gerenciarCursoComOficinaBean.sala.desLocalizacao}" id="localizacao" size="50" maxlength="255"/>
+									</h:panelGrid>
+									<br />
+									<div align="center">
+										<p:commandButton value="Salvar" process="panelSala" update="panelCadastroSala,gridListaSala" ajax="true" action="#{gerenciarCursoComOficinaBean.salvarSala}"/>
+										<p:spacer width="10" />
+										<p:commandButton value="Limpar" process="panelSala" update="panelCadastroSala" ajax="true" action="#{gerenciarCursoComOficinaBean.limparSala}" />
+									</div>
+									<br />
+									<h:panelGrid id="gridListaSala" width="100%">
+										<p:dataTable paginatorAlwaysVisible="false" paginatorPosition="bottom" emptyMessage="Nenhum Sala Cadastrada!"
+											var="lista" value="#{gerenciarCursoComOficinaBean.listaSalas}" style="width:100%" id="listaSala"
+											rowStyleClass="#{empty rowIx or rowIx mod 2 ne 0 ? 'linhaImpar' : 'linhaPar'}" rowIndexVar="rowIx"
+											paginator="true" rows="5" rowsPerPageTemplate="#{gerenciarCursoComOficinaBean.paginacao}"
+											rendered="#{!empty gerenciarCursoComOficinaBean.listaSalas}">
+				
+											<f:facet name="header">
+												<h:outputLabel value="Lista de Salas" />
+											</f:facet>
+											<p:column headerText="sala" sortBy="#{lista.nomSala}" filterBy="#{lista.nomSala}" filterMatchMode="contains"
+												style="width:40%">
+												<h:outputLabel value="#{lista.nomSala}" />
+											</p:column>
+											<p:column headerText="Localização" filterBy="#{lista.desLocalizacao}" filterMatchMode="contains" style="width:40%">
+												<h:outputLabel value="#{lista.desLocalizacao}" />
+											</p:column>
+											<p:column headerText="Capacidade" filterBy="#{lista.numCapacidade}" filterMatchMode="contains" style="width:10%">
+												<h:outputLabel value="#{lista.numCapacidade}" />
+											</p:column>
+											<p:column style="width:10%;text-align:center;">
+												<f:facet name="header">
+													<h:outputLabel value="Ações" />
+												</f:facet>
+												<p:commandLink title="Editar" style="padding:5px !important;" ajax="true"
+													update=":form:tabview:panelCadastroSala,:form:tabview:gridListaSala" process=":form:tabview:panelCadastroSala,:form:tabview:gridListaSala" 
+														action="#{gerenciarCursoComOficinaBean.loadSala}">
+													<h:graphicImage library="design/imagem" name="icone-editar.png" />
+													<f:setPropertyActionListener target="#{gerenciarCursoComOficinaBean.sala}" value="#{lista}" />
+												</p:commandLink>
+												<p:commandLink title="Excluir" process=":form:tabview:panelCadastroSala,:form:tabview:gridListaSala"
+													oncomplete="confirmationSala.show()">
+													<h:graphicImage library="design/imagem" name="icone-excluir.png" />
+													<f:setPropertyActionListener target="#{gerenciarCursoComOficinaBean.sala}" value="#{lista}" />
+												</p:commandLink>
+											</p:column>
+										</p:dataTable>
+									</h:panelGrid>
+								</p:tab>
+								
+								<p:tab title="Professores" id="panelProfessor" >
+									<h:panelGrid width="100%" id="gridPanelCadastroProfessor">
+										<br />
+										<h:panelGrid columns="2" id="panelCadastroProfessor" border="0" columnClasses="coluna15,coluna85" width="100%">
+											<h:outputLabel value="Professor:"/>
+											<p:autoComplete dropdown="true" queryDelay="500"
+												value="#{gerenciarCursoComOficinaBean.candidato}" minQueryLength="2" id="professor" size="60"
+												completeMethod="#{gerenciarCursoComOficinaBean.completeProfessor}" forceSelection="true" var="listaProfessor" itemLabel="#{listaProfessor.nome}"
+												itemValue="#{listaProfessor.id}" converter="professorConverter">
+											</p:autoComplete>
+										</h:panelGrid>
+									</h:panelGrid>
+									<br />
+									<div align="center">
+										<p:commandButton value="Salvar" process="panelProfessor" update="gridPanelCadastroProfessor,gridListaProfessor" ajax="true" action="#{gerenciarCursoComOficinaBean.salvarProfessor}"/>
+									</div>
+									<br />
+									<h:panelGrid width="100%" id="gridListaProfessor">
+										<p:dataTable paginatorAlwaysVisible="false" paginatorPosition="bottom" emptyMessage="Nenhum Professor Cadastrado!"
+											var="lista" value="#{gerenciarCursoComOficinaBean.professores}" style="width:100%" id="listaProfessor"
+											rowStyleClass="#{empty rowIx or rowIx mod 2 ne 0 ? 'linhaImpar' : 'linhaPar'}" rowIndexVar="rowIx"
+											paginator="true" rows="5" rowsPerPageTemplate="#{gerenciarCursoComOficinaBean.paginacao}"
+											rendered="#{!empty gerenciarCursoComOficinaBean.professores}">
+				
+											<f:facet name="header">
+												<h:outputLabel value="Lista de Professores" />
+											</f:facet>
+											<p:column headerText="Nome" sortBy="#{lista.candidato.nome}" filterBy="#{lista.candidato.nome}" filterMatchMode="contains"
+												style="width:40%">
+												<h:outputLabel value="#{lista.candidato.nome}" />
+											</p:column>
+											<p:column headerText="Curso" sortBy="#{lista.curso.titulo}" filterBy="#{lista.curso.titulo}" filterMatchMode="contains"
+												style="width:40%">
+												<h:outputLabel value="#{lista.curso.titulo}" />
+											</p:column>
+											<p:column style="width:10%;text-align:center;">
+												<f:facet name="header">
+													<h:outputLabel value="Ações" />
+												</f:facet>
+												<p:commandLink title="Excluir" process=":form:tabview:panelProfessor"
+													oncomplete="confirmationProfessor.show()">
+													<h:graphicImage library="design/imagem" name="icone-excluir.png" />
+													<f:setPropertyActionListener target="#{gerenciarCursoComOficinaBean.professor}" value="#{lista}" />
+												</p:commandLink>
+											</p:column>
+										</p:dataTable>
+									</h:panelGrid>
+								</p:tab>
+								
+								<p:tab title="Oficinas" id="panelOficina">
+									<h:panelGrid columns="2" id="panelCadastroOficina" border="1" columnClasses="coluna20,coluna80" width="100%">
+										<h:outputLabel value="Nome da Oficina:" styleClass="icoObrigatorio" />
+										<p:inputText value="#{gerenciarCursoComOficinaBean.oficina.nomOficina}" id="nomOficina" size="80" maxlength="255"/>
+										
+										<h:outputText value="Carga Horária:" styleClass="icoObrigatorio"/>
+										<p:selectOneMenu id="cargaHoraria" style="width:100px;" value="#{gerenciarCursoComOficinaBean.oficina.numCargaHoraria}">
+											<f:selectItem itemLabel="Selecione" itemValue="" />
+											<f:selectItem itemLabel="04:00" itemValue="4" />
+											<f:selectItem itemLabel="08:00" itemValue="8" />
+											<f:selectItem itemLabel="12:00" itemValue="12" />
+											<f:selectItem itemLabel="16:00" itemValue="16" />
+											<f:selectItem itemLabel="20:00" itemValue="20" />
+											<f:selectItem itemLabel="24:00" itemValue="24" />
+											<f:selectItem itemLabel="28:00" itemValue="28" />
+											<f:selectItem itemLabel="32:00" itemValue="32" />
+											<f:selectItem itemLabel="36:00" itemValue="36" />
+											<f:selectItem itemLabel="40:00" itemValue="40" />
+										</p:selectOneMenu>
+										
+										<h:outputText value="Código:" styleClass="icoObrigatorio"/>
+										<p:inputText value="#{gerenciarCursoComOficinaBean.oficina.codOficina}" id="codigo" size="17" maxlength="255"/>
+									</h:panelGrid>
+									<br />
+									<div align="center">
+										<p:commandButton value="Salvar" process="panelOficina" update="panelCadastroOficina,gridOficinas,:form:tabview,:form:panelGrades" oncomplete="minimizarGrades();" ajax="true" action="#{gerenciarCursoComOficinaBean.salvarOficina}"/>
+										<p:spacer width="10" />
+										<p:commandButton value="Limpar" process="@this" update="panelCadastroOficina,gridOficinas" ajax="true" action="#{gerenciarCursoComOficinaBean.limparOficina}" />
+									</div>
+									<br />
+									<h:panelGrid id="gridOficinas" width="100%">
+										<p:dataTable paginatorAlwaysVisible="false" paginatorPosition="bottom" emptyMessage="Nenhum Oficina Cadastrada!"
+											var="lista" value="#{gerenciarCursoComOficinaBean.listaOficinas}" style="width:100%" id="listaOficina"
+											rowStyleClass="#{empty rowIx or rowIx mod 2 ne 0 ? 'linhaImpar' : 'linhaPar'}" rowIndexVar="rowIx"
+											paginator="true" rows="5" rowsPerPageTemplate="#{gerenciarCursoComOficinaBean.paginacao}"
+											rendered="#{!empty gerenciarCursoComOficinaBean.listaOficinas}">
+											
+											<f:facet name="header">
+												<h:outputLabel value="Lista de Oficinas" />
+											</f:facet>
+											<p:column headerText="Nome Oficina" sortBy="#{lista.nomOficina}" filterBy="#{lista.nomOficina}" filterMatchMode="contains"
+												style="width:70%">
+												<h:outputLabel value="#{lista.nomOficina}" />
+											</p:column>
+											<p:column headerText="Código" filterBy="#{lista.codOficina}" filterMatchMode="contains" style="width:10%">
+												<h:outputLabel value="#{lista.codOficina}" />
+											</p:column>
+											<p:column headerText="Carga Horária" style="width:10%">
+												<h:outputLabel value="#{lista.cargaHorariaFormat}" />
+											</p:column>
+											<p:column style="width:10%;text-align:center;">
+												<f:facet name="header">
+													<h:outputLabel value="Ações" />
+												</f:facet>
+												<p:commandLink title="Editar" style="padding:5px !important;" ajax="true"
+													update=":form:tabview:panelCadastroOficina,:form:tabview:gridOficinas" process=":form:tabview:panelCadastroOficina,:form:tabview:gridOficinas" 
+														action="#{gerenciarCursoComOficinaBean.loadOficina}">
+													<h:graphicImage library="design/imagem" name="icone-editar.png" />
+													<f:setPropertyActionListener target="#{gerenciarCursoComOficinaBean.oficina}" value="#{lista}" />
+												</p:commandLink>
+												<p:commandLink title="Excluir" process=":form:tabview:panelCadastroOficina,:form:tabview:gridOficinas"
+													oncomplete="confirmationOficina.show()">
+													<h:graphicImage library="design/imagem" name="icone-excluir.png" />
+													<f:setPropertyActionListener target="#{gerenciarCursoComOficinaBean.oficina}" value="#{lista}" />
+												</p:commandLink>
+											</p:column>
+										</p:dataTable>
+									</h:panelGrid>
+								</p:tab>
+								<p:tab title="Pacotes" id="panelPacote" rendered="#{!empty gerenciarCursoComOficinaBean.listaOficinas}">
+									<h:panelGrid columns="3" id="panelCadastroPacote" columnClasses="coluna15,coluna65,coluna20" width="100%">
+										<h:outputLabel value="Nome do pacote:" styleClass="icoObrigatorio" />
+										<h:panelGrid columns="2" style="text-align: left;">
+											<p:inputText value="#{gerenciarCursoComOficinaBean.pacote.nomPacote}"
+												id="nomPacote" size="83" maxlength="255"/>
+											<p:commandLink id="botaoAdicinarOficina" title="Adicionar Oficina" process="panelCadastroPacote" action="#{gerenciarCursoComOficinaBean.verificarNomePacote}">
+												<h:graphicImage library="design/imagem" name="icone-adicionar.png" />
+											</p:commandLink>
+										</h:panelGrid>
+										<h:outputLabel value="" />
+										
+										<h:outputLabel value="" />
+										<h:panelGrid id="panelGridTableOficinas" width="100%">
+											<p:dataTable paginatorAlwaysVisible="false" paginatorPosition="bottom" emptyMessage="Nenhum Oficina Selecionada!"
+												var="oficinaPacote" value="#{gerenciarCursoComOficinaBean.listaOficinasSelecionadas}" style="width:100%" id="tableOficinaPacote"
+												rowStyleClass="#{empty rowIx or rowIx mod 2 ne 0 ? 'linhaImpar' : 'linhaPar'}" rowIndexVar="rowIx"
+												paginator="true" rows="5" rowsPerPageTemplate="#{gerenciarCursoComOficinaBean.paginacao}"
+												rendered="#{!empty gerenciarCursoComOficinaBean.listaOficinasSelecionadas}">
+												
+												<f:facet name="header">
+													<h:outputLabel value="Oficinas Adicionadas" />
+												</f:facet>
+												<p:column headerText="Nome Oficina" style="width:30%">
+													<h:outputLabel value="#{oficinaPacote.nomOficina}" />
+												</p:column>
+												<p:column headerText="Código" style="width:10%">
+													<h:outputLabel value="#{oficinaPacote.codOficina}" />
+												</p:column>
+												<p:column headerText="Carga Horária" style="width:10%">
+													<h:outputLabel value="#{oficinaPacote.cargaHorariaFormat}" />
+												</p:column>
+												<p:column style="width:10%;text-align:center;">
+													<f:facet name="header">
+														<h:outputLabel value="Ações" />
+													</f:facet>
+													<p:commandLink title="Excluir" process="@this"
+														oncomplete="confirmationOficinaPacote.show()">
+														<h:graphicImage library="design/imagem" name="icone-excluir.png" />
+														<f:setPropertyActionListener target="#{gerenciarCursoComOficinaBean.oficinaPacoteExclusao}" value="#{oficinaPacote}" />
+													</p:commandLink>
+												</p:column>
+											</p:dataTable>
+											<h:panelGrid width="100%" style="text-align: right;" id="idTotalCargahoraria">
+												<h:panelGrid rendered="#{gerenciarCursoComOficinaBean.mostrarTotalCargaHoraria}" width="100%" style="text-align: right;">
+													<h:outputLabel value="Total da carga horária das oficinas adicionadas: #{gerenciarCursoComOficinaBean.totalComNovoRegistro}:00h"/>
+												</h:panelGrid>
+											</h:panelGrid>
+										</h:panelGrid>
+										<h:outputLabel value=" " />
+									</h:panelGrid>
+									<br />
+									<div align="center">
+										<p:commandButton value="Salvar" process="panelPacote" update="panelCadastroPacote,dataTablePacotes,:form:tabviewGrades" ajax="true" action="#{gerenciarCursoComOficinaBean.salvarPacote}"/>
+										<p:spacer width="10" />
+										<p:commandButton value="Limpar" process="panelPacote" update="panelCadastroPacote" ajax="true" action="#{gerenciarCursoComOficinaBean.limparPacote}" />
+									</div>
+									<br />
+									<h:panelGrid id="dataTablePacotes" border="0" width="100%">
+										<p:dataTable paginatorAlwaysVisible="false" paginatorPosition="bottom" emptyMessage="Nenhum Pacote Cadastrada!"
+											var="listaPac" value="#{gerenciarCursoComOficinaBean.listaPacotes}" style="width:100%" id="listaPacote"
+											rowStyleClass="#{empty rowIx or rowIx mod 2 ne 0 ? 'linhaImpar' : 'linhaPar'}" rowIndexVar="rowIx"
+											paginator="true" rows="5" rowsPerPageTemplate="#{gerenciarCursoComOficinaBean.paginacao}"
+											rendered="#{!empty gerenciarCursoComOficinaBean.listaPacotes}">
+				
+											<f:facet name="header">
+												<h:outputLabel value="Lista de Pacotes" />
+											</f:facet>
+											<p:column headerText="Nome Pacote" sortBy="#{listaPac.nomPacote}" filterBy="#{listaPac.nomPacote}" filterMatchMode="contains"
+												style="width:90%">
+												<h:outputLabel value="#{listaPac.nomPacote}" />
+											</p:column>
+											<p:column style="width:10%;text-align:center;">
+												<f:facet name="header">
+													<h:outputLabel value="Ações" />
+												</f:facet>
+												<p:commandLink title="Editar" style="padding:5px !important;" ajax="true"
+													process="@this,:form:tabview:panelCadastroPacote,:form:tabview:dataTablePacotes" update="@this,:form:tabview:panelCadastroPacote,:form:tabview:dataTablePacotes" 
+													action="#{gerenciarCursoComOficinaBean.loadPacote}">
+													<h:graphicImage library="design/imagem" name="icone-editar.png" />
+													<f:setPropertyActionListener target="#{gerenciarCursoComOficinaBean.pacote}" value="#{listaPac}" />
+												</p:commandLink>
+												<p:commandLink title="Excluir" process=":form:tabview:dataTablePacotes"
+													oncomplete="confirmationPacote.show()">
+													<h:graphicImage library="design/imagem" name="icone-excluir.png" />
+													<f:setPropertyActionListener target="#{gerenciarCursoComOficinaBean.pacote}" value="#{listaPac}" />
+												</p:commandLink>
+											</p:column>
+										</p:dataTable>
+									</h:panelGrid>
+								</p:tab>
+							</p:tabView>
+						</p:panel>
+						
+						<p:panel id="panelGrades" header="Grades" toggleable="true" toggleSpeed="500" style="text-align:center;" widgetVar="widgetGrades" visible="#{!empty gerenciarCursoComOficinaBean.listaOficinas}">
+							<p:tabView activeIndex="0" cache="false" id="tabviewGrades" style="text-align: left;">
+								<p:tab title="Grade de Pacotes" id="panelGradePacote" rendered="#{!empty gerenciarCursoComOficinaBean.listaPacotes}">
+									<h:panelGrid columns="2" id="panelCadastroGradePacote" border="0" columnClasses="coluna15,coluna85" width="100%">
+										<h:outputLabel value="Pacote:" styleClass="icoObrigatorio"/>
+										<p:selectOneMenu id="pacote" style="width:450px;" value="#{gerenciarCursoComOficinaBean.idPacote}">
+											<f:selectItem itemLabel="Selecione" itemValue="" />
+											<f:selectItems value="#{gerenciarCursoComOficinaBean.pacotes}" var="name" itemLabel="#{name.nomPacote}" itemValue="#{name.id}" />
+											<p:ajax update="dataTableGradePacotes,listaGradePacote,:form:confirmacaoEdicaoID" process="@this" event="change" listener="#{gerenciarCursoComOficinaBean.carregarOficinas}" />
+										</p:selectOneMenu>
+									</h:panelGrid>
+									<br />
+									<h:panelGrid id="dataTableGradePacotes" border="0" width="100%">
+										<p:dataTable paginatorAlwaysVisible="false" paginatorPosition="bottom" var="lista" id="listaGradePacote" emptyMessage="#{gerenciarCursoComOficinaBean.emptyMessage}" update="listaGradePacote"
+											rowsPerPageTemplate="#{gerenciarCursoComOficinaBean.paginacao}" styleClass="coluna100" value="#{gerenciarCursoComOficinaBean.gradePacotes}"
+											paginator="true" rows="10" rowStyleClass="#{empty rowIx or rowIx mod 2 ne 0 ? 'linhaImpar' : 'linhaPar'}"
+											rowIndexVar="rowIx" rendered="#{!empty gerenciarCursoComOficinaBean.gradePacotes}">
+						
+											<f:facet name="header">
+												<h:outputLabel value="Lista de Pacotes" />
+											</f:facet>
+											<p:column headerText="Oficina" sortBy="#{lista.pacoteOficina.oficina.nomOficina}" filterBy="#{lista.pacoteOficina.oficina.nomOficina}" style="width:20%">
+												<h:outputLabel value="#{lista.pacoteOficina.oficina.nomOficina}" />
+											</p:column>
+											<p:column headerText="Horário" style="width:20%;text-align:center;">
+							                    <h:outputText value="#{lista.horario.desHorario}" />  
+											</p:column>
+											<p:column headerText="Turma" style="width:20%;text-align:center;">
+							                    <h:outputText value="#{lista.turma.descricao}" />  
+											</p:column>
+											<p:column headerText="Ações" style="width:10%;text-align:center;">
+												<p:commandLink title="Editar" update="listaGradePacote" process="@this,listaGradePacote" oncomplete="confirmationEdicaoGradePacote.show()">
+													<h:graphicImage library="design/imagem" name="icone-editar.png" />
+													<f:setPropertyActionListener target="#{gerenciarCursoComOficinaBean.gradePacote}" value="#{lista}" />
+												</p:commandLink>
+												<p:commandLink title="Excluir" process="@this" oncomplete="confirmationExclusaoGradePacote.show()"
+													rendered="#{lista.id != null}">
+													<h:graphicImage library="design/imagem" name="icone-excluir.png" />
+													<f:setPropertyActionListener target="#{gerenciarCursoComOficinaBean.gradePacote}" value="#{lista}" />
+												</p:commandLink>
+											</p:column>
+										</p:dataTable>
+									</h:panelGrid>
+								</p:tab>
+								<p:tab title="Grade de Oficinas" id="panelGradeOficina">
+									<h:panelGrid id="panelGridPrincipalGradeOficina" width="100%">
+										<h:panelGrid columns="3" id="panelCadastroGradeOficina" border="0" columnClasses="coluna15,coluna65,coluna20" width="100%">
+											<h:outputLabel value="Oficina:" styleClass="icoObrigatorio"/>
+											<p:selectOneMenu id="oficina" style="width:451px;" value="#{gerenciarCursoComOficinaBean.idOficina}"
+												requiredMessage="#{gerenciarCursoComOficinaBean.requiredMessage}" required="true">
+												<f:selectItem itemLabel="Selecione" itemValue="" />
+												<f:selectItems value="#{gerenciarCursoComOficinaBean.oficinas}" var="name" itemLabel="#{name.nomOficina}" itemValue="#{name.id}" />
+												<p:ajax update="panelGridPrincipalCombos,botoesPacoteOficinas,dataTableGradeOficinas" process="@this" event="change" 
+													listener="#{gerenciarCursoComOficinaBean.recuperarInscricaoCursos}" global="false"/>
+											</p:selectOneMenu>
+											<p:message for="oficina" />
+										</h:panelGrid>
+										
+										<h:panelGrid id="panelGridPrincipalCombos" width="97%">
+											<h:panelGrid columns="3" id="panelCombos" border="0" columnClasses="coluna15,coluna65,coluna20" width="100%"
+												rendered="#{gerenciarCursoComOficinaBean.mostrarCampos}">	
+												<h:outputLabel value="Professor:" styleClass="icoObrigatorio"/>
+												<p:selectOneMenu id="professorGrade" style="width:450px;" value="#{gerenciarCursoComOficinaBean.idProfessor}"
+													requiredMessage="#{gerenciarCursoComOficinaBean.requiredMessage}" required="true">
+													<f:selectItem itemLabel="Selecione" itemValue="" />
+													<f:selectItems value="#{gerenciarCursoComOficinaBean.professores}" var="nameProfessor" itemLabel="#{nameProfessor.candidato.nome}" itemValue="#{nameProfessor.candidato.id}" />
+												</p:selectOneMenu>
+												<p:message for="professorGrade" />
+												
+												<h:outputLabel value="Turma:" styleClass="icoObrigatorio"/>
+												<p:selectOneMenu id="turma" style="width:450px;" value="#{gerenciarCursoComOficinaBean.idGradeOficinaTurma}"
+													requiredMessage="#{gerenciarCursoComOficinaBean.requiredMessage}" required="true">
+													<f:selectItem itemLabel="Selecione" itemValue="" />
+													<f:selectItems value="#{gerenciarCursoComOficinaBean.gradeOficinaTurmas}" var="nameTurma" itemLabel="#{nameTurma.descricao}" itemValue="#{nameTurma.id}" />
+												</p:selectOneMenu>
+												<p:message for="turma" />
+												
+												<h:outputLabel value="Sala:" styleClass="icoObrigatorio"/>
+												<p:selectOneMenu id="salaGrade" style="width:450px;" value="#{gerenciarCursoComOficinaBean.idSala}"
+													requiredMessage="#{gerenciarCursoComOficinaBean.requiredMessage}" required="true">
+													<f:selectItem itemLabel="Selecione" itemValue="" />
+													<f:selectItems value="#{gerenciarCursoComOficinaBean.salas}" var="nameSala" itemLabel="#{nameSala.nomSala}" itemValue="#{nameSala.id}" />
+												</p:selectOneMenu>
+												<p:message for="salaGrade" />
+												
+												<h:outputLabel value="Horário:" styleClass="icoObrigatorio"/>
+												<p:selectOneMenu id="horario" style="width:450px;" value="#{gerenciarCursoComOficinaBean.idHorarioTurma}"
+													requiredMessage="#{gerenciarCursoComOficinaBean.requiredMessage}" required="true">
+													<f:selectItem itemLabel="Selecione" itemValue="" />
+													<f:selectItems value="#{gerenciarCursoComOficinaBean.horariosTurmas}" var="nameHorarioTurma" itemLabel="#{nameHorarioTurma.desHorario}" itemValue="#{nameHorarioTurma.id}" />
+												</p:selectOneMenu>
+												<p:message for="horario" />
+											</h:panelGrid>
+										</h:panelGrid>
+									</h:panelGrid>
+									<br />
+									<div align="center">
+										<h:panelGrid id="botoesPacoteOficinas" columns="3" style="border: 0 none !important;">
+											<p:commandButton value="Salvar" process="panelGradeOficina" update="panelGridPrincipalGradeOficina,dataTableGradeOficinas" ajax="true" action="#{gerenciarCursoComOficinaBean.salvarGradeOficina}" rendered="#{gerenciarCursoComOficinaBean.mostrarCampos}"/>
+											<p:spacer width="10" rendered="#{gerenciarCursoComOficinaBean.mostrarCampos}"/>
+											<p:commandButton value="Limpar" process="panelGradeOficina" update="panelGridPrincipalGradeOficina" ajax="true" action="#{gerenciarCursoComOficinaBean.limparGradeOficina}" rendered="#{gerenciarCursoComOficinaBean.mostrarCampos}"/>
+										</h:panelGrid>
+									</div>
+									<br />
+									<h:panelGrid id="dataTableGradeOficinas" border="0" width="100%">
+										<p:dataTable paginatorAlwaysVisible="false" paginatorPosition="bottom" var="listaGradeOficina" id="listaGradeOficina" emptyMessage="#{gerenciarCursoComOficinaBean.emptyMessage}" update="listaGradeOficina"
+											rowsPerPageTemplate="#{gerenciarCursoComOficinaBean.paginacao}" styleClass="coluna100" value="#{gerenciarCursoComOficinaBean.gradeOficinas}"
+											paginator="true" rows="5" rowStyleClass="#{empty rowIx or rowIx mod 2 ne 0 ? 'linhaImpar' : 'linhaPar'}"
+											rowIndexVar="rowIx" rendered="#{!empty gerenciarCursoComOficinaBean.gradeOficinas}">
+						
+											<f:facet name="header">
+												<h:outputLabel value="Grade de Oficinas" />
+											</f:facet>
+											<p:column headerText="Oficina" sortBy="#{listaGradeOficina.oficina.nomOficina}" filterBy="#{listaGradeOficina.oficina.nomOficina}" style="width:20%" filterMatchMode="contains">
+												<h:outputLabel value="#{listaGradeOficina.oficina.nomOficina}" />
+											</p:column>
+											<p:column headerText="Professor" sortBy="#{listaGradeOficina.professorEvento.candidato.nome}" filterBy="#{listaGradeOficina.professorEvento.candidato.nome}" style="width:20%;text-align:center;" filterMatchMode="contains">
+							                    <h:outputText value="#{listaGradeOficina.professorEvento.candidato.nome}" />  
+											</p:column>
+											<p:column headerText="Turma" sortBy="#{listaGradeOficina.turma.descricao}" filterBy="#{listaGradeOficina.turma.descricao}" style="width:20%;text-align:center;" filterMatchMode="contains">
+							                    <h:outputText value="#{listaGradeOficina.turma.descricao}" />  
+											</p:column>
+											<p:column headerText="Sala" sortBy="#{listaGradeOficina.sala.nomSala}" filterBy="#{listaGradeOficina.sala.nomSala}" style="width:15%;text-align:center;" filterMatchMode="contains">
+							                    <h:outputText value="#{listaGradeOficina.sala.nomSala}" />  
+											</p:column>
+											<p:column headerText="Horário" sortBy="#{listaGradeOficina.horario.desHorario}" filterBy="#{listaGradeOficina.horario.desHorario}" style="width:15%;text-align:center;" filterMatchMode="contains">
+							                    <h:outputText value="#{listaGradeOficina.horario.desHorario}" />  
+											</p:column>
+											<p:column headerText="Ações" style="width:10%;text-align:center;">
+												<p:commandLink title="Editar" style="padding:5px !important;"
+													update=":form:tabviewGrades:panelGridPrincipalGradeOficina,:form:tabviewGrades:botoesPacoteOficinas" process="@this,:form:tabviewGrades:dataTableGradeOficinas,:form:tabviewGrades:panelGridPrincipalCombos" action="#{gerenciarCursoComOficinaBean.recuperarInscricaoCursosEdicao}">
+													<h:graphicImage library="design/imagem" name="icone-editar.png" />
+													<f:setPropertyActionListener target="#{gerenciarCursoComOficinaBean.gradeOficina}" value="#{listaGradeOficina}" />
+												</p:commandLink>
+												<p:commandLink title="Excluir" process="@this" oncomplete="confirmationGradeOficina.show()"
+													rendered="#{listaGradeOficina.id != null}">
+													<h:graphicImage library="design/imagem" name="icone-excluir.png" />
+													<f:setPropertyActionListener target="#{gerenciarCursoComOficinaBean.gradeOficina}" value="#{listaGradeOficina}" />
+												</p:commandLink>
+											</p:column>
+										</p:dataTable>
+									</h:panelGrid>
+								</p:tab>
+							</p:tabView>
+						</p:panel>
+					</h:panelGrid>
+				</h:panelGrid>
+			</p:fieldset>
+
+			<p:confirmDialog appendToBody="true" message="Confirma a Exclusão" header="Exclusão" severity="alert"
+				widgetVar="confirmationHorario">
+				<h:panelGrid columns="2">
+					<p:commandButton value="Sim" update=":form:tabview:listaHorario,:form:tabview:panelCadastroHorario,:form:tabview" oncomplete="confirmationHorario.hide()" actionListener="#{gerenciarCursoComOficinaBean.excluirHorario}"
+						immediate="true" process="@this"/>
+					<p:commandButton value="Não" onclick="confirmationHorario.hide()" ajax="true" update="@this" process="@this"/>
+				</h:panelGrid>
+			</p:confirmDialog>
+			
+			<p:confirmDialog appendToBody="true" message="Confirma a Exclusão" header="Exclusão" severity="alert"
+				widgetVar="confirmationTurma">
+				<h:panelGrid columns="2">
+					<p:commandButton value="Sim" update=":form:tabview:panelGridListaTurma,:form:tabview:panelCadastroTurma" oncomplete="confirmationTurma.hide()" actionListener="#{gerenciarCursoComOficinaBean.excluirTurma}"
+						immediate="true" process="@this"/>
+					<p:commandButton value="Não" onclick="confirmationTurma.hide()" ajax="true" update="@this" process="@this"/>
+				</h:panelGrid>
+			</p:confirmDialog>
+			
+			<p:confirmDialog appendToBody="true" message="Confirma a Exclusão" header="Exclusão" severity="alert"
+				widgetVar="confirmationSala">
+				<h:panelGrid columns="2">
+					<p:commandButton value="Sim" update=":form:tabview:gridListaSala,:form:tabview:listaSala,:form:tabview:panelCadastroSala" oncomplete="confirmationSala.hide()" actionListener="#{gerenciarCursoComOficinaBean.excluirSala}"
+						immediate="true" process="@this"/>
+					<p:commandButton value="Não" onclick="confirmationSala.hide()" ajax="true" update="@this" process="@this"/>
+				</h:panelGrid>
+			</p:confirmDialog>
+			
+			<p:confirmDialog appendToBody="true" message="Confirma a Exclusão" header="Exclusão" severity="alert"
+				widgetVar="confirmationProfessor">
+				<h:panelGrid columns="2">
+					<p:commandButton value="Sim" update=":form:tabview:listaProfessor,:form:tabview:panelProfessor,:form:tabview" oncomplete="confirmationProfessor.hide()" actionListener="#{gerenciarCursoComOficinaBean.excluirProfessor}"
+						immediate="true" process="@this"/>
+					<p:commandButton value="Não" onclick="confirmationProfessor.hide()" ajax="true" update="@this" process="@this"/>
+				</h:panelGrid>
+			</p:confirmDialog>
+			
+			<p:confirmDialog appendToBody="true" message="Confirma a Exclusão" header="Exclusão" severity="alert"
+				widgetVar="confirmationOficina">
+				<h:panelGrid columns="2">
+					<p:commandButton value="Sim" update=":form:tabview:listaOficina,:form:tabview:panelCadastroOficina,:form:tabview,:form:panelGrades" oncomplete="confirmationOficina.hide();minimizarGrades();" actionListener="#{gerenciarCursoComOficinaBean.excluirOficina}"
+						immediate="true" process="@this"/>
+					<p:commandButton value="Não" onclick="confirmationOficina.hide()" ajax="true" update="@this" process="@this"/>
+				</h:panelGrid>
+			</p:confirmDialog>
+			
+			<p:confirmDialog appendToBody="true" message="Confirma a Exclusão" header="Exclusão" severity="alert"
+				widgetVar="confirmationOficinaPacote">
+				<h:panelGrid columns="2">
+					<p:commandButton value="Sim" update=":form:tabview:panelGridTableOficinas" oncomplete="confirmationOficinaPacote.hide()" actionListener="#{gerenciarCursoComOficinaBean.excluirOficinaPacote}"
+						immediate="true" process="@this"/>
+					<p:commandButton value="Não" onclick="confirmationOficinaPacote.hide()" ajax="true" update="@this" process="@this"/>
+				</h:panelGrid>
+			</p:confirmDialog>
+			
+			<p:confirmDialog appendToBody="true" message="Confirma a Exclusão" header="Exclusão" severity="alert"
+				widgetVar="confirmationPacote">
+				<h:panelGrid columns="2">
+					<p:commandButton value="Sim" update=":form:tabview:dataTablePacotes,:form:tabview:panelCadastroPacote,:form:tabviewGrades" oncomplete="confirmationPacote.hide()" actionListener="#{gerenciarCursoComOficinaBean.excluirPacote}"
+						immediate="true" process="@this"/>
+					<p:commandButton value="Não" onclick="confirmationPacote.hide()" ajax="true" update="@this" process="@this"/>
+				</h:panelGrid>
+			</p:confirmDialog>
+			
+			<p:dialog header="Edição da Oficina na Grade de pacotes" severity="alert"
+				widgetVar="confirmationEdicaoGradePacote" id="confirmacaoEdicaoID" >
+				<h:panelGrid columns="2" columnClasses="coluna20,coluna60" width="100%" id="dialogEdicao">
+					<h:outputLabel value="Horário:" styleClass="icoObrigatorio"/>
+				  	<p:selectOneMenu id="horario" value="#{gerenciarCursoComOficinaBean.idHorario}" style="width:250">
+						<f:selectItem itemLabel="Selecione" itemValue="" />
+						<f:selectItems value="#{gerenciarCursoComOficinaBean.gradePacoteHorarios}" var="name" itemLabel="#{name.desHorario}" itemValue="#{name.id}" />
+					</p:selectOneMenu>  
+					
+					<h:outputLabel value="Turma:" styleClass="icoObrigatorio"/>
+					<p:selectOneMenu id="turma" value="#{gerenciarCursoComOficinaBean.idTurma}" style="width:250">
+						<f:selectItem itemLabel="Selecione" itemValue="" />
+						<f:selectItems value="#{gerenciarCursoComOficinaBean.gradePacoteTurmas}" var="name" itemLabel="#{name.descricao}" itemValue="#{name.id}" />
+					</p:selectOneMenu> 
+				</h:panelGrid>
+				<br />
+				<div align="center">
+					<p:commandButton value="Salvar" process="@this,dialogEdicao,:form:tabviewGrades:panelGradePacote" update="@form" oncomplete="confirmationEdicaoGradePacote.hide()" actionListener="#{gerenciarCursoComOficinaBean.editarExcluirOficinas}"/>
+					<p:spacer width="10" />
+					<p:commandButton value="Cancelar" onclick="confirmationEdicaoGradePacote.hide()" />
+				</div>
+			</p:dialog>
+			
+			<p:dialog header="Adicionar Oficinas" severity="alert" widgetVar="adicionarOficinas" 
+				id="idPanelOficinaProfessor" width="700" visible="#{gerenciarCursoComOficinaBean.mostrarDialogAdicionarOficinasPacote}">
+				<h:panelGrid columns="2" columnClasses="coluna20,coluna80" width="100%" id="dialogOficinaProfessor">
+					<h:outputLabel value="Oficinas:" styleClass="icoObrigatorio"/>
+					<h:panelGrid id="panelAdicaoOficina" border="0" style="text-align: left;">
+						<p:autoComplete dropdown="true" queryDelay="500" value="#{gerenciarCursoComOficinaBean.oficinaSelecionada}" minQueryLength="2" id="oficinas"
+							size="75" completeMethod="#{gerenciarCursoComOficinaBean.completeOficina}" forceSelection="true" var="lista" scrollHeight="300"
+							itemLabel="#{lista.nomOficina}" itemValue="#{lista.id}" converter="OficinaConverter">
+						</p:autoComplete>
+					</h:panelGrid>
+					
+				</h:panelGrid>
+				<br />
+				<div align="center">
+					<p:commandButton value="Adicionar" process="@this,dialogOficinaProfessor" actionListener="#{gerenciarCursoComOficinaBean.adicionarOficinaPacote}" 
+						update=":form:tabview:panelCadastroPacote,:form:tabview:panelGridTableOficinas,:form:tabview:idTotalCargahoraria"/>
+				</div>
+				<br />
+			</p:dialog>
+			
+			<p:dialog header="Clonar Apoio" severity="alert" widgetVar="clonarApoioPop" id="idPanelClonarApoio" style="width: 700px;">
+				<h:panelGrid columns="2" columnClasses="coluna20,coluna80" id="dialogClonarApoio" style="width: 600px;">
+					<h:outputLabel value="Curso:" styleClass="icoObrigatorio"/>
+					<p:autoComplete dropdown="true" queryDelay="500" value="#{gerenciarCursoComOficinaBean.cursoClone}" minQueryLength="2" id="cursoClone"
+						size="70" completeMethod="#{gerenciarCursoComOficinaBean.completeCurso}" forceSelection="true" var="listaClone" scrollHeight="300"
+						itemLabel="#{listaClone.cursoData}" itemValue="#{listaClone.id}" converter="cursoConverter" global="false">
+					</p:autoComplete>
+				</h:panelGrid>
+				<br />
+				<div align="center">
+					<p:commandButton value="Clonar" process="@this,dialogClonarApoio" actionListener="#{gerenciarCursoComOficinaBean.clonarApoio}" 
+						update="gridPrincipal"
+						oncomplete="clonarApoioPop.hide();"/>
+					<p:commandButton value="Cancelar" onclick="clonarApoioPop.hide();" />
+				</div>
+				<br />
+			</p:dialog>
+			
+			<p:confirmDialog appendToBody="true" message="Confirma a Exclusão" header="Exclusão" severity="alert"
+				widgetVar="confirmationExclusaoGradePacote">
+				<h:panelGrid columns="2">
+					<p:commandButton value="Sim" update=":form:tabviewGrades:listaGradePacote" oncomplete="confirmationExclusaoGradePacote.hide()" actionListener="#{gerenciarCursoComOficinaBean.removerOficinaGradePacote}"
+						immediate="true" />
+					<p:commandButton value="Não" onclick="confirmationExclusaoGradePacote.hide()" />
+				</h:panelGrid>
+			</p:confirmDialog>
+
+			<p:confirmDialog appendToBody="true" message="Confirma a Exclusão" header="Exclusão" severity="alert"
+				widgetVar="confirmationGradeOficina">
+				<h:panelGrid columns="2">
+					<p:commandButton value="Sim" update=":form:tabviewGrades:listaGradeOficina" oncomplete="confirmationGradeOficina.hide()" actionListener="#{gerenciarCursoComOficinaBean.excluirGradeOficina}"
+						immediate="true" />
+					<p:commandButton value="Não" onclick="confirmationGradeOficina.hide()" />
+				</h:panelGrid>
+			</p:confirmDialog>
+		</h:form>
+	</ui:define>
+</ui:composition>

@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui" template="/templates/template.xhtml">
+
+	<ui:define name="body">
+		<h:form prependId="false" id="form">
+			<p:fieldset legend="Pesquisar Candidato" id="fieldCandidato">
+				<h:panelGrid columns="2" columnClasses="coluna20,coluna80" width="100%">
+					<h:outputLabel value="Curso:" />
+					<p:autoComplete value="#{pesquisarParceiroBean.dto.curso}" completeMethod="#{pesquisarParceiroBean.completeCurso}" var="list"
+						itemLabel="#{list.cursoData}" itemValue="#{list.id}" converter="cursoConverter" global="false" size="60">
+						<p:ajax event="itemSelect" update="@form" process="@form"/>
+					</p:autoComplete>
+				</h:panelGrid>
+
+				<h:panelGrid columns="2" columnClasses="coluna20,coluna80" width="100%" id="gridPrincipal"
+					rendered="#{pesquisarParceiroBean.dto.curso != null and pesquisarParceiroBean.dto.curso.id != null}">
+					<h:outputLabel value="Email:" />
+					<p:inputText value="#{pesquisarParceiroBean.dto.email}" size="60" maxlength="255" />
+					<h:outputLabel value="Inscritros" />
+					<p:selectOneMenu id="options" value="#{pesquisarParceiroBean.dto.inscrito}">
+						<f:selectItems value="#{pesquisarParceiroBean.tipoParceiros}" />
+					</p:selectOneMenu>
+				</h:panelGrid>
+
+				<br />
+				<div align="center">
+					<p:commandButton value="Limpar" immediate="true" ajax="false" action="pesquisarParceiros.jsf"
+						rendered="#{pesquisarParceiroBean.dto.curso != null and pesquisarParceiroBean.dto.curso.id != null}" />
+					<p:spacer width="10" />
+					<p:commandButton value="Pesquisar" ajax="true" process="@form" update="@form" actionListener="#{pesquisarParceiroBean.pesquisar}"
+						rendered="#{pesquisarParceiroBean.dto.curso != null and pesquisarParceiroBean.dto.curso.id != null}" />
+				</div>
+				<br />
+
+				<p:dataTable paginatorAlwaysVisible="false" paginatorPosition="bottom" var="lista" id="lista"
+					emptyMessage="#{pesquisarParceiroBean.emptyMessage}" update="lista" rowsPerPageTemplate="5,10,20,50" styleClass="coluna100"
+					value="#{pesquisarParceiroBean.listaParceiros}" paginator="true" rows="5"
+					rowStyleClass="#{empty rowIx or rowIx mod 2 ne 0 ? 'linhaImpar' : 'linhaPar'}" rowIndexVar="rowIx"
+					rendered="#{not empty pesquisarParceiroBean.listaParceiros}">
+
+					<f:facet name="header">
+						<h:outputLabel value="Lista de Parceiros: #{pesquisarParceiroBean.listaParceiros.size()}" />
+					</f:facet>
+					<p:column headerText="Curso">
+						<h:outputLabel value="#{lista.curso.titulo}" />
+					</p:column>
+					<p:column headerText="Email">
+						<h:outputLabel value="#{lista.email}" />
+					</p:column>
+					<p:column headerText="Inscrito?" style="width:10%;text-align:center;">
+						<h:outputLabel value="Sim" rendered="#{lista.inscrito == 1}" />
+						<h:outputLabel value="Não" rendered="#{lista.inscrito == 2}" />
+					</p:column>
+					<p:column headerText="Ações" style="width:15%;text-align:center;">
+						<p:commandLink oncomplete="visualizarCandidato.show()" title="Visualizar Candidato" process="@form" update="@form"
+							rendered="#{lista.candidato != null and lista.candidato.id != null}">
+							<h:graphicImage library="design/imagem" name="icone-visualizar.png" />
+							<f:setPropertyActionListener target="#{pesquisarParceiroBean.dto.candidato}" value="#{lista.candidato}" />
+						</p:commandLink>
+					</p:column>
+				</p:dataTable>
+			</p:fieldset>
+
+			<p:dialog appendToBody="false" header="Visualizar Candidato" widgetVar="visualizarCandidato" width="500">
+				<h:panelGrid columns="2" width="100%">
+					<h:outputLabel value="Nome Completo:" />
+					<h:outputText value="#{pesquisarParceiroBean.dto.candidato.nome}" />
+
+					<h:outputLabel value="Matrícula:" />
+					<h:outputText value="#{pesquisarParceiroBean.dto.candidato.matricula}" />
+
+					<h:outputLabel value="Matrícula do Chefe:" />
+					<h:outputText value="#{pesquisarParceiroBean.dto.candidato.matriculaChefe}" />
+
+					<h:outputLabel value="Data de Nascimento:" />
+					<h:outputText value="#{pesquisarParceiroBean.dto.candidato.dataNascimento}" />
+
+					<h:outputLabel value="CPF:" rendered="#{pesquisarParceiroBean.dto.candidato.nacionalidadeBrasil}" />
+					<h:outputText value="#{pesquisarParceiroBean.dto.candidato.cpf}" rendered="#{pesquisarParceiroBean.dto.candidato.nacionalidadeBrasil}" />
+					<h:outputLabel value="Documento Estrangeiro:" rendered="#{!pesquisarParceiroBean.dto.candidato.nacionalidadeBrasil}" />
+					<h:outputText value="#{pesquisarParceiroBean.dto.candidato.docEstrangeiro}"
+						rendered="#{!pesquisarParceiroBean.dto.candidato.nacionalidadeBrasil}" />
+
+					<h:outputLabel value="orgão:" />
+					<h:outputText value="#{pesquisarParceiroBean.dto.candidato.orgao.nome}" />
+
+					<h:outputLabel value="UF(Orgão):" />
+					<h:outputText value="#{pesquisarParceiroBean.dto.candidato.municipioOrgao.uf.sigla}" />
+
+					<h:outputLabel value="Munícipio(Orgão):" />
+					<h:outputText value="#{pesquisarParceiroBean.dto.candidato.municipioOrgao.descricao}" />
+
+					<h:outputLabel value="Logradouro:" />
+					<h:outputText value="#{pesquisarParceiroBean.dto.candidato.logradouro}" />
+
+					<h:outputLabel value="Complemento:" />
+					<h:outputText value="#{pesquisarParceiroBean.dto.candidato.complemento}" />
+
+					<h:outputLabel value="UF(Endereço):" />
+					<h:outputText value="#{pesquisarParceiroBean.dto.candidato.municipioEndereco.uf.sigla}" />
+
+					<h:outputLabel value="Munícipio(Endereço):" />
+					<h:outputText value="#{pesquisarParceiroBean.dto.candidato.municipioEndereco.descricao}" />
+
+					<h:outputLabel value="CEP:" />
+					<h:outputText value="#{pesquisarParceiroBean.dto.candidato.cep}" />
+
+					<h:outputLabel value="Telefone Com.:" />
+					<h:outputText value="#{pesquisarParceiroBean.dto.candidato.telComercial}" />
+
+					<h:outputLabel value="Telefone Cel.:" />
+					<h:outputText value="#{pesquisarParceiroBean.dto.candidato.telCelular}" />
+
+					<h:outputLabel value="Telefone Res.:" />
+					<h:outputText value="#{pesquisarParceiroBean.dto.candidato.telResidencial}" />
+
+					<h:outputLabel value="E-mail Institucional:" />
+					<h:outputText value="#{pesquisarParceiroBean.dto.candidato.emailInstitucional}" />
+
+					<h:outputLabel value="E-mail Pessoal" />
+					<h:outputText value="#{pesquisarParceiroBean.dto.candidato.emailPessoal}" />
+				</h:panelGrid>
+				<br />
+				<div align="center">
+					<p:commandButton value="Fechar" onclick="visualizarCandidato.hide()" />
+				</div>
+			</p:dialog>
+		</h:form>
+	</ui:define>
+</ui:composition>

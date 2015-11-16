@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui">
+
+<f:view contentType="text/html">
+
+	<h:head>
+	    <meta http-equiv="X-UA-Compatible" content="IE=9" />  
+		<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+		<meta http-equiv="Pragma" content="no-cache" />
+		<meta http-equiv="Expires" content="0" />
+		<f:loadBundle basename="constantes" var="const" />
+
+		<h:outputScript library="design/js" name="calendar_traducao.js" />
+		<h:outputStylesheet library="design/css" name="default.css" />
+		<h:outputStylesheet library="design/css" name="css.css" />
+
+		<title><h:outputText value="#{const.versao}" /></title>
+	</h:head>
+
+	<h:body>
+		<p:layout fullPage="true">
+			<p:layoutUnit position="center">
+				<!-- GERAL - INÍCIO -->
+				<div class="geral">
+					<p:ajaxStatus onstart="statusDialog.show();" onsuccess="statusDialog.hide();" />
+					<p:dialog appendToBody="true" modal="true" widgetVar="statusDialog" draggable="false" closable="false"
+						resizable="false">
+						<h:graphicImage library="design/imagem" name="ajaxloading.gif" />
+					</p:dialog>
+
+					<!-- CABEÇALHO  -->
+					<div id="barra-brasil">
+						<div class="barra-brasilgov-left"></div>
+						<div class="container barra">
+							<div class="ai-brasilgov">
+								<a target="_blank" href="http://www.brasil.gov.br" class="brasilgov" title="Portal de Estado do Brasil"></a> <a
+									target="_blank" href="http://www.acessoainformacao.gov.br" class="ai" title="Acesso à informação"></a>
+							</div>
+						</div>
+						<div class="barra-brasilgov-right"></div>
+					</div>
+
+					<div class="cabecalho" align="center">
+						<h:graphicImage library="design/imagem-default" name="cabecalho.jpg" style="align:middle;float: left;" />
+					</div>
+					<!-- CABEÇALHO - FIM -->
+
+					<!-- CONTEÚDO - INÍCIO -->
+					<div class="conteudo-login">
+						<div>
+							<ui:insert name="body" />
+						</div>
+					</div>
+					<!-- CONTEÚDO - FIM -->
+					<br /> <br /> <br /> <br /> <br />
+
+					<!-- GERAL - FIM -->
+				</div>
+			</p:layoutUnit>
+
+			<p:layoutUnit position="south" size="45">
+				<!-- RODAPÉ - INÍCIO -->
+				<div class="rodape" align="center">
+					<h:graphicImage library="design/imagem-default" name="rodape.png" />
+				</div>
+				<!-- RODAPÉ - FIM -->
+
+			</p:layoutUnit>
+
+		</p:layout>
+	</h:body>
+</f:view>
+
+</html>

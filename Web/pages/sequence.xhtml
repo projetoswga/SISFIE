@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui"
+	template="/templates/template.xhtml">
+
+
+	<ui:define name="body">
+
+		<h:form id="formId" prependId="false">
+			    <p:messages id="menSeq" showDetail="true" globalOnly="false" autoUpdate="true" closable="true" />  
+		
+			<div align="center">
+				<p:commandButton value="Gerenciar Sequence" ajax="true" process="@form" update="@form"
+					action="#{sequenceBean.organizarSequence}" />
+			</div>
+			<br />
+			<p:fieldset rendered="#{!empty sequenceBean.lista}" legend="Sequences Gerenciadas" id="fieldPrincipal">
+				<h:outputText value="Total: #{sequenceBean.total}" style="font-weight: bold;color:red"/>
+				<br />
+				<ui:repeat var="seq" value="#{sequenceBean.lista}">
+					<h:outputText value="Sequence : " />
+					<h:outputText value="#{seq.label} " style="font-weight: bold;color:green" />
+					<h:outputText value="VALUE: "/>
+					<h:outputText value="#{seq.value}" style="font-weight: bold;;color:red"/>
+					<br />
+				</ui:repeat>
+			</p:fieldset>
+		</h:form>
+	</ui:define>
+</ui:composition>

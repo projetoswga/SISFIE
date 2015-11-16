@@ -1,0 +1,432 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui" template="/templates/template.xhtml">
+
+	<ui:define name="body">
+		<h:form prependId="false" id="form">
+
+			<p:fieldset legend="Curso" id="fieldCurso">
+				<h:panelGrid columns="2" columnClasses="coluna20,coluna80" border="0" width="100%">
+					<h:outputLabel value="Curso composto por Oficina?" />
+					<p:selectBooleanCheckbox id="flgOficina" value="#{CadastrarCursoBean.model.flgPossuiOficina}">
+						<p:ajax event="change" process="flgOficina,panelVagas" listener="#{CadastrarCursoBean.limparVagas}"
+							update="panelVagas,panelPrazo,percenturalVagas,fieldEmailParceiros" />
+					</p:selectBooleanCheckbox>
+					<h:outputLabel value="Curso Exige Documentação?" />
+					<p:selectBooleanCheckbox id="flgDocumentacao" value="#{CadastrarCursoBean.model.flgExigeDocumentacao}" />
+				</h:panelGrid>
+
+				<h:panelGrid id="panelPrazo" columns="3" columnClasses="coluna20,coluna40,coluna40" border="0" width="100%">
+					<h:outputLabel value="Carga Horária: " id="cHoraria" rendered="#{CadastrarCursoBean.model.flgPossuiOficina}"
+						styleClass="icoObrigatorio" />
+					<p:inputMask mask="9?9999" value="#{CadastrarCursoBean.model.cargaHoraria}" size="10" id="cargaHoraria"
+						rendered="#{CadastrarCursoBean.model.flgPossuiOficina}" requiredMessage="#{CadastrarCursoBean.requiredMessage}" required="true" />
+					<p:message for="cargaHoraria" />
+				</h:panelGrid>
+
+				<h:panelGrid columns="3" border="0" columnClasses="coluna20,coluna40,coluna40" width="100%">
+					<h:outputLabel value="Número do Projeto:" styleClass="icoObrigatorio" />
+					<p:inputMask mask="99.99.99.99999.99.99" value="#{CadastrarCursoBean.model.codigo}" id="cod" size="58" maxlength="255"
+						requiredMessage="#{CadastrarCursoBean.requiredMessage}" required="true" />
+					<p:message for="cod" />
+
+					<h:outputLabel value="Visibilidade" styleClass="icoObrigatorio" />
+					<p:selectOneRadio id="visibilidade" value="#{CadastrarCursoBean.model.publico}" requiredMessage="#{CadastrarCursoBean.requiredMessage}"
+						required="true">
+						<f:selectItem itemLabel="Público" itemValue="true" />
+						<f:selectItem itemLabel="Privado" itemValue="false" />
+						<p:ajax event="change" process="visibilidade" update="fieldEmail" />
+					</p:selectOneRadio>
+					<p:message for="visibilidade" />
+
+					<h:outputLabel value="Título:" styleClass="icoObrigatorio" />
+					<p:inputText value="#{CadastrarCursoBean.model.titulo}" id="tit" size="58" maxlength="255"
+						requiredMessage="#{CadastrarCursoBean.requiredMessage}" required="true" />
+					<p:message for="tit" />
+
+					<h:outputLabel value="Área de Interesse:" />
+					<p:selectOneMenu id="area" style="width:300px;" value="#{CadastrarCursoBean.idArea}">
+						<f:selectItem itemLabel="Selecione" itemValue="" />
+						<f:selectItems value="#{CadastrarCursoBean.areas}" var="name" itemLabel="#{name.descricao}" itemValue="#{name.id}" />
+					</p:selectOneMenu>
+					<p:message for="area" />
+
+					<h:outputLabel value="Local:" styleClass="icoObrigatorio" />
+					<p:selectOneMenu id="local" style="width:300px;" value="#{CadastrarCursoBean.idLocal}"
+						requiredMessage="#{CadastrarCursoBean.requiredMessage}" required="true">
+						<f:selectItem itemLabel="Selecione" itemValue="" />
+						<f:selectItems value="#{CadastrarCursoBean.locais}" var="name" itemLabel="#{name.descricao}" itemValue="#{name.id}" />
+					</p:selectOneMenu>
+					<p:message for="local" />
+
+					<h:outputLabel value="Órgão Solicitante:" />
+					<p:autoComplete queryDelay="500" value="#{CadastrarCursoBean.orgaoSelecionado}" minQueryLength="2" id="idOrgaos" size="58"
+						completeMethod="#{CadastrarCursoBean.completeOrgao}" forceSelection="true" var="lista" itemLabel="#{lista.nomeSiglaFormat}"
+						itemValue="#{lista.id}" converter="OrgaoConverter" maxResults="15">
+					</p:autoComplete>
+					<h:outputText value=" " />
+
+					<h:outputLabel value="Turno:" />
+					<p:selectOneMenu id="turno" effect="fade" style="width:300px;" value="#{CadastrarCursoBean.idTurno}">
+						<f:selectItem itemLabel="Selecione" itemValue="" />
+						<f:selectItems value="#{CadastrarCursoBean.turnos}" var="name" itemValue="#{name.id}" itemLabel="#{name.desTurno}" />
+					</p:selectOneMenu>
+					<h:outputText value=" " />
+
+				</h:panelGrid>
+
+				<h:panelGrid id="panelVagas" columns="2" columnClasses="coluna20,coluna80" border="0" width="100%">
+					<h:outputLabel value="Número de Vagas" id="nVagas" rendered="#{!CadastrarCursoBean.model.flgPossuiOficina}" />
+					<p:inputMask mask="9?9999" value="#{CadastrarCursoBean.numeroVagas}" size="10" id="vagas"
+						rendered="#{!CadastrarCursoBean.model.flgPossuiOficina}" />
+					<p:message for="vagas" />
+				</h:panelGrid>
+
+				<h:panelGrid id="percenturalVagas" columns="3" columnClasses="coluna20,coluna40,coluna40" border="0" width="100%">
+					<h:outputLabel value="Percentural de Vagas para Parceiros:" id="perVagas"
+						rendered="#{CadastrarCursoBean.model.flgPossuiOficina and CadastrarCursoBean.model.publico}" />
+					<h:panelGrid columns="2" rendered="#{CadastrarCursoBean.model.flgPossuiOficina and CadastrarCursoBean.model.publico}">
+						<p:inputText value="#{CadastrarCursoBean.model.numPercentualVagasParceiro}" size="3" id="percentual" maxlength="3" />
+						<h:outputLabel value="%" />
+					</h:panelGrid>
+					<p:message for="percentual" />
+				</h:panelGrid>
+
+				<h:panelGrid columns="3" border="0" columnClasses="coluna20,coluna40,coluna40" width="100%">
+
+					<h:outputLabel value="Data Realização Início:" styleClass="icoObrigatorio" />
+					<h:panelGrid columns="2" border="0">
+						<p:calendar mindate="#{CadastrarCursoBean.hoje}" locale="pt" pattern="dd/MM/yyyy" id="dtRealizacao" navigator="true" maxlength="10"
+							size="15" readOnlyInputText="true" value="#{CadastrarCursoBean.model.dtRealizacaoInicio}" mode="popup" showOn="button"
+							requiredMessage="#{CadastrarCursoBean.requiredMessage}" required="true" />
+						<p:commandLink process="@this" title="Limpar" update="dtRealizacao">
+							<h:graphicImage name="icone-limpar.png" library="design/imagem" />
+							<f:setPropertyActionListener target="#{CadastrarCursoBean.model.dtRealizacaoInicio}" value="" />
+						</p:commandLink>
+					</h:panelGrid>
+					<p:message for="dtRealizacao" />
+
+					<h:outputLabel value="Data Realização Fim:" styleClass="icoObrigatorio" />
+					<h:panelGrid columns="2" border="0">
+						<p:calendar mindate="#{CadastrarCursoBean.hoje}" locale="pt" pattern="dd/MM/yyyy" id="dtRealizacaoFim" navigator="true" maxlength="10"
+							size="15" readOnlyInputText="true" value="#{CadastrarCursoBean.model.dtRealizacaoFim}" mode="popup" showOn="button"
+							requiredMessage="#{CadastrarCursoBean.requiredMessage}" required="true" />
+						<p:commandLink process="@this" title="Limpar" update="dtRealizacaoFim">
+							<h:graphicImage name="icone-limpar.png" library="design/imagem" />
+							<f:setPropertyActionListener target="#{CadastrarCursoBean.model.dtRealizacaoFim}" value="" />
+						</p:commandLink>
+					</h:panelGrid>
+					<p:message for="dtRealizacaoFim" />
+
+					<h:outputLabel value="Período Inscrição Início:" styleClass="icoObrigatorio" />
+					<h:panelGrid columns="2" border="0">
+						<p:calendar mindate="#{CadastrarCursoBean.hoje}" locale="pt" pattern="dd/MM/yyyy" id="dtInscricaoInicio" navigator="true"
+							maxlength="10" size="15" readOnlyInputText="true" value="#{CadastrarCursoBean.model.dtInicioInscricao}" mode="popup" showOn="button"
+							requiredMessage="#{CadastrarCursoBean.requiredMessage}" required="true" />
+						<p:commandLink process="@this" title="Limpar" update="dtInscricaoInicio">
+							<h:graphicImage name="icone-limpar.png" library="design/imagem" />
+							<f:setPropertyActionListener target="#{CadastrarCursoBean.model.dtInicioInscricao}" value="" />
+						</p:commandLink>
+					</h:panelGrid>
+					<p:message for="dtInscricaoInicio" />
+				</h:panelGrid>
+				<h:panelGrid columns="3" border="0" columnClasses="coluna20,coluna40,coluna40" width="100%">
+
+					<p:selectOneRadio id="optionsInscricao" layout="pageDirection" value="#{CadastrarCursoBean.idTipoInscricao}"
+						requiredMessage="#{CadastrarCursoBean.requiredMessage}" required="true">
+						<f:selectItem itemLabel="Por Data de Fim de Inscrição" itemValue="1" />
+						<f:selectItem itemLabel="Determinada pelo Gestor" itemValue="2" />
+						<p:ajax event="change" process="optionsInscricao" listener="#{CadastrarCursoBean.limparInscricao}" update="fimInscricao" />
+					</p:selectOneRadio>
+					<h:outputText value=" " />
+					<p:message for="optionsInscricao" />
+				</h:panelGrid>
+
+				<h:panelGrid id="fimInscricao" width="100%">
+					<h:panelGrid rendered="#{CadastrarCursoBean.idTipoInscricao eq 1}" columns="4" border="0"
+						columnClasses="coluna20,coluna15,coluna5,coluna60" width="100%">
+						<h:outputLabel value="Período Inscrição Fim:" styleClass="icoObrigatorio" />
+						<p:calendar mindate="#{CadastrarCursoBean.hoje}" locale="pt" pattern="dd/MM/yyyy" id="dtInscricaoFim" navigator="true" maxlength="10"
+							size="15" readOnlyInputText="true" value="#{CadastrarCursoBean.model.dtTerminoInscricao}" mode="popup" showOn="button" />
+						<p:commandLink process="@this" title="Limpar" update="dtInscricaoFim">
+							<h:graphicImage name="icone-limpar.png" library="design/imagem" />
+							<f:setPropertyActionListener target="#{CadastrarCursoBean.model.dtTerminoInscricao}" value="" />
+						</p:commandLink>
+						<p:message for="dtInscricaoFim" />
+					</h:panelGrid>
+				</h:panelGrid>
+
+				<h:panelGrid columns="3" columnClasses="coluna20,coluna60,coluna20" border="0" width="100%">
+					<h:outputLabel value="Habilitar Curso Por Região" />
+					<p:selectBooleanCheckbox value="#{CadastrarCursoBean.cursoPorRegiao}" id="checkCurso"
+						requiredMessage="#{CadastrarCursoBean.requiredMessage}" required="true">
+						<p:ajax event="change" process="checkCurso" update="regiao" listener="#{CadastrarCursoBean.limparRegiao}" />
+					</p:selectBooleanCheckbox>
+					<p:message for="checkCurso" />
+				</h:panelGrid>
+
+				<h:panelGrid id="regiao" width="100%">
+					<p:fieldset legend="Região" id="fieldRegiao" rendered="#{CadastrarCursoBean.cursoPorRegiao}">
+						<h:panelGrid columns="2" border="0" width="100%" columnClasses="coluna50,coluna50">
+							<h:panelGrid columns="1" border="0" width="100%" id="panelUf">
+								<h:panelGrid columns="3" border="0" columnClasses="coluna20,coluna5,coluna75" width="100%">
+									<h:outputLabel value="UF" styleClass="icoObrigatorio" />
+									<p:autoComplete queryDelay="100" value="#{CadastrarCursoBean.uf}" minQueryLength="1" id="uf" size="45"
+										completeMethod="#{CadastrarCursoBean.completeUF}" forceSelection="true" var="uf" itemLabel="#{uf.sigla}" itemValue="#{uf.id}"
+										converter="UFConverter">
+										<p:column style="width:100%">
+											<h:outputText value="#{uf.sigla} - #{uf.descricao} " />
+										</p:column>
+									</p:autoComplete>
+									<p:commandLink title="Adicionar" process="panelUf" action="#{CadastrarCursoBean.adicionarUf}" update="fieldRegiao">
+										<h:graphicImage library="design/imagem" name="icone-adicionar.png" />
+									</p:commandLink>
+								</h:panelGrid>
+								<p:dataTable paginatorAlwaysVisible="false" paginatorPosition="bottom" var="lista" id="listaUf"
+									rendered="#{!empty CadastrarCursoBean.ufCursos}" update="listaUf" styleClass="coluna100" value="#{CadastrarCursoBean.ufCursos}"
+									paginator="true" rows="5" rowStyleClass="#{empty rowIx or rowIx mod 2 ne 0 ? 'linhaImpar' : 'linhaPar'}" rowIndexVar="rowIx">
+									<p:column headerText="UF" style="width:20%">
+										<h:outputText value="#{lista.uf.sigla}" />
+									</p:column>
+									<p:column headerText="Estado" style="width:60%">
+										<h:outputText value="#{lista.uf.descricao}" />
+									</p:column>
+									<p:column headerText="Ação" style="width:20%">
+										<p:commandLink title="Excluir" process="@this" action="#{CadastrarCursoBean.deleteUf}" update=":form:fieldRegiao">
+											<h:graphicImage library="design/imagem" name="icone-excluir.png" />
+											<f:setPropertyActionListener target="#{CadastrarCursoBean.ufCursoDelete}" value="#{lista}" />
+										</p:commandLink>
+									</p:column>
+								</p:dataTable>
+							</h:panelGrid>
+							<h:panelGrid columns="1" border="0" width="100%" id="panelMunicipio" rendered="#{!empty CadastrarCursoBean.ufCursos}">
+								<h:panelGrid columns="3" border="0" columnClasses="coluna20,coluna5,coluna75" width="100%">
+									<h:outputLabel value="Município" />
+									<p:autoComplete queryDelay="500" value="#{CadastrarCursoBean.municipio}" minQueryLength="1" id="municipio" size="45"
+										completeMethod="#{CadastrarCursoBean.completeMunicipio}" forceSelection="true" var="municipio" itemLabel="#{municipio.descricao}"
+										itemValue="#{municipio.id}" converter="MunicipioConverter" />
+									<p:commandLink title="Adicionar" process="panelMunicipio" action="#{CadastrarCursoBean.adicionarMunicipio}" update="panelMunicipio">
+										<h:graphicImage library="design/imagem" name="icone-adicionar.png" />
+									</p:commandLink>
+								</h:panelGrid>
+								<p:dataTable paginatorAlwaysVisible="false" paginatorPosition="bottom" var="lista" id="listaMunicipio"
+									emptyMessage="Nenhum Município Adicionado" update="listaMunicipio" styleClass="coluna100"
+									value="#{CadastrarCursoBean.municipioCursos}" paginator="true" rows="5"
+									rowStyleClass="#{empty rowIx or rowIx mod 2 ne 0 ? 'linhaImpar' : 'linhaPar'}" rowIndexVar="rowIx">
+									<p:column headerText="Município" style="width:80%">
+										<h:outputText value="#{lista.municipio.descricao}" />
+									</p:column>
+									<p:column headerText="Ação" style="width:20%">
+										<p:commandLink title="Excluir" process="@this" action="#{CadastrarCursoBean.deleteMunicipio}" update=":form:panelMunicipio">
+											<h:graphicImage library="design/imagem" name="icone-excluir.png" />
+											<f:setPropertyActionListener target="#{CadastrarCursoBean.municipioCurso}" value="#{lista}" />
+										</p:commandLink>
+									</p:column>
+								</p:dataTable>
+							</h:panelGrid>
+						</h:panelGrid>
+					</p:fieldset>
+				</h:panelGrid>
+				<br />
+				<h:panelGrid id="areasConhecimentoPricipal" width="100%">
+					<p:fieldset legend="Áreas de Conhecimento" id="fieldAreaConhecimento">
+						<h:panelGrid columns="2" id="AreasConhecimento" width="100%" columnClasses="coluna20,coluna80">
+							<h:outputLabel value="Área de Conhecimento:" />
+							<h:panelGrid columns="2" id="panelAdicaoAreaConhecimento" border="0" style="text-align: left;">
+								<p:autoComplete queryDelay="500" value="#{CadastrarCursoBean.areaConhecimentoSelecionada}" minQueryLength="2" id="areaConhecimentos"
+									size="57" completeMethod="#{CadastrarCursoBean.completeAreaConhecimento}" forceSelection="true" var="lista" dropdown="true"
+									itemLabel="#{lista.descricao}" itemValue="#{lista.id}" converter="AreaConhecimentoConverter" maxResults="15" scrollHeight="300">
+									<p:ajax event="itemSelect" update="panelAdicaoAreaConhecimento,panelGridTableAreaConhecimento"
+										process="panelAdicaoAreaConhecimento" listener="#{CadastrarCursoBean.adicionarAreaConhecimento}" />
+								</p:autoComplete>
+							</h:panelGrid>
+
+							<h:outputLabel value="" />
+							<h:panelGrid id="panelGridTableAreaConhecimento" width="100%">
+								<p:dataTable var="areaConhecimentoCurso" id="tableAreaConhecimento" emptyMessage="#{CadastrarCursoBean.emptyMessage}"
+									update="tableAreaConhecimento" rowIndexVar="rowIx" styleClass="coluna100" value="#{CadastrarCursoBean.areaConhecimentoCursos}"
+									rowStyleClass="#{empty rowIx or rowIx mod 2 ne 0 ? 'linhaImpar' : 'linhaPar'}"
+									rendered="#{not empty CadastrarCursoBean.areaConhecimentoCursos}">
+
+									<f:facet name="header">
+										<h:outputLabel value="Área de Conhecimento Adicionadas" />
+									</f:facet>
+									<p:column headerText="Descrição" style="width:90%">
+										<h:outputLabel value="#{areaConhecimentoCurso.areaConhecimento.descricao}" />
+									</p:column>
+									<p:column style="width:10%;text-align:center;">
+										<f:facet name="header">
+											<h:outputLabel value="Ações" />
+										</f:facet>
+										<p:commandLink title="Excluir" process="@this" oncomplete="confirmationAreaConhecimento.show()">
+											<h:graphicImage library="design/imagem" name="icone-excluir.png" />
+											<f:setPropertyActionListener target="#{CadastrarCursoBean.areaConhecimentoCursoExclusao}" value="#{areaConhecimentoCurso}" />
+										</p:commandLink>
+									</p:column>
+								</p:dataTable>
+							</h:panelGrid>
+						</h:panelGrid>
+					</p:fieldset>
+				</h:panelGrid>
+				<br />
+				<h:panelGrid columns="3" border="0" columnClasses="coluna48,coluna4,coluna48" width="100%">
+					<p:dataTable id="homologacao" var="lista" value="#{CadastrarCursoBean.homologacaoDataModel}"
+						selection="#{CadastrarCursoBean.homologacao}" style="width:100%;">
+						<f:facet name="header">
+							<h:outputText value="Homologação" />
+						</f:facet>
+						<p:column selectionMode="multiple" style="width:18px" />
+						<p:column headerText="Tipo de Homologação">
+							<h:outputText value="#{lista.descricao}" />
+						</p:column>
+					</p:dataTable>
+					<h:outputLabel value="" />
+					<p:dataTable id="esferaGov" var="lista" value="#{CadastrarCursoBean.esferaGovernoDataModel}"
+						selection="#{CadastrarCursoBean.esferaGoverno}" style="width:100%;">
+						<f:facet name="header">
+							<h:outputText value="Esfera de Governo" />
+						</f:facet>
+						<p:column selectionMode="multiple" style="width:18px" />
+						<p:column headerText="Esfera">
+							<h:outputText value="#{lista.descricao}" />
+						</p:column>
+					</p:dataTable>
+				</h:panelGrid>
+				<br />
+				<h:panelGrid columns="3" border="0" width="100%" columnClasses="coluna48,coluna4,coluna48">
+					<p:dataTable id="listaEspera" var="lista" value="#{CadastrarCursoBean.opcaoDataModel}"
+						selection="#{CadastrarCursoBean.opcaoListaCandidato}" style="width:100%;">
+						<f:facet name="header">
+							<h:outputText value="Lista de Espera" />
+						</f:facet>
+						<p:column selectionMode="single" style="width:18px" />
+						<p:column headerText="Tipo de Espera">
+							<h:outputText value="#{lista.descricao}" />
+						</p:column>
+					</p:dataTable>
+					<h:outputLabel value="" />
+					<p:dataTable id="listaCampo" var="lista" value="#{CadastrarCursoBean.preenchimentoDataModel}"
+						selection="#{CadastrarCursoBean.campoPreenchimento}" style="width:100%;">
+						<f:facet name="header">
+							<h:outputText value="Dados do Aluno Obrigatório" />
+						</f:facet>
+						<p:column selectionMode="multiple" style="width:18px" />
+						<p:column headerText="Campo">
+							<h:outputText value="#{lista.descricao}" />
+						</p:column>
+					</p:dataTable>
+				</h:panelGrid>
+				<br />
+				<h:panelGrid width="100%" id="fieldEmail">
+					<h:panelGrid width="100%" rendered="#{CadastrarCursoBean.model.privado}">
+						<h:panelGrid columns="4" id="cadastroEmail" border="1" columnClasses="coluna25,coluna25,coluna50" width="100%">
+							<h:outputLabel value="E-mail Participante Curso Privado:" styleClass="icoObrigatorio" />
+							<p:inputText value="#{CadastrarCursoBean.email}" id="email" size="50" maxlength="255" />
+							<p:commandLink title="Adicionar" process="cadastroEmail" action="#{CadastrarCursoBean.adicionarEmail}"
+								update="listaEmail,cadastroEmail">
+								<h:graphicImage library="design/imagem" name="icone-adicionar.png" />
+							</p:commandLink>
+						</h:panelGrid>
+
+						<p:dataTable paginatorAlwaysVisible="false" paginatorPosition="bottom" var="lista" id="listaEmail"
+							emptyMessage="#{CadastrarCursoBean.emptyMessage}" update="listaEmail" rowsPerPageTemplate="#{CadastrarCursoBean.paginacao}"
+							styleClass="coluna100" value="#{CadastrarCursoBean.emailsCursoPrivado}" paginator="true" rows="5"
+							rowStyleClass="#{empty rowIx or rowIx mod 2 ne 0 ? 'linhaImpar' : 'linhaPar'}" rowIndexVar="rowIx">
+
+							<f:facet name="header">
+								<h:outputLabel value="E-mails Participantes" />
+							</f:facet>
+							<p:column headerText="Email" sortBy="#{lista.email}" filterBy="#{lista.email}" style="width:90%">
+								<h:outputLabel value="#{lista.email}" />
+							</p:column>
+							<p:column style="width:10%;text-align:center;">
+								<f:facet name="header">
+									<h:outputLabel value="Ação" />
+								</f:facet>
+								<p:commandLink title="Excluir" process="@this" oncomplete="confirmationEmail.show()">
+									<h:graphicImage library="design/imagem" name="icone-excluir.png" />
+									<f:setPropertyActionListener target="#{CadastrarCursoBean.emailDelete}" value="#{lista}" />
+								</p:commandLink>
+							</p:column>
+						</p:dataTable>
+					</h:panelGrid>
+				</h:panelGrid>
+				<br />
+				<h:panelGrid width="100%" id="fieldEmailParceiros">
+					<h:panelGrid width="100%" rendered="#{CadastrarCursoBean.model.flgPossuiOficina and CadastrarCursoBean.model.publico}">
+						<h:panelGrid columns="3" id="cadastroEmailParceiro" border="1" columnClasses="coluna25,coluna25,coluna50" width="100%">
+							<h:outputLabel value="E-mail do Parceiro Participante:" />
+							<p:inputText value="#{CadastrarCursoBean.emailParceiro}" id="emailParceiro" size="50" maxlength="255" />
+							<p:commandLink title="Adicionar" process="cadastroEmailParceiro" action="#{CadastrarCursoBean.adicionarEmailParceiro}"
+								update="listaEmailParceiro,cadastroEmailParceiro">
+								<h:graphicImage library="design/imagem" name="icone-adicionar.png" />
+							</p:commandLink>
+							<h:outputLabel value="Enviar E-mail aos Parceiros Participantes?" />
+							<p:selectOneRadio value="#{CadastrarCursoBean.enviarEmailParceiros}">
+					            <f:selectItem itemLabel="Sim" itemValue="true" />
+					            <f:selectItem itemLabel="Não" itemValue="false" />
+					        </p:selectOneRadio>
+						</h:panelGrid>
+
+						<p:dataTable paginatorAlwaysVisible="false" paginatorPosition="bottom" var="lista" id="listaEmailParceiro"
+							emptyMessage="#{CadastrarCursoBean.emptyMessage}" rowsPerPageTemplate="#{CadastrarCursoBean.paginacao}"
+							style="width:100%" value="#{CadastrarCursoBean.emailsParceiros}" paginator="true" rows="5"
+							rowStyleClass="#{empty rowIx or rowIx mod 2 ne 0 ? 'linhaImpar' : 'linhaPar'}" rowIndexVar="rowIx">
+
+							<f:facet name="header">
+								<h:outputLabel value="E-mails dos Parceiros Participantes: #{CadastrarCursoBean.emailsParceiros.size()}" />
+							</f:facet>
+							<p:column headerText="Email" sortBy="#{lista.email}" filterBy="#{lista.email}" style="width:90%">
+								<h:outputLabel value="#{lista.email}" />
+							</p:column>
+							<p:column style="width:10%;text-align:center;">
+								<f:facet name="header">
+									<h:outputLabel value="Ação" />
+								</f:facet>
+								<p:commandLink title="Excluir" process=":form:fieldEmailParceiros" update=":form:fieldEmailParceiros" oncomplete="confirmationEmailParceiro.show();">
+									<h:graphicImage library="design/imagem" name="icone-excluir.png" />
+									<f:setPropertyActionListener target="#{CadastrarCursoBean.emailDeleteParceiro}" value="#{lista}" />
+								</p:commandLink>
+							</p:column>
+						</p:dataTable>
+					</h:panelGrid>
+				</h:panelGrid>
+
+
+				<div align="center">
+					<p:commandButton value="Salvar" ajax="true" process="@form" update="@form" action="#{CadastrarCursoBean.save}" />
+					<p:spacer width="10" />
+					<p:commandButton value="Limpar" immediate="true" ajax="false" action="cadastrarCurso.jsf" />
+				</div>
+			</p:fieldset>
+
+			<p:confirmDialog appendToBody="true" message="Confirma a Exclusão" header="Exclusão" severity="alert"
+				widgetVar="confirmationAreaConhecimento">
+				<div style="text-align: right">
+					<p:commandButton value="Sim" update="areasConhecimentoPricipal" oncomplete="confirmationAreaConhecimento.hide()"
+						actionListener="#{CadastrarCursoBean.excluirAreaConhecimentoCurso}" styleClass="ui-confirmdialog-yes" icon="ui-icon-check"
+						immediate="true" />
+					<p:commandButton value="Não" onclick="confirmationAreaConhecimento.hide()" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+				</div>
+			</p:confirmDialog>
+
+			<p:confirmDialog appendToBody="true" message="Confirma a Exclusão" header="Exclusão" severity="alert" widgetVar="confirmationEmail">
+				<div style="text-align: right">
+					<p:commandButton value="Sim" update="listaEmail" oncomplete="confirmationEmail.hide()"
+						actionListener="#{CadastrarCursoBean.deleteEmail}" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" immediate="true" />
+					<p:commandButton value="Não" onclick="confirmationEmail.hide()" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+				</div>
+			</p:confirmDialog>
+
+			<p:confirmDialog appendToBody="true" message="Confirma a Exclusão" header="Exclusão" severity="alert"
+				widgetVar="confirmationEmailParceiro">
+				<div style="text-align: right">
+					<p:commandButton value="Sim" process="@this" update="fieldEmailParceiros" oncomplete="confirmationEmailParceiro.hide();"
+						actionListener="#{CadastrarCursoBean.deleteEmailParceiro}" styleClass="ui-confirmdialog-yes" icon="ui-icon-check"/>
+					<p:commandButton value="Não" onclick="confirmationEmailParceiro.hide()" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+				</div>
+			</p:confirmDialog>
+		</h:form>
+	</ui:define>
+</ui:composition>

@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui"
+	template="/templates/template.xhtml">
+
+	<ui:define name="body">
+		<h:form prependId="false" id="form">
+			<p:fieldset legend="Excluir Candidato" id="fieldCandidato">
+				<h:panelGrid columns="2" columnClasses="coluna20,coluna80" width="100%">
+					<h:outputLabel value="Inscrição:" />
+					<p:inputText value="#{excluirCandidatoBean.dto.inscricao}" size="50" maxlength="255" />
+					<h:outputLabel value="Nome:" />
+					<p:inputText value="#{excluirCandidatoBean.dto.nome}" size="50" maxlength="255" />
+					<h:outputLabel value="Nacionalidade:" />
+					<p:selectOneRadio id="options" value="#{excluirCandidatoBean.dto.nacionalidadeBrasil}">
+						<f:selectItem itemLabel="Brasileiro" itemValue="true" />
+						<f:selectItem itemLabel="Outro (Caso  não possua CPF)" itemValue="false" />
+						<p:ajax event="change" process="options" listener="#{excluirCandidatoBean.limparCampoPesquisa}" update="idDocumento" />
+					</p:selectOneRadio>
+				</h:panelGrid>
+				<h:panelGrid id="idDocumento" columns="2" border="0" columnClasses="coluna20,coluna80" width="100%">
+					<h:outputLabel value="CPF:" rendered="#{excluirCandidatoBean.dto.nacionalidadeBrasil}" />
+					<p:inputMask value="#{excluirCandidatoBean.dto.cpf}" size="20" maxlength="255"
+						rendered="#{excluirCandidatoBean.dto.nacionalidadeBrasil}" mask="999.999.999-99" />
+					<h:outputLabel value="Documento Estrangeiro:" rendered="#{!excluirCandidatoBean.dto.nacionalidadeBrasil}" />
+					<p:inputText value="#{excluirCandidatoBean.dto.docEstrangeiro}" size="20" maxlength="255"
+						rendered="#{!excluirCandidatoBean.dto.nacionalidadeBrasil}" />
+				</h:panelGrid>
+				<br />
+				<div align="center">
+					<p:commandButton value="Limpar" immediate="true" ajax="false" action="excluirCandidato.jsf" />
+					<p:spacer width="10" />
+					<p:commandButton value="Pesquisar" ajax="true" process="@form" update="@form"
+						action="#{excluirCandidatoBean.pesquisar}" />
+				</div>
+				<br />
+				
+				<p:dataTable paginatorAlwaysVisible="false" paginatorPosition="bottom" var="lista" id="lista"
+					emptyMessage="#{excluirCandidatoBean.emptyMessage}" update="lista"
+					rowsPerPageTemplate="#{excluirCandidatoBean.paginacao}" styleClass="coluna100"
+					value="#{excluirCandidatoBean.lazyDataModel}" paginator="true" rows="5"
+					rowStyleClass="#{empty rowIx or rowIx mod 2 ne 0 ? 'linhaImpar' : 'linhaPar'}" rowIndexVar="rowIx"
+					rendered="#{not empty excluirCandidatoBean.lazyDataModel}">
+
+					<f:facet name="header">
+						<h:outputLabel value="Lista de Candidatos: #{excluirCandidatoBean.rowCount}" />
+					</f:facet>
+					<p:column headerText="Nome" style="width:15%">
+						<h:outputLabel value="#{lista.nome}" />
+					</p:column>
+					<p:column headerText="Email Institucional" style="width:15%">
+						<h:outputLabel value="#{lista.emailInstitucional}" />
+					</p:column>
+					<p:column headerText="Data Nascimento" style="width:10%">
+						<h:outputLabel value="#{lista.dataNascimento}">
+							<f:convertDateTime pattern="dd/MM/yyyy" />
+						</h:outputLabel>
+					</p:column>
+					<p:column headerText="Órgão" style="width:15%">
+						<h:outputLabel value="#{lista.orgao.nome}" />
+					</p:column>
+					<p:column headerText="Ações" style="width:15%;text-align:center;">
+						<p:commandLink oncomplete="confirmation.show()"	title="Excluir Candidato" process="@this">
+							<h:graphicImage library="design/imagem" name="icone-excluir.png" />
+							<f:setPropertyActionListener target="#{excluirCandidatoBean.candidatoSelect}" value="#{lista}" />
+						</p:commandLink>
+					</p:column>
+				</p:dataTable>
+			</p:fieldset>
+			<p:confirmDialog appendToBody="true" message="Confirma a Exclusão do candidato!" header="Excluir Candidato" severity="alert"
+				widgetVar="confirmation">
+				<h:panelGrid columns="2">
+					<p:commandButton value="Sim" update="lista" oncomplete="confirmation.hide()"
+						actionListener="#{excluirCandidatoBean.excluirCandidato}" immediate="true" />
+					<p:commandButton value="Não" onclick="confirmation.hide()" />
+				</h:panelGrid>
+			</p:confirmDialog>
+		</h:form>
+	</ui:define>
+</ui:composition>
+			

@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui"
+	template="/templates/template.xhtml">
+
+	<ui:define name="body">
+		<f:loadBundle basename="constantes" var="const" />
+
+		<h:form id="formId" prependId="false">
+			<p:fieldset legend="#{gradePacotesBean.qualifiedName}" id="fieldPrincipal">
+				<h:panelGrid columns="2" id="panelCadastro" border="0" columnClasses="coluna15,coluna85" width="100%">
+					<h:outputLabel value="Pacote:" styleClass="icoObrigatorio"/>
+					<p:selectOneMenu id="pacote" style="width:450px;" value="#{gradePacotesBean.idPacote}">
+						<f:selectItem itemLabel="Selecione" itemValue="" />
+						<f:selectItems value="#{gradePacotesBean.pacotes}" var="name" itemLabel="#{name.nomPacote}" itemValue="#{name.id}" />
+						<p:ajax update="lista,confirmacaoEdicaoID" process="@this" event="change" listener="#{gradePacotesBean.carregarOficinas}" />
+					</p:selectOneMenu>
+				</h:panelGrid>
+				<br />
+				<p:dataTable paginatorAlwaysVisible="false" paginatorPosition="bottom" var="lista" id="lista" emptyMessage="#{gradePacotesBean.emptyMessage}" update="lista"
+					rowsPerPageTemplate="#{gradePacotesBean.paginacao}" styleClass="coluna100" value="#{gradePacotesBean.gradePacotes}"
+					paginator="true" rows="10" rowStyleClass="#{empty rowIx or rowIx mod 2 ne 0 ? 'linhaImpar' : 'linhaPar'}"
+					rowIndexVar="rowIx">
+
+					<f:facet name="header">
+						<h:outputLabel value="Lista de Pacotes" />
+					</f:facet>
+					<p:column headerText="Curso" sortBy="#{lista.pacoteOficina.oficina.nomOficina}" filterBy="#{lista.pacoteOficina.oficina.nomOficina}" style="width:20%">
+						<h:outputLabel value="#{lista.pacoteOficina.oficina.nomOficina}" />
+					</p:column>
+					<p:column headerText="Horário" style="width:20%;text-align:center;">
+	                    <h:outputText value="#{lista.horario.desHorario}" />  
+					</p:column>
+					<p:column headerText="Turma" style="width:20%;text-align:center;">
+	                    <h:outputText value="#{lista.turma.descricao}" />  
+					</p:column>
+					<p:column headerText="Ações" style="width:10%;text-align:center;">
+						<p:commandLink title="Editar" update="lista" process="@this,lista" oncomplete="confirmationEdicao.show()">
+							<h:graphicImage library="design/imagem" name="icone-editar.png" />
+							<f:setPropertyActionListener target="#{gradePacotesBean.model}" value="#{lista}" />
+						</p:commandLink>
+						<p:commandLink title="Excluir" process="@this" oncomplete="confirmation.show()"
+							rendered="#{lista.id != null}">
+							<h:graphicImage library="design/imagem" name="icone-excluir.png" />
+							<f:setPropertyActionListener target="#{gradePacotesBean.model}" value="#{lista}" />
+						</p:commandLink>
+					</p:column>
+				</p:dataTable>
+			</p:fieldset>
+			<p:dialog header="Edição da Oficina na Grade de pacotes" severity="alert"
+				widgetVar="confirmationEdicao" id="confirmacaoEdicaoID" >
+				<h:panelGrid columns="2" columnClasses="coluna20,coluna60" width="100%" id="dialogEdicao">
+					<h:outputLabel value="Horário:" styleClass="icoObrigatorio"/>
+				  	<p:selectOneMenu id="horario" value="#{gradePacotesBean.idHorario}" style="width:250">
+						<f:selectItem itemLabel="Selecione" itemValue="" />
+						<f:selectItems value="#{gradePacotesBean.horarios}" var="name" itemLabel="#{name.desHorario}" itemValue="#{name.id}" />
+					</p:selectOneMenu>  
+					
+					<h:outputLabel value="Turma:" styleClass="icoObrigatorio"/>
+					<p:selectOneMenu id="turma" value="#{gradePacotesBean.idTurma}" style="width:250">
+						<f:selectItem itemLabel="Selecione" itemValue="" />
+						<f:selectItems value="#{gradePacotesBean.turmas}" var="name" itemLabel="#{name.descricao}" itemValue="#{name.id}" />
+					</p:selectOneMenu> 
+				</h:panelGrid>
+				<br />
+				<div align="center">
+					<p:commandButton value="Salvar" process="@this,dialogEdicao" update="@form" oncomplete="confirmationEdicao.hide()" actionListener="#{gradePacotesBean.editarExcluirOficinas}"/>
+					<p:spacer width="10" />
+					<p:commandButton value="Cancelar" onclick="confirmationEdicao.hide()" />
+				</div>
+			</p:dialog>
+			
+			<p:confirmDialog appendToBody="true" message="Confirma a Exclusão" header="Exclusão" severity="alert"
+				widgetVar="confirmation">
+				<h:panelGrid columns="2">
+					<p:commandButton value="Sim" update="lista" oncomplete="confirmation.hide()" actionListener="#{gradePacotesBean.removerOficinaGradePacote}"
+						immediate="true" />
+					<p:commandButton value="Não" onclick="confirmation.hide()" />
+				</h:panelGrid>
+			</p:confirmDialog>
+		</h:form>
+	</ui:define>
+</ui:composition>

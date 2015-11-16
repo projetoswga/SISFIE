@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="subRelatorioTurmas" language="groovy" pageWidth="595" pageHeight="842" columnWidth="595" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band splitType="Stretch"/>
+	</title>
+	<pageHeader>
+		<band splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band splitType="Stretch"/>
+	</columnHeader>
+	<detail>
+		<band height="66" splitType="Stretch">
+			<textField>
+				<reportElement key="cpf" positionType="Float" mode="Opaque" x="290" y="28" width="153" height="20" backcolor="#FFFFFF"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement verticalAlignment="Middle" markup="none">
+					<font size="10" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA["125"]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement key="inscricao" positionType="Float" mode="Opaque" x="290" y="0" width="153" height="28" backcolor="#CCCCCC"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[TOTAL INSCRITO]]></text>
+			</staticText>
+			<textField>
+				<reportElement key="cpf" positionType="Float" mode="Opaque" x="0" y="28" width="145" height="20" backcolor="#FFFFFF"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement verticalAlignment="Middle" markup="none">
+					<font size="10" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Turma tal"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement key="cpf" positionType="Float" mode="Opaque" x="443" y="28" width="151" height="20" backcolor="#FFFFFF"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement verticalAlignment="Middle" markup="none">
+					<font size="10" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA["110"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement key="cpf" positionType="Float" mode="Opaque" x="145" y="28" width="145" height="20" backcolor="#FFFFFF"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement verticalAlignment="Middle" markup="none">
+					<font size="10" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA["10/01/2013"]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement key="inscricao" positionType="Float" mode="Opaque" x="0" y="0" width="145" height="28" backcolor="#CCCCCC"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[TURMA]]></text>
+			</staticText>
+			<staticText>
+				<reportElement key="inscricao" positionType="Float" mode="Opaque" x="145" y="0" width="145" height="28" backcolor="#CCCCCC"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[DATA]]></text>
+			</staticText>
+			<staticText>
+				<reportElement key="inscricao" positionType="Float" mode="Opaque" x="443" y="0" width="151" height="28" backcolor="#CCCCCC"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[TOTAL HOMOLOGADOS]]></text>
+			</staticText>
+		</band>
+	</detail>
+	<columnFooter>
+		<band splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band splitType="Stretch"/>
+	</summary>
+</jasperReport>

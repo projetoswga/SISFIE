@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui"
+	template="/templates/template.xhtml">
+
+
+	<ui:define name="body">
+		<f:loadBundle basename="constantes" var="const" />
+
+		<h:form id="formId" prependId="false">
+			<p:fieldset legend="#{turmaBean.qualifiedName}" id="fieldPrincipal">
+				<h:panelGrid columns="3" id="panelCadastro" border="1" columnClasses="coluna15,coluna65,coluna20" width="100%">
+					<h:outputLabel value="Curso:" styleClass="icoObrigatorio"/>
+					<p:selectOneMenu id="curso" style="width:400px;" value="#{turmaBean.idCurso}"
+						requiredMessage="#{turmaBean.requiredMessage}" required="true">
+						<f:selectItem itemLabel="Selecione" itemValue="" />
+						<f:selectItems value="#{turmaBean.cursos}" var="name" itemLabel="#{name.titulo}" itemValue="#{name.id}" />
+					</p:selectOneMenu>
+					<p:message for="curso" />
+					
+					<h:outputLabel value="Descrição:" styleClass="icoObrigatorio" />
+					<p:inputText value="#{turmaBean.model.descricao}" requiredMessage="#{turmaBean.requiredMessage}"
+						required="true" id="descricao" size="50" maxlength="255" />
+					<p:message for="descricao" />
+					
+					<h:outputLabel value="Ativo?" />
+					<p:selectOneRadio id="options" value="#{turmaBean.model.flgAtivo}">
+						<f:selectItem itemLabel="Sim" itemValue="true" />
+						<f:selectItem itemLabel="Não" itemValue="false" />
+					</p:selectOneRadio>
+					<h:outputText value=" " />
+				</h:panelGrid>
+				<br />
+				<div align="center">
+					<p:commandButton value="Limpar" immediate="true" ajax="false" action="turma.jsf" />
+					<p:spacer width="10" />
+					<p:commandButton rendered="#{p:ifGranted('ROLE_TURMA_CADASTRAR')}" value="Salvar" ajax="true" process="@form"
+						update="@form" action="#{turmaBean.save}" />
+				</div>
+				<br />
+				<p:dataTable paginatorAlwaysVisible="false" paginatorPosition="bottom" var="lista" id="lista" emptyMessage="#{turmaBean.emptyMessage}" update="lista"
+					rowsPerPageTemplate="#{turmaBean.paginacao}" styleClass="coluna100" value="#{turmaBean.lazyDataModel}"
+					paginator="true" rows="5" rowStyleClass="#{empty rowIx or rowIx mod 2 ne 0 ? 'linhaImpar' : 'linhaPar'}"
+					rowIndexVar="rowIx">
+
+					<f:facet name="header">
+						<h:outputLabel value="Lista de Turmas" />
+					</f:facet>
+					<p:column headerText="Curso" sortBy="#{lista.curso.titulo}" filterBy="#{lista.curso.titulo}" style="width:40%">
+						<h:outputLabel value="#{lista.curso.titulo}" />
+					</p:column>
+					<p:column headerText="Descrição" sortBy="#{lista.descricao}" filterBy="#{lista.descricao}" style="width:40%">
+						<h:outputLabel value="#{lista.descricao}" />
+					</p:column>
+					<p:column headerText="Ativo" sortBy="#{lista.flgAtivo}" style="width:10%">
+						<h:outputLabel value="#{lista.ativoFormat}" />
+					</p:column>
+					<p:column style="width:10%;text-align:center;">
+						<f:facet name="header">
+							<h:outputLabel value="Ações" />
+						</f:facet>
+						<p:commandLink rendered="#{p:ifGranted('ROLE_TURMA_EDITAR')}" title="Editar" style="padding:5px !important;"
+							update=":formId:panelCadastro" process="@this" action="#{turmaBean.load}">
+							<h:graphicImage library="design/imagem" name="icone-editar.png" />
+							<f:setPropertyActionListener target="#{turmaBean.model}" value="#{lista}" />
+						</p:commandLink>
+						<p:commandLink rendered="#{p:ifGranted('ROLE_TURMA_REMOVER')}" title="Excluir" process="@this"
+							oncomplete="confirmation.show()">
+							<h:graphicImage library="design/imagem" name="icone-excluir.png" />
+							<f:setPropertyActionListener target="#{turmaBean.model}" value="#{lista}" />
+						</p:commandLink>
+					</p:column>
+				</p:dataTable>
+			</p:fieldset>
+			<p:confirmDialog appendToBody="true" message="Confirma a Exclusão" header="Exclusão" severity="alert"
+				widgetVar="confirmation">
+				<h:panelGrid columns="2">
+					<p:commandButton value="Sim" update="lista" oncomplete="confirmation.hide()" actionListener="#{turmaBean.delete}"
+						immediate="true" />
+					<p:commandButton value="Não" onclick="confirmation.hide()" />
+				</h:panelGrid>
+			</p:confirmDialog>
+		</h:form>
+	</ui:define>
+</ui:composition>

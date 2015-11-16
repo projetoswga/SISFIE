@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui"
+	template="/templates/template.xhtml">
+
+	<ui:define name="body">
+		<h:form prependId="false">
+			<p:fieldset legend="Editar Candidato">
+				<h:panelGrid columns="3" border="0" columnClasses="coluna20,coluna60,coluna20" width="100%">
+					<h:outputLabel value="Nome Completo:" styleClass="icoObrigatorio" />
+					<p:inputText value="#{pesquisarCandidatoBean.model.nome}" size="50" maxlength="255" id="idNome"
+						requiredMessage="#{pesquisarCandidatoBean.requiredMessage}" required="true" />
+					<p:message for="idNome" />
+
+					<h:outputLabel value="Matrícula:" />
+					<p:inputText value="#{pesquisarCandidatoBean.model.matricula}" size="20" maxlength="255" id="idMatricula" />
+					<h:outputText value="" />
+
+					<h:outputLabel value="Matrícula do Chefe:" />
+					<p:inputText value="#{pesquisarCandidatoBean.model.matriculaChefe}" size="20" maxlength="255" id="idMatriculaChefe" />
+					<h:outputText value="" />
+
+					<h:outputLabel value="Data de Nascimento:" styleClass="icoObrigatorio" />
+					<h:panelGrid columns="2" border="0" columnClasses="coluna25,coluna75" id="dtNascionalidade">
+						<p:calendar maxdate="#{pesquisarCandidatoBean.dataHj}" yearRange="-111:+0" locale="pt" pattern="dd/MM/yyyy"
+							id="dtNascimento" navigator="true" maxlength="10" size="15" readOnlyInputText="true"
+							value="#{pesquisarCandidatoBean.model.dataNascimento}" mode="popup" showOn="button"
+							requiredMessage="#{pesquisarCandidatoBean.requiredMessage}" required="true" />
+						<p:commandLink process="@this" title="Limpar" update="dtNascionalidade">
+							<h:graphicImage name="icone-limpar.png" library="design/imagem" />
+							<f:setPropertyActionListener target="#{pesquisarCandidatoBean.model.dataNascimento}" value="" />
+						</p:commandLink>
+					</h:panelGrid>
+					<p:message for="dtNascimento" />
+
+
+					<h:outputLabel value="Nacionalidade:" />
+					<p:selectOneRadio id="options" value="#{pesquisarCandidatoBean.model.nacionalidadeBrasil}">
+						<f:selectItem itemLabel="Brasileiro" itemValue="true" />
+						<f:selectItem itemLabel="Outro (Caso  não possua CPF)" itemValue="false" />
+						<p:ajax event="change" process="options" listener="#{pesquisarCandidatoBean.limparCampo}" update="idDocumento" />
+					</p:selectOneRadio>
+					<h:outputText value="" />
+				</h:panelGrid>
+
+				<h:panelGrid id="idDocumento" columns="3" border="0" columnClasses="coluna20,coluna60,coluna20" width="100%">
+					<h:outputLabel value="CPF:" styleClass="icoObrigatorio"
+						rendered="#{pesquisarCandidatoBean.model.nacionalidadeBrasil}" />
+					<p:inputMask value="#{pesquisarCandidatoBean.model.cpf}" size="20" maxlength="255"
+						rendered="#{pesquisarCandidatoBean.model.nacionalidadeBrasil}" mask="999.999.999-99" />
+					<h:outputLabel value="Documento Estrangeiro:" styleClass="icoObrigatorio"
+						rendered="#{!pesquisarCandidatoBean.model.nacionalidadeBrasil}" />
+					<p:inputText value="#{pesquisarCandidatoBean.model.docEstrangeiro}" size="20" maxlength="255"
+						rendered="#{!pesquisarCandidatoBean.model.nacionalidadeBrasil}" />
+					<h:outputText value="" />
+				</h:panelGrid>
+
+				<h:panelGrid columns="3" border="0" columnClasses="coluna20,coluna60,coluna20" width="100%" id="camposCandidato">
+					<h:outputLabel value="orgão:" styleClass="icoObrigatorio" />
+					<p:autoComplete queryDelay="500" value="#{pesquisarCandidatoBean.orgaoSelecionado}" minQueryLength="2"
+						id="idOrgaos" size="70" completeMethod="#{pesquisarCandidatoBean.completeOrgao}" forceSelection="true" var="lista"
+						itemLabel="#{lista.nomeSiglaFormat}" itemValue="#{lista.id}" converter="OrgaoConverter" maxResults="15"
+						requiredMessage="#{pesquisarCandidatoBean.requiredMessage}" required="true">
+					</p:autoComplete>
+					<p:message for="idOrgaos" />
+
+					<h:outputLabel value="UF(Orgão):" styleClass="icoObrigatorio" />
+					<p:selectOneMenu effect="fade" style="width:280px;" value="#{pesquisarCandidatoBean.idUfOrgaoSelecionado}"
+						id="idUf" requiredMessage="#{pesquisarCandidatoBean.requiredMessage}" required="true">
+						<f:selectItem itemLabel="Selecione" itemValue="" />
+						<f:selectItems value="#{pesquisarCandidatoBean.ufOrgaos}" var="objeto" itemLabel="#{objeto.sigla}"
+							itemValue="#{objeto.id}" />
+						<p:ajax update="idMunicipio" process="@this" event="change" listener="#{pesquisarCandidatoBean.changeUF}" />
+					</p:selectOneMenu>
+					<p:message for="idUf" />
+
+					<h:outputLabel value="Munícipio(Orgão):" styleClass="icoObrigatorio" />
+					<p:selectOneMenu effect="fade" style="width:280px;" value="#{pesquisarCandidatoBean.idMunicipioSelecionado}"
+						id="idMunicipio" requiredMessage="#{pesquisarCandidatoBean.requiredMessage}" required="true">
+						<f:selectItem itemLabel="Selecione" itemValue="" />
+						<f:selectItems value="#{pesquisarCandidatoBean.municipioOrgaos}" var="objeto" itemLabel="#{objeto.descricao}"
+							itemValue="#{objeto.id}" />
+					</p:selectOneMenu>
+					<p:message for="idMunicipio" />
+
+					<h:outputLabel value="Logradouro:" />
+					<p:inputText value="#{pesquisarCandidatoBean.model.logradouro}" size="50" maxlength="255" />
+					<h:outputText value="" />
+
+					<h:outputLabel value="Complemento:" />
+					<p:inputText value="#{pesquisarCandidatoBean.model.complemento}" size="50" maxlength="255" />
+					<h:outputText value="" />
+
+					<h:outputLabel value="UF(Endereço):" styleClass="icoObrigatorio" />
+					<p:selectOneMenu effect="fade" style="width:280px;" value="#{pesquisarCandidatoBean.idUfEnderecoSelecionado}"
+						id="idUfEndereco" requiredMessage="#{pesquisarCandidatoBean.requiredMessage}" required="true">
+						<f:selectItem itemLabel="Selecione" itemValue="" />
+						<f:selectItems value="#{pesquisarCandidatoBean.ufEnderecos}" var="objeto" itemLabel="#{objeto.sigla}"
+							itemValue="#{objeto.id}" />
+						<p:ajax update="idMunicipioEndereco" process="@this" event="change"
+							listener="#{pesquisarCandidatoBean.changeUFEndereco}" />
+					</p:selectOneMenu>
+					<p:message for="idUfEndereco" />
+
+					<h:outputLabel value="Munícipio(Endereço):" styleClass="icoObrigatorio" />
+					<p:selectOneMenu effect="fade" style="width:280px;"
+						value="#{pesquisarCandidatoBean.idMunicipioEnderecoSelecionado}" id="idMunicipioEndereco"
+						requiredMessage="#{pesquisarCandidatoBean.requiredMessage}" required="true">
+						<f:selectItem itemLabel="Selecione" itemValue="" />
+						<f:selectItems value="#{pesquisarCandidatoBean.municipioEnderecos}" var="objeto" itemLabel="#{objeto.descricao}"
+							itemValue="#{objeto.id}" />
+					</p:selectOneMenu>
+					<p:message for="idMunicipioEndereco" />
+
+					<h:outputLabel value="CEP:" />
+					<p:inputMask mask="99.999-999" value="#{pesquisarCandidatoBean.model.cep}" size="20" maxlength="255" />
+					<h:outputText value="" />
+
+					<h:outputLabel value="Telefone Com.:" />
+					<p:inputMask mask="(99)99999999?9" value="#{pesquisarCandidatoBean.model.telComercial}" size="20" maxlength="255" />
+					<h:outputText value="" />
+
+					<h:outputLabel value="Telefone Cel.:" />
+					<p:inputMask mask="(99)99999999?9" value="#{pesquisarCandidatoBean.model.telCelular}" size="20" maxlength="255" />
+					<h:outputText value="" />
+
+					<h:outputLabel value="Telefone Res.:" />
+					<p:inputMask mask="(99)99999999?9" value="#{pesquisarCandidatoBean.model.telResidencial}" size="20" maxlength="255" />
+					<h:outputText value="" />
+
+
+					<h:outputLabel value="E-mail Institucional:" styleClass="icoObrigatorio" />
+					<h:panelGrid columns="3">
+						<p:inputText value="#{pesquisarCandidatoBean.model.emailInstitucional}" size="50" maxlength="255"
+							id="idEmailInstitucional" requiredMessage="#{pesquisarCandidatoBean.requiredMessage}" required="true"
+							disabled="#{!pesquisarCandidatoBean.alterarEmail}" />
+						<p:selectBooleanCheckbox value="#{pesquisarCandidatoBean.alterarEmail}">
+							<p:ajax update="camposCandidato" process="@this" event="change" />
+						</p:selectBooleanCheckbox>
+						<h:outputLabel value="Alterar email" />
+					</h:panelGrid>
+					<p:message for="idEmailInstitucional" />
+
+					<h:outputLabel value="Confirmação E-mail Institucional:" styleClass="icoObrigatorio" id="labelConfirmacaoEmail"
+						rendered="#{pesquisarCandidatoBean.alterarEmail}" />
+					<p:inputText value="#{pesquisarCandidatoBean.confirmacaoEmail}" size="50" maxlength="255" id="idEmailConfirme"
+						requiredMessage="#{pesquisarCandidatoBean.requiredMessage}" rendered="#{pesquisarCandidatoBean.alterarEmail}" />
+					<h:outputText value="" id="complementoConfirmacao" rendered="#{pesquisarCandidatoBean.alterarEmail}" />
+
+					<h:outputLabel value="E-mail Pessoal" />
+					<p:inputText value="#{pesquisarCandidatoBean.model.emailPessoal}" id="emailPessoa" size="50" maxlength="255" />
+					<p:message for="emailPessoa" />
+
+				</h:panelGrid>
+				<div align="center">
+					<p:commandButton value="Alterar" action="#{pesquisarCandidatoBean.alterarCandidato}" ajax="true" process="@form"
+						update="@form" />
+					<p:spacer width="10" />
+					<p:commandButton value="Voltar" immediate="true" ajax="false" action="pesquisarCandidato.jsf" />
+				</div>
+			</p:fieldset>
+		</h:form>
+	</ui:define>
+</ui:composition>

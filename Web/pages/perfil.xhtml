@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui"
+	template="/templates/template.xhtml">
+
+
+	<ui:define name="body">
+
+		<h:form id="formId" prependId="false">
+			<p:fieldset legend="#{perfilBean.qualifiedName}" id="fieldPrincipal">
+				<h:panelGrid columns="4" id="panelCadastro" border="1" columnClasses="coluna15,coluna30,coluna20,coluna45"
+					width="100%">
+					<h:outputLabel value="Descrição:" styleClass="icoObrigatorio" />
+					<p:inputText value="#{perfilBean.model.descricao}" requiredMessage="#{perfilBean.requiredMessage}" required="true"
+						id="nome" size="50" maxlength="255" />
+					<p:message for="nome" />
+					<h:outputText value=" " />
+
+				</h:panelGrid>
+				<br />
+				<div align="center">
+					<p:commandButton value="Limpar" immediate="true" ajax="false" action="perfil.jsf" />
+					<p:spacer width="10" />
+					<p:commandButton rendered="#{p:ifGranted('ROLE_PERFIL_CADASTRAR')}" value="Salvar" ajax="true" process="@form" update="@form"
+						action="#{perfilBean.save}" />
+				</div>
+				<br />
+				<p:dataTable paginatorAlwaysVisible="false" paginatorPosition="bottom" var="lista" id="lista" emptyMessage="#{perfilBean.emptyMessage}" update="lista"
+					rowsPerPageTemplate="#{perfilBean.paginacao}" styleClass="coluna100" value="#{perfilBean.lazyDataModel}"
+					paginator="true" rows="5" rowStyleClass="#{empty rowIx or rowIx mod 2 ne 0 ? 'linhaImpar' : 'linhaPar'}"
+					rowIndexVar="rowIx">
+
+					<f:facet name="header">
+						<h:outputLabel value="Lista de Perfis" />
+					</f:facet>
+					<p:column headerText="Descrição" sortBy="#{lista.descricao}" filterBy="#{lista.descricao}" style="width:90%">
+						<h:outputLabel value="#{lista.descricao}" />
+					</p:column>
+
+					<p:column style="width:10%;text-align:center;">
+						<f:facet name="header">
+							<h:outputLabel value="Ações" />
+						</f:facet>
+						<p:commandLink rendered="#{lista.id != 1 and p:ifGranted('ROLE_PERFIL_EDITAR')}" title="Editar"
+							style="padding:5px !important;" update=":formId:panelCadastro" process="@this" action="#{perfilBean.load}">
+							<h:graphicImage library="design/imagem" name="icone-editar.png" />
+							<f:setPropertyActionListener target="#{perfilBean.model}" value="#{lista}" />
+						</p:commandLink>
+						<p:commandLink rendered="#{lista.id != 1 and p:ifGranted('ROLE_PERFIL_REMOVER')}" title="Excluir" process="@this"
+							oncomplete="confirmation.show()">
+							<h:graphicImage library="design/imagem" name="icone-excluir.png" />
+							<f:setPropertyActionListener target="#{perfilBean.model}" value="#{lista}" />
+						</p:commandLink>
+					</p:column>
+				</p:dataTable>
+			</p:fieldset>
+			<p:confirmDialog appendToBody="true" message="Confirma a Exclusão" header="Exclusão" severity="alert"
+				widgetVar="confirmation">
+				<h:panelGrid columns="2">
+					<p:commandButton value="Sim" update="lista" oncomplete="confirmation.hide()" actionListener="#{perfilBean.delete}"
+						immediate="true" />
+					<p:commandButton value="Não" onclick="confirmation.hide()" />
+				</h:panelGrid>
+			</p:confirmDialog>
+		</h:form>
+	</ui:define>
+</ui:composition>

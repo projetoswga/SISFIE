@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui"
+	template="/templates/template.xhtml">
+
+	<ui:define name="body">
+		<h:form prependId="false" id="form">
+			<p:fieldset legend="Pesquisar Candidato" id="fieldCandidato">
+				<h:panelGrid columns="2" columnClasses="coluna20,coluna80" width="100%">
+					<h:outputLabel value="Inscrição:" />
+					<p:inputText value="#{pesquisarCandidatoBean.dto.inscricao}" size="50" maxlength="255" />
+					<h:outputLabel value="Nome:" />
+					<p:inputText value="#{pesquisarCandidatoBean.dto.nome}" size="50" maxlength="255" />
+					<h:outputLabel value="Nacionalidade:" />
+					<p:selectOneRadio id="options" value="#{pesquisarCandidatoBean.dto.nacionalidadeBrasil}">
+						<f:selectItem itemLabel="Brasileiro" itemValue="true" />
+						<f:selectItem itemLabel="Outro (Caso  não possua CPF)" itemValue="false" />
+						<p:ajax event="change" process="options" listener="#{pesquisarCandidatoBean.limparCampoPesquisa}" update="idDocumento" />
+					</p:selectOneRadio>
+				</h:panelGrid>
+				<h:panelGrid id="idDocumento" columns="2" border="0" columnClasses="coluna20,coluna80" width="100%">
+					<h:outputLabel value="CPF:" rendered="#{pesquisarCandidatoBean.dto.nacionalidadeBrasil}" />
+					<p:inputMask value="#{pesquisarCandidatoBean.dto.cpf}" size="20" maxlength="255"
+						rendered="#{pesquisarCandidatoBean.dto.nacionalidadeBrasil}" mask="999.999.999-99" />
+					<h:outputLabel value="Documento Estrangeiro:" rendered="#{!pesquisarCandidatoBean.dto.nacionalidadeBrasil}" />
+					<p:inputText value="#{pesquisarCandidatoBean.dto.docEstrangeiro}" size="20" maxlength="255"
+						rendered="#{!pesquisarCandidatoBean.dto.nacionalidadeBrasil}" />
+				</h:panelGrid>
+				<h:panelGrid columns="2" columnClasses="coluna20,coluna80" width="100%">
+					<h:outputLabel value="E-mail institucional:" />
+					<p:inputText value="#{pesquisarCandidatoBean.dto.emailInstitucional}" size="50" maxlength="255" />
+					<h:outputLabel value="Data de Nascimento:" />
+					<h:panelGrid columns="2" border="0" columnClasses="coluna25,coluna75" id="dtNascionalidade">
+						<p:calendar maxdate="#{pesquisarCandidatoBean.dataHj}" yearRange="-111:+0" locale="pt" pattern="dd/MM/yyyy"
+							id="dtNascimento" navigator="true" maxlength="10" size="15" readOnlyInputText="true"
+							value="#{pesquisarCandidatoBean.dto.dtNascimento}" mode="popup" showOn="button"/>
+						<p:commandLink process="@this" title="Limpar" update="dtNascionalidade">
+							<h:graphicImage name="icone-limpar.png" library="design/imagem" />
+							<f:setPropertyActionListener target="#{pesquisarCandidatoBean.dto.dtNascimento}" value="" />
+						</p:commandLink>
+					</h:panelGrid>
+					<h:outputLabel value="Órgão:" />
+					<p:autoComplete  queryDelay="500" value="#{pesquisarCandidatoBean.dto.orgaoSelecionado}" minQueryLength="2"
+						id="idOrgaos" size="70" completeMethod="#{pesquisarCandidatoBean.completeOrgao}" forceSelection="true" var="lista"
+						itemLabel="#{lista.nomeSiglaFormat}" itemValue="#{lista.id}" converter="OrgaoConverter" maxResults="15">
+					</p:autoComplete>
+					<h:outputLabel value="Curso:" />
+					<p:autoComplete dropdown="true" queryDelay="500" id="curso" size="65" scrollHeight="300"  minQueryLength="2"
+						value="#{pesquisarCandidatoBean.curso}" completeMethod="#{pesquisarCandidatoBean.completeCurso}" forceSelection="true"
+						var="lista" itemLabel="#{lista.cursoData}" itemValue="#{lista.id}" converter="cursoConverter" global="false">
+						<p:ajax event="itemSelect" update="@this" process="@form" listener="#{pesquisarCandidatoBean.copiarIdCurso}"/>
+					</p:autoComplete>
+					<h:outputLabel value="UF(Orgão):"/>
+					<p:selectOneMenu effect="fade" style="width:360px;" value="#{pesquisarCandidatoBean.dto.idUfOrgaoSelecionado}" id="idUf">
+						<f:selectItem itemLabel="Selecione" itemValue="" />
+						<f:selectItems value="#{pesquisarCandidatoBean.ufOrgaos}" var="objeto" itemLabel="#{objeto.sigla}" itemValue="#{objeto.id}" />
+						<p:ajax update="idMunicipio" process="@this" event="change" listener="#{pesquisarCandidatoBean.changeUF}" />
+					</p:selectOneMenu>
+					<h:outputLabel value="Munícipio(Orgão):"/>
+					<p:selectOneMenu effect="fade" style="width:360px;" value="#{pesquisarCandidatoBean.dto.idMunicipioSelecionado}"
+						id="idMunicipio">
+						<f:selectItem itemLabel="Selecione" itemValue="" />
+						<f:selectItems value="#{pesquisarCandidatoBean.municipioOrgaos}" var="objeto" itemLabel="#{objeto.descricao}"
+							itemValue="#{objeto.id}" />
+					</p:selectOneMenu>
+					<h:outputLabel value="UF(Endereço):"/>
+					<p:selectOneMenu effect="fade" style="width:360px;" value="#{pesquisarCandidatoBean.dto.idUfEnderecoSelecionado}" id="idUfEndereco">
+						<f:selectItem itemLabel="Selecione" itemValue="" />
+						<f:selectItems value="#{pesquisarCandidatoBean.ufEnderecos}" var="objeto" itemLabel="#{objeto.sigla}" itemValue="#{objeto.id}" />
+						<p:ajax update="idMunicipioEndereco" process="@this" event="change" listener="#{pesquisarCandidatoBean.changeUFEndereco}" />
+					</p:selectOneMenu>
+					<h:outputLabel value="Munícipio(Endereço):"/>
+					<p:selectOneMenu effect="fade" style="width:360px;" value="#{pesquisarCandidatoBean.dto.idMunicipioEnderecoSelecionado}"
+						id="idMunicipioEndereco">
+						<f:selectItem itemLabel="Selecione" itemValue="" />
+						<f:selectItems value="#{pesquisarCandidatoBean.municipioEnderecos}" var="objeto" itemLabel="#{objeto.descricao}"
+							itemValue="#{objeto.id}" />
+					</p:selectOneMenu>
+					<h:outputLabel value="Status:" />
+					<p:selectOneMenu id="status" style="width:360px;" value="#{pesquisarCandidatoBean.dto.idStatus}">
+						<f:selectItem itemLabel="Selecione" itemValue="" />
+						<f:selectItems value="#{pesquisarCandidatoBean.status}" var="obj" itemLabel="#{obj.descricao}"
+							itemValue="#{obj.id}" />
+					</p:selectOneMenu>
+				</h:panelGrid>
+				
+				<br />
+				<div align="center">
+					<p:commandButton value="Limpar" immediate="true" ajax="false" action="pesquisarCandidato.jsf" />
+					<p:spacer width="10" />
+					<p:commandButton value="Pesquisar" ajax="true" process="@form" update="@form"
+						action="#{pesquisarCandidatoBean.pesquisar}" />
+				</div>
+				<br />
+				
+				<p:dataTable paginatorAlwaysVisible="false" paginatorPosition="bottom" var="lista" id="lista"
+					emptyMessage="#{pesquisarCandidatoBean.emptyMessage}" update="lista"
+					rowsPerPageTemplate="#{pesquisarCandidatoBean.paginacao}" styleClass="coluna100"
+					value="#{pesquisarCandidatoBean.lazyDataModel}" paginator="true" rows="5"
+					rowStyleClass="#{empty rowIx or rowIx mod 2 ne 0 ? 'linhaImpar' : 'linhaPar'}" rowIndexVar="rowIx"
+					rendered="#{not empty pesquisarCandidatoBean.lazyDataModel}">
+
+					<f:facet name="header">
+						<h:outputLabel value="Lista de Candidatos: #{pesquisarCandidatoBean.rowCount}" />
+					</f:facet>
+					<p:column headerText="Nome" style="width:15%">
+						<h:outputLabel value="#{lista.nome}" />
+					</p:column>
+					<p:column headerText="Email Institucional" style="width:15%">
+						<h:outputLabel value="#{lista.emailInstitucional}" />
+					</p:column>
+					<p:column headerText="Data Nascimento" style="width:10%">
+						<h:outputLabel value="#{lista.dataNascimento}">
+							<f:convertDateTime pattern="dd/MM/yyyy" />
+						</h:outputLabel>
+					</p:column>
+					<p:column headerText="Órgão" style="width:15%">
+						<h:outputLabel value="#{lista.orgao.nome}" />
+					</p:column>
+					<p:column headerText="Ações" style="width:15%;text-align:center;">
+						<p:commandLink oncomplete="confirmation.show()"	title="Resetar Senha" process="@this">
+							<h:graphicImage library="design/imagem" name="icone-apagar.png" />
+							<f:setPropertyActionListener target="#{pesquisarCandidatoBean.candidatoSelect}" value="#{lista}" />
+						</p:commandLink>
+						<p:commandLink title="Alterar Email" update="@form" process="@form" action="#{pesquisarCandidatoBean.carregarCandidato}">
+							<h:graphicImage library="design/imagem" name="icone-editar.png" />
+							<f:setPropertyActionListener target="#{pesquisarCandidatoBean.model}" value="#{lista}" />
+						</p:commandLink>
+					</p:column>
+				</p:dataTable>
+			</p:fieldset>
+			<p:confirmDialog appendToBody="true" message="Confirma a redefinição da senha!" header="Resetar senha" severity="alert"
+				widgetVar="confirmation">
+				<h:panelGrid columns="2">
+					<p:commandButton value="Sim" update="lista" oncomplete="confirmation.hide()"
+						actionListener="#{pesquisarCandidatoBean.resetarSenha}" immediate="true" />
+					<p:commandButton value="Não" onclick="confirmation.hide()" />
+				</h:panelGrid>
+			</p:confirmDialog>
+			<p:dialog appendToBody="true" modal="true" header="Enviando Email"  widgetVar="popAviso">
+				<h:outputText
+					value="Redefinição de senha realizado com sucesso. Em poucos instantes será enviado um email para o candidato com a nova senha para acesso ao sistema." />
+				<br />
+				<div align="center">
+					<p:commandButton value="Ok" immediate="true" oncomplete="confirmation.hide();popAviso.hide();" />
+				</div>
+			</p:dialog>
+		</h:form>
+	</ui:define>
+</ui:composition>
+			

@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<faces-config version="2.0" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xi="http://www.w3.org/2001/XInclude"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-facesconfig_2_0.xsd">
+
+
+	<!-- Arquivo de Mensagem. Mensagem.properties -->
+	<application>
+		<message-bundle>constantes</message-bundle>
+	</application>
+
+
+	<application>
+		<el-resolver>org.springframework.web.jsf.el.SpringBeanFacesELResolver</el-resolver>
+	</application>
+
+	<converter>
+		<converter-id>cursoConverter</converter-id>
+		<converter-class>br.com.sisfie.converter.CursoConverter</converter-class>
+	</converter>
+	
+	<converter>
+		<converter-id>turmaConverter</converter-id>
+		<converter-class>br.com.sisfie.converter.TurmaConverter</converter-class>
+	</converter>
+	
+	<converter>
+		<converter-id>usuarioConverter</converter-id>
+		<converter-class>br.com.sisfie.converter.UsuarioConverter</converter-class>
+	</converter>
+
+	<converter>
+		<converter-id>UFConverter</converter-id>
+		<converter-class>br.com.sisfie.converter.UFConverter</converter-class>
+	</converter>
+	
+	<converter>
+		<converter-id>MunicipioConverter</converter-id>
+		<converter-class>br.com.sisfie.converter.MunicipioConverter</converter-class>
+	</converter>
+	
+	<converter>
+		<converter-id>OrgaoConverter</converter-id>
+		<converter-class>br.com.sisfie.converter.OrgaoConverter</converter-class>
+	</converter>
+	
+	<converter>
+		<converter-id>OficinaConverter</converter-id>
+		<converter-class>br.com.sisfie.converter.OficinaConverter</converter-class>
+	</converter>
+	
+	<converter>
+		<converter-id>AreaConhecimentoConverter</converter-id>
+		<converter-class>br.com.sisfie.converter.AreaConhecimentoConverter</converter-class>
+	</converter>
+	
+	<converter>
+		<converter-id>professorConverter</converter-id>
+		<converter-class>br.com.sisfie.converter.ProfessorConverter</converter-class>
+	</converter>
+	
+	<converter>
+		<converter-id>candidatoConverter</converter-id>
+		<converter-class>br.com.sisfie.converter.CandidatoConverter</converter-class>
+	</converter>
+	
+	<converter>
+		<converter-id>numeroProjetoConverter</converter-id>
+		<converter-class>br.com.sisfie.converter.NumeroProjetoConverter</converter-class>
+	</converter>
+	
+	<converter>
+		<converter-id>telefoneConverter</converter-id>
+		<converter-class>br.com.sisfie.converter.TelefoneConverter</converter-class>
+	</converter>
+	
+	<converter>
+		<converter-id>CPFConverter</converter-id>
+		<converter-class>br.com.sisfie.converter.CPFConverter</converter-class>
+	</converter>
+</faces-config>

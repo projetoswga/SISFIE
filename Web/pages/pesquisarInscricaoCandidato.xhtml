@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui" template="/templates/template.xhtml">
+
+	<ui:define name="body">
+		<h:form prependId="false" id="form">
+			<p:fieldset legend="Pesquisar Inscrição Candidato" id="fieldSetPrincipal">
+				<h:panelGrid columns="2" columnClasses="coluna20,coluna80" width="100%" id="gridPrincipal">
+					<h:outputLabel value="Curso:" />
+					<p:autoComplete value="#{pesquisarInscricaoCandidatoBean.cursos}" completeMethod="#{pesquisarInscricaoCandidatoBean.completeCurso}"
+						var="list" itemLabel="#{list.cursoData}" itemValue="#{list.id}" converter="cursoConverter" global="false" multiple="true">
+					</p:autoComplete>
+					<h:outputLabel value="Órgão:" />
+					<p:autoComplete queryDelay="500" value="#{pesquisarInscricaoCandidatoBean.model.candidato.orgao}" minQueryLength="2" id="idOrgaos"
+						size="90" completeMethod="#{pesquisarCandidatoBean.completeOrgao}" forceSelection="true" var="orgao"
+						itemLabel="#{orgao.nomeSiglaFormat}" itemValue="#{orgao.id}" converter="OrgaoConverter" global="false">
+					</p:autoComplete>
+					<h:outputLabel value="Nº Projeto:" />
+					<p:inputMask mask="99.99.99.99999.99.99" value="#{pesquisarInscricaoCandidatoBean.model.curso.codigo}" size="45" maxlength="255" />
+					<h:outputLabel value="Nº Inscrição:" />
+					<p:inputText value="#{pesquisarInscricaoCandidatoBean.model.inscricao}" size="45" maxlength="255" />
+					<h:outputLabel value="Nome Candidato:" />
+					<p:inputText value="#{pesquisarInscricaoCandidatoBean.model.candidato.nome}" size="90" maxlength="255" />
+					<h:outputLabel value="Status da Inscrição:" />
+					<p:selectOneMenu id="idStatus" style="width:464px;" value="#{pesquisarInscricaoCandidatoBean.idStatus}">
+						<f:selectItem itemLabel="Selecione" itemValue="0" />
+						<f:selectItems value="#{pesquisarInscricaoCandidatoBean.listaStatus}" var="status" itemLabel="#{status.descricao}"
+							itemValue="#{status.id}" />
+					</p:selectOneMenu>
+					<h:outputLabel value="Sem seleção de Oficinas/Pacotes?" />
+					<p:selectBooleanCheckbox value="#{pesquisarInscricaoCandidatoBean.semSelecaoOficina}" id="checkCurso" />
+				</h:panelGrid>
+				<br />
+				<div align="center">
+					<p:commandButton value="Pesquisar" process="@form" update="@form" ajax="true" action="#{pesquisarInscricaoCandidatoBean.pesquisar}" />
+					<p:spacer width="10" />
+					<p:commandButton value="Limpar" immediate="true" ajax="false" action="pesquisarInscricaoCandidato.jsf" />
+				</div>
+				<br />
+				<p:dataTable paginatorAlwaysVisible="false" paginatorPosition="bottom" var="listaInscritos" id="listaInscritos"
+					emptyMessage="#{pesquisarInscricaoCandidatoBean.emptyMessage}" update="listaInscritos"
+					rowsPerPageTemplate="#{pesquisarInscricaoCandidatoBean.paginacao}" styleClass="coluna100"
+					value="#{pesquisarInscricaoCandidatoBean.lazyDataModel}" paginator="true" rows="5"
+					rowStyleClass="#{empty rowIx or rowIx mod 2 ne 0 ? 'linhaImpar' : 'linhaPar'}" rowIndexVar="rowIx" rowKey="#{listaInscritos.id}"
+					selection="#{pesquisarInscricaoCandidatoBean.inscricoes}">
+
+					<f:facet name="header">
+						<h:outputLabel value="Lista de Candidato / Inscrição: #{pesquisarInscricaoCandidatoBean.countInscricao}" />
+					</f:facet>
+					<p:column headerText="Inscrição" style="width:5%;">
+						<h:outputLabel value="#{listaInscritos.inscricao}" />
+					</p:column>
+					<p:column headerText="Curso" style="width:15%;">
+						<h:outputLabel value="#{listaInscritos.curso.cursoData}" />
+					</p:column>
+					<p:column headerText="Nome" style="width:15%;">
+						<h:outputLabel value="#{listaInscritos.candidato.nome}" />
+					</p:column>
+					<p:column headerText="CPF/Estrangeiro" style="width:10%;">
+						<h:outputText value="#{listaInscritos.candidato.cpf}" converter="CPFConverter"
+							rendered="#{listaInscritos.candidato.cpf != null and !empty listaInscritos.candidato.cpf}" />
+						<h:outputText value="#{listaInscritos.candidato.docEstrangeiro}"
+							rendered="#{listaInscritos.candidato.docEstrangeiro != null and !empty listaInscritos.candidato.docEstrangeiro}" />
+					</p:column>
+					<p:column headerText="Órgão" style="width:10%;">
+						<h:outputLabel value="#{listaInscritos.candidato.orgao.nome}" />
+					</p:column>
+					<p:column headerText="Telefone" style="width:10%;">
+						<h:outputLabel value="#{listaInscritos.candidato.telComercial}" converter="telefoneConverter" />
+					</p:column>
+					<p:column headerText="Município" style="width:10%;">
+						<h:outputLabel value="#{listaInscritos.candidato.municipioOrgao.descricao}" />
+					</p:column>
+					<p:column headerText="UF" style="width:5%;">
+						<h:outputLabel value="#{listaInscritos.candidato.municipioOrgao.uf.sigla}" />
+					</p:column>
+					<p:column headerText="Status" style="width:10%;">
+						<h:outputLabel value="#{listaInscritos.ultimoStatus.status.descricao}" />
+					</p:column>
+					<p:column style="width:10%;text-align:center;">
+						<f:facet name="header">
+							<h:outputLabel value="Ações" />
+						</f:facet>
+						<p:commandLink title="Cancelar Inscrição" process="@this"
+							rendered="#{listaInscritos.situacao != null and listaInscritos.ultimoStatus.status.id ne 2}" oncomplete="cancelarPop.show()">
+							<h:graphicImage library="design/imagem" name="icone-cancelar.png" />
+							<f:setPropertyActionListener target="#{pesquisarInscricaoCandidatoBean.model}" value="#{listaInscritos}" />
+						</p:commandLink>
+						<p:commandLink title="Desfazer Cancelamento" process="@this" rendered="#{listaInscritos.ultimoStatus.status.id eq 2}"
+							oncomplete="confirmationDesfazerCancelamento.show()">
+							<h:graphicImage library="design/imagem" name="icone-atualizar.png" />
+							<f:setPropertyActionListener target="#{pesquisarInscricaoCandidatoBean.model}" value="#{listaInscritos}" />
+						</p:commandLink>
+						<p:commandLink title="Desfazer Homologação" process="@this" rendered="#{listaInscritos.ultimoStatus.status.id eq 12}"
+							oncomplete="confirmationDesfazerHomologacao.show()">
+							<h:graphicImage library="design/imagem" name="icone-apagar.png" />
+							<f:setPropertyActionListener target="#{pesquisarInscricaoCandidatoBean.model}" value="#{listaInscritos}" />
+						</p:commandLink>
+					</p:column>
+					<p:column selectionMode="multiple" style="width:4%;"
+						disabledSelection="#{listaInscritos.ultimoStatus.status.id eq 3 or listaInscritos.ultimoStatus.status.id eq 12}" />
+				</p:dataTable>
+				<br />
+				<div align="center">
+					<p:commandButton value="Homologar" process="@form" update="@form" ajax="true" action="#{pesquisarInscricaoCandidatoBean.homologar}"
+						rendered="#{pesquisarInscricaoCandidatoBean.mostrarBotaoHomologar}" />
+					<p:spacer width="10" />
+					<p:commandButton value="Isentar" process="@form" update="@form" ajax="true" action="#{pesquisarInscricaoCandidatoBean.isentar}"
+						rendered="#{pesquisarInscricaoCandidatoBean.mostrarBotaoIsentar}" />
+				</div>
+				<br />
+			</p:fieldset>
+
+			<p:confirmDialog appendToBody="true" message="Deseja desfazer a homologação?" header="Confirmação" severity="alert"
+				widgetVar="confirmationDesfazerHomologacao" id="idPopApagarHomologacao">
+				<div style="text-align: right">
+					<p:commandButton value="Sim" process="@form" update="@form" action="#{pesquisarInscricaoCandidatoBean.desfazerHormologacao}"
+						onclick="confirmationDesfazerHomologacao.hide()" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+					<p:commandButton value="Não" onclick="confirmationDesfazerHomologacao.hide()" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+				</div>
+			</p:confirmDialog>
+
+			<p:confirmDialog appendToBody="true" message="Deseja desfazer o Cancelamento?" header="Confirmação" severity="alert"
+				widgetVar="confirmationDesfazerCancelamento" id="idPopDesfazerCancelamento">
+				<div style="text-align: right">
+					<p:commandButton value="Sim" process="@form" update="@form" action="#{pesquisarInscricaoCandidatoBean.desfazerCancelamento}"
+						onclick="confirmationDesfazerCancelamento.hide()" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+					<p:commandButton value="Não" onclick="confirmationDesfazerCancelamento.hide()" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+				</div>
+			</p:confirmDialog>
+
+			<p:dialog appendToBody="false" modal="false" header="Cancelar Inscrição" widgetVar="cancelarPop" width="600" height="400">
+				<h:panelGrid columns="2" columnClasses="coluna20,coluna80">
+					<h:outputLabel value="Corpo Email: " styleClass="icoObrigatorio" />
+					<p:inputTextarea value="#{pesquisarInscricaoCandidatoBean.textoCancelar}" autoResize="false" cols="50" rows="7" />
+				</h:panelGrid>
+				<br />
+				<br />
+				<div align="center">
+					<p:commandButton value="Enviar Email" process="@form" update="@form" action="#{pesquisarInscricaoCandidatoBean.cancelarInscricao}"
+						onclick="cancelarPop.hide()" />
+					<p:commandButton value="Fechar" onclick="cancelarPop.hide()" />
+				</div>
+			</p:dialog>
+		</h:form>
+	</ui:define>
+</ui:composition>

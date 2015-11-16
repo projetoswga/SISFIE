@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui"
+	template="/templates/template.xhtml">
+
+	<ui:define name="body">
+		<f:loadBundle basename="constantes" var="const" />
+
+		<h:form id="formId" prependId="false">
+			<p:fieldset legend="#{pacoteBean.qualifiedName}" id="fieldPrincipal">
+				<h:panelGrid columns="3" id="panelCadastro" border="1" columnClasses="coluna20,coluna60,coluna20" width="100%">
+					<h:outputLabel value="Curso:" styleClass="icoObrigatorio"/>
+					<p:selectOneMenu id="curso" style="width:450px;" value="#{pacoteBean.idCurso}"
+						requiredMessage="#{pacoteBean.requiredMessage}" required="true">
+						<f:selectItem itemLabel="Selecione" itemValue="" />
+						<f:selectItems value="#{pacoteBean.cursos}" var="name" itemLabel="#{name.titulo}" itemValue="#{name.id}" />
+						<p:ajax update="panelCadastro" process="@this" event="change" listener="#{pacoteBean.carregarOficinas}" />
+					</p:selectOneMenu>
+					<p:message for="curso" />
+					
+					<h:outputLabel value="Nome do pacote:" styleClass="icoObrigatorio" />
+					<p:inputText value="#{pacoteBean.model.nomPacote}" requiredMessage="#{pacoteBean.requiredMessage}" required="true"
+						id="nomPacote" size="83" maxlength="255"/>
+					<p:message for="nomPacote" />
+					
+					<h:outputLabel value="Oficinas:" styleClass="icoObrigatorio"/>
+					<h:panelGrid columns="2" id="panelAdicaoOficina" border="0" style="text-align: left;">
+						<p:autoComplete queryDelay="500" value="#{pacoteBean.oficinaSelecionada}" minQueryLength="2" id="oficinas"
+							size="83" completeMethod="#{pacoteBean.completeOficina}" forceSelection="true" var="lista"
+							itemLabel="#{lista.nomOficina}" itemValue="#{lista.id}" converter="OficinaConverter" maxResults="15">
+						</p:autoComplete>
+						<p:commandLink id="botaoAdicinarOficina" title="Adicionar Oficinas" process="panelAdicaoOficina" action="#{pacoteBean.adicionarOficina}" update="panelAdicaoOficina,panelGridTableOficinas">
+							<h:graphicImage library="design/imagem" name="icone-adicionar.png" />
+						</p:commandLink>
+					</h:panelGrid>
+					<h:outputLabel value="" />
+					
+					<h:outputLabel value="" />
+					<h:panelGrid id="panelGridTableOficinas">
+						<p:dataTable var="oficina" id="tableOficina" emptyMessage="#{pacoteBean.emptyMessage}" 
+							update="tableOficina" rowIndexVar="rowIx"
+							styleClass="coluna100" value="#{pacoteBean.listaOficinasSelecionadas}"
+							rowStyleClass="#{empty rowIx or rowIx mod 2 ne 0 ? 'linhaImpar' : 'linhaPar'}"
+							rendered="#{not empty pacoteBean.listaOficinasSelecionadas}">
+							
+							<f:facet name="header">
+								<h:outputLabel value="Oficinas Adicionadas" />
+							</f:facet>
+							<p:column headerText="Nome Oficina" style="width:20%">
+								<h:outputLabel value="#{oficina.nomOficina}" />
+							</p:column>
+							<p:column headerText="Código" style="width:20%">
+								<h:outputLabel value="#{oficina.codOficina}" />
+							</p:column>
+							<p:column headerText="Carga Horária" style="width:20%">
+								<h:outputLabel value="#{oficina.cargaHorariaFormat}" />
+							</p:column>
+							<p:column style="width:10%;text-align:center;">
+								<f:facet name="header">
+									<h:outputLabel value="Ações" />
+								</f:facet>
+								<p:commandLink title="Excluir" process="@this"
+									oncomplete="confirmationOficina.show()">
+									<h:graphicImage library="design/imagem" name="icone-excluir.png" />
+									<f:setPropertyActionListener target="#{pacoteBean.oficinaExclusao}" value="#{oficina}" />
+								</p:commandLink>
+							</p:column>
+						</p:dataTable>
+					</h:panelGrid>
+					<h:outputLabel value="" />
+				</h:panelGrid>
+				<br />
+				<div align="center">
+					<p:commandButton value="Limpar" immediate="true" ajax="false" action="pacote.jsf" />
+					<p:spacer width="10" />
+					<p:commandButton value="Salvar" process="@form" update="@form" ajax="true" action="#{pacoteBean.save}"/>
+				</div>
+				<br />
+				<p:dataTable paginatorAlwaysVisible="false" paginatorPosition="bottom" var="lista" id="lista" emptyMessage="#{pacoteBean.emptyMessage}" update="lista"
+					rowsPerPageTemplate="#{pacoteBean.paginacao}" styleClass="coluna100" value="#{pacoteBean.lazyDataModel}"
+					paginator="true" rows="5" rowStyleClass="#{empty rowIx or rowIx mod 2 ne 0 ? 'linhaImpar' : 'linhaPar'}"
+					rowIndexVar="rowIx">
+
+					<f:facet name="header">
+						<h:outputLabel value="Lista de Pacotes" />
+					</f:facet>
+					<p:column headerText="Curso" sortBy="#{lista.curso.titulo}" filterBy="#{lista.curso.titulo}" style="width:20%">
+						<h:outputLabel value="#{lista.curso.titulo}" />
+					</p:column>
+					<p:column headerText="Nome Pacote" sortBy="#{lista.nomPacote}" filterBy="#{lista.nomPacote}" style="width:20%">
+						<h:outputLabel value="#{lista.nomPacote}" />
+					</p:column>
+					<p:column style="width:10%;text-align:center;">
+						<f:facet name="header">
+							<h:outputLabel value="Ações" />
+						</f:facet>
+						<p:commandLink title="Editar" style="padding:5px !important;"
+							update=":formId:panelCadastro" process="@this" action="#{pacoteBean.load}">
+							<h:graphicImage library="design/imagem" name="icone-editar.png" />
+							<f:setPropertyActionListener target="#{pacoteBean.model}" value="#{lista}" />
+						</p:commandLink>
+						<p:commandLink title="Excluir" process="@this"
+							oncomplete="confirmation.show()">
+							<h:graphicImage library="design/imagem" name="icone-excluir.png" />
+							<f:setPropertyActionListener target="#{pacoteBean.model}" value="#{lista}" />
+						</p:commandLink>
+					</p:column>
+				</p:dataTable>
+			</p:fieldset>
+			<p:confirmDialog appendToBody="true" message="Confirma a Exclusão" header="Exclusão" severity="alert"
+				widgetVar="confirmationOficina">
+				<h:panelGrid columns="2">
+					<p:commandButton value="Sim" update="panelAdicaoOficina,panelGridTableOficinas" oncomplete="confirmationOficina.hide()" actionListener="#{pacoteBean.excluirOficina}"
+						immediate="true" />
+					<p:commandButton value="Não" onclick="confirmationOficina.hide()" />
+				</h:panelGrid>
+			</p:confirmDialog>
+			<p:confirmDialog appendToBody="true" message="Confirma a Exclusão" header="Exclusão" severity="alert"
+				widgetVar="confirmation">
+				<h:panelGrid columns="2">
+					<p:commandButton value="Sim" update="lista" oncomplete="confirmation.hide()" actionListener="#{pacoteBean.delete}"
+						immediate="true" />
+					<p:commandButton value="Não" onclick="confirmation.hide()" />
+				</h:panelGrid>
+			</p:confirmDialog>
+		</h:form>
+	</ui:define>
+</ui:composition>

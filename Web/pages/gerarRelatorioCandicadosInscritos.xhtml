@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui"
+	template="/templates/template.xhtml">
+
+	<ui:define name="body">
+
+		<h:form prependId="false">
+			<p:fieldset legend="Gerar relatório dos Candidato Inscritos" id="fieldCandidato">
+				<h:panelGrid columns="2" columnClasses="coluna15,coluna75" width="100%">
+					<h:outputLabel value="Curso:" />
+					<p:autoComplete dropdown="true" queryDelay="500" value="#{relatorioCandidatoInscritoBean.curso}" global="false"
+						minQueryLength="2" id="curso" size="60" scrollHeight="300" completeMethod="#{relatorioCandidatoInscritoBean.completeCurso}"
+						forceSelection="true" var="lista" itemLabel="#{lista.cursoData}" itemValue="#{lista.id}" converter="cursoConverter">
+						<p:ajax update="idTurma" process="@this" event="itemSelect"
+							listener="#{relatorioCandidatoInscritoBean.buscarTurma}" />
+					</p:autoComplete>
+
+					<h:outputLabel value="Turma:" />
+					<p:selectOneMenu id="idTurma" style="width:337px;" value="#{relatorioCandidatoInscritoBean.idTurma}">
+						<f:selectItems value="#{relatorioCandidatoInscritoBean.turmas}" />
+					</p:selectOneMenu>
+					
+					<h:outputLabel value="Situação da Inscrição:" />
+					<p:selectOneMenu id="idSituacaoInscricao" style="width:337px;" value="#{relatorioCandidatoInscritoBean.idSituacaoInscricao}">
+						<f:selectItems value="#{relatorioCandidatoInscritoBean.situacaoInscricoes}" />
+					</p:selectOneMenu>
+
+					<h:outputLabel value="Órgão Solicitante:" />
+					<p:autoComplete queryDelay="500" value="#{relatorioCandidatoInscritoBean.orgaoSolicitante}" minQueryLength="2" maxResults="15"
+						id="idOrgaoSolicitante" size="70" completeMethod="#{relatorioCandidatoInscritoBean.completeOrgao}" forceSelection="true"
+						var="lista" itemLabel="#{lista.nomeSiglaFormat}" itemValue="#{lista.id}" converter="OrgaoConverter">
+					</p:autoComplete>
+					
+					<h:outputLabel value="Órgão Candidato:" />
+					<p:autoComplete queryDelay="500" value="#{relatorioCandidatoInscritoBean.orgao}" minQueryLength="2" maxResults="15"
+						id="idOrgaos" size="70" completeMethod="#{relatorioCandidatoInscritoBean.completeOrgao}" forceSelection="true"
+						var="lista" itemLabel="#{lista.nomeSiglaFormat}" itemValue="#{lista.id}" converter="OrgaoConverter">
+					</p:autoComplete>
+
+					<h:outputLabel value="Data Início Realização" />
+					<h:panelGrid columns="2" border="0" columnClasses="coluna75,coluna25">
+						<p:calendar maxdate="#{relatorioCandidatoInscritoBean.dataHj}" yearRange="-111:+0" locale="pt"
+							pattern="dd/MM/yyyy" id="dtInicio" navigator="true" maxlength="10" size="15" readOnlyInputText="true"
+							value="#{relatorioCandidatoInscritoBean.dtInicial}" mode="popup" showOn="button" />
+						<p:commandLink process="@this" title="Limpar" update="dtInicio">
+							<h:graphicImage name="icone-limpar.png" library="design/imagem" />
+							<f:setPropertyActionListener target="#{relatorioCandidatoInscritoBean.dtInicial}" value="" />
+						</p:commandLink>
+					</h:panelGrid>
+					<h:outputLabel value="Data Fim Realização" />
+					<h:panelGrid columns="2" border="0" columnClasses="coluna75,coluna25">
+						<p:calendar maxdate="#{relatorioCandidatoInscritoBean.dataHj}" yearRange="-111:+0" locale="pt"
+							pattern="dd/MM/yyyy" id="dtFim" navigator="true" maxlength="10" size="15" readOnlyInputText="true"
+							value="#{relatorioCandidatoInscritoBean.dtFinal}" mode="popup" showOn="button" />
+						<p:commandLink process="@this" title="Limpar" update="dtFim">
+							<h:graphicImage name="icone-limpar.png" library="design/imagem" />
+							<f:setPropertyActionListener target="#{relatorioCandidatoInscritoBean.dtFinal}" value="" />
+						</p:commandLink>
+					</h:panelGrid>
+
+					<h:outputLabel value="Formato:" />
+					<p:selectOneRadio id="options" value="#{relatorioCandidatoInscritoBean.formato}">
+						<f:selectItem itemLabel="PDF" itemValue="pdf" />
+						<f:selectItem itemLabel="HTML" itemValue="html" />
+						<f:selectItem itemLabel="EXCEL" itemValue="xls" />
+					</p:selectOneRadio>
+
+				</h:panelGrid>
+				<br />
+				<div align="center">
+					<p:commandButton value="Limpar" immediate="true" ajax="false" action="gerarRelatorioCandicadosInscritos.jsf" />
+					<p:spacer width="5" />
+					<p:commandButton value="Gerar" ajax="false" action="#{relatorioCandidatoInscritoBean.gerarRelatorio}" />
+				</div>
+				<br />
+			</p:fieldset>
+		</h:form>
+	</ui:define>
+</ui:composition>

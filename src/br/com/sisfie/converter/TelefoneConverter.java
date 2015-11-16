@@ -1,0 +1,28 @@
+package br.com.sisfie.converter;
+
+import javax.faces.component.UIComponent;
+import javax.faces.context.FacesContext;
+import javax.faces.convert.Converter;
+
+import br.com.arquitetura.util.StringUtil;
+
+public class TelefoneConverter implements Converter {
+
+	@Override
+	public Object getAsObject(FacesContext arg0, UIComponent arg1, String arg2) {
+		return null;
+	}
+
+	@Override
+	public String getAsString(FacesContext facesContext, UIComponent uiComponent, Object valor) {
+		if (valor != null && valor.toString() != null && !valor.toString().isEmpty()){
+			if (valor.toString().length() > 10){
+				return StringUtil.format("(##) #####-####", valor.toString());
+			}else {
+				return StringUtil.format("(##) ####-####", valor.toString());
+			}
+		}
+		return null;
+	}
+
+}

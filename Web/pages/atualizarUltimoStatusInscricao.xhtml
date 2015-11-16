@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui" template="/templates/template.xhtml">
+
+	<ui:define name="body">
+	
+		<h:form prependId="false" id="form">
+			<p:fieldset legend="Atualizar Último Status Inscrição" id="fieldPrincipal">
+			
+				<h:panelGrid columns="2" border="0" columnClasses="coluna20,coluna80" width="100%">
+					<h:outputLabel value="Curso" styleClass="icoObrigatorio" />
+					<p:autoComplete dropdown="true" queryDelay="500" value="#{atualizarUltimoStatusInscricaoBean.curso}" minQueryLength="2" id="curso"
+						size="60" scrollHeight="300" completeMethod="#{atualizarUltimoStatusInscricaoBean.completeCurso}" forceSelection="true" var="lista"
+						itemLabel="#{lista.cursoData}" itemValue="#{lista.id}" converter="cursoConverter" global="false">
+					</p:autoComplete>
+				</h:panelGrid>
+				<br />
+				<div align="center">
+					<p:commandButton value="Pesquisar" ajax="true" process="@form" update="@form" action="#{atualizarUltimoStatusInscricaoBean.pesquisar}" />
+				</div>
+				<br />
+				<h:panelGrid id="gridTable">
+					<p:dataTable paginatorAlwaysVisible="false" paginatorPosition="bottom" var="lista" id="lista"
+						rendered="#{not empty atualizarUltimoStatusInscricaoBean.listaCurso}" emptyMessage="Nenhum registro encontrado!" update="lista"
+						rowsPerPageTemplate="5,10,20,50" styleClass="coluna100" value="#{atualizarUltimoStatusInscricaoBean.listaCurso}" paginator="true"
+						rows="5" rowStyleClass="#{empty rowIx or rowIx mod 2 ne 0 ? 'linhaImpar' : 'linhaPar'}" rowIndexVar="rowIx">
+
+						<f:facet name="header">
+							<h:outputLabel value="Lista de Cursos #{atualizarUltimoStatusInscricaoBean.listaCurso.size()}" />
+						</f:facet>
+						<p:column headerText="Número do Projeto" style="width:10%">
+							<h:outputLabel value="#{lista.codigo}" converter="numeroProjetoConverter" />
+						</p:column>
+						<p:column headerText="Título" style="width:30%">
+							<h:outputLabel value="#{lista.cursoData}" />
+						</p:column>
+						<p:column headerText="Área" style="width:15%">
+							<h:outputLabel value="#{lista.area.descricao}" />
+						</p:column>
+						<p:column headerText="Realização Inicío" style="width:10%">
+							<h:outputLabel value="#{lista.dtRealizacaoInicio}">
+								<f:convertDateTime pattern="dd/MM/yyyy" />
+							</h:outputLabel>
+						</p:column>
+						<p:column headerText="Realização Fim" style="width:10%">
+							<h:outputLabel value="#{lista.dtRealizacaoFim}">
+								<f:convertDateTime pattern="dd/MM/yyyy" />
+							</h:outputLabel>
+						</p:column>
+						<p:column headerText="Ações" style="width:10%;text-align:center;">
+							<p:commandLink title="Atualizar" update=":form:gridTable" process="@this"
+								action="#{atualizarUltimoStatusInscricaoBean.atualizar(lista)}">
+								<h:graphicImage library="design/imagem" name="icone-atualizar.png" />
+							</p:commandLink>
+						</p:column>
+					</p:dataTable>
+				</h:panelGrid>
+			</p:fieldset>
+		</h:form>
+	</ui:define>
+</ui:composition>

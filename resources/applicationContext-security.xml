@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:sec="http://www.springframework.org/schema/security"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+		http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.0.3.xsd">
+
+	<sec:http auto-config="true" access-denied-page="/pages/acesso-invalido.jsf">
+		<sec:intercept-url pattern="/pages/externo/**" access="IS_AUTHENTICATED_ANONYMOUSLY" />
+		<sec:intercept-url pattern="/login*" access="IS_AUTHENTICATED_ANONYMOUSLY" />
+		<sec:intercept-url pattern="/pages/**" access="ROLE_USER" />
+
+		<!-- Set the login page and what to do if login fails -->
+		<sec:form-login login-page="/login.jsf" default-target-url="/pages/principal.jsf"
+			always-use-default-target="true" authentication-failure-url="/login.jsf" />
+
+		<sec:logout invalidate-session="true" logout-success-url="/login.jsf" />
+
+
+	</sec:http>
+
+	<sec:authentication-manager alias="loginManager">
+		<sec:authentication-provider>
+			<sec:password-encoder hash="md5" />
+			<sec:jdbc-user-service data-source-ref="dataSource"
+				users-by-username-query="select LOGIN as USERNAME, SENHA as PASSWORD, 
+		FLG_ATIVO as ENABLED from SISFIE.USUARIO where LOGIN=?"
+				authorities-by-username-query="select distinct u.LOGIN as USERNAME, f.NOM_ROLE 
+		from SISFIE.PERFIL p, SISFIE.USUARIO u, SISFIE.PERFIL_FUNCIONALIDADE pf, SISFIE.FUNCIONALIDADE f where u.ID_PERFIL = p.ID_PERFIL and pf.ID_PERFIL = p.ID_PERFIL 
+		and pf.ID_FUNCIONALIDADE = f.ID_FUNCIONALIDADE and u.LOGIN=?" />
+		</sec:authentication-provider>
+	</sec:authentication-manager>
+
+
+	<!-- <sec:authentication-manager alias="loginManager"> <sec:authentication-provider> <sec:user-service> <sec:user name="sisfie" 
+		password="sisfie" authorities="ROLE_USER" /> </sec:user-service> </sec:authentication-provider> </sec:authentication-manager> -->
+
+</beans>

@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui"
+	template="/templates/template.xhtml">
+
+	<ui:define name="body">
+		<h:form prependId="false" id="form">
+
+
+			<p:fieldset legend="Curso" id="fieldCurso">
+
+				<h:panelGrid columns="2" columnClasses="coluna20,coluna80" border="0" width="100%">
+					<h:outputLabel value="Curso composto por Oficina?" />
+					<h:outputText value="Sim" rendered="#{CadastrarCursoBean.model.flgPossuiOficina}" />
+					<h:outputText value="Não" rendered="#{!CadastrarCursoBean.model.flgPossuiOficina}" />
+				</h:panelGrid>
+				<h:panelGrid columns="2" border="0" columnClasses="coluna20,coluna80" width="100%">
+					<h:outputLabel value="Número do Projeto:" />
+					<h:outputLabel value="#{CadastrarCursoBean.model.codigo}" converter="numeroProjetoConverter"/>
+
+					<h:outputLabel value="Visibilidade" />
+					<h:outputText value="Público" rendered="#{CadastrarCursoBean.model.publico}" />
+					<h:outputText value="Privado" rendered="#{CadastrarCursoBean.model.privado}" />
+
+					<h:outputLabel value="Título:" />
+					<h:outputLabel value="#{CadastrarCursoBean.model.titulo}" />
+
+					<h:outputLabel value="Área:" />
+					<h:outputLabel value="#{CadastrarCursoBean.model.area.descricao}" />
+
+
+					<h:outputLabel value="Local:" />
+					<h:outputLabel value="#{CadastrarCursoBean.model.localizacao.descricao}" />
+
+					<h:outputLabel value="Órgão Solicitante:" />
+					<h:outputLabel value="#{CadastrarCursoBean.model.orgao.nomeSiglaFormat}" />
+
+
+					<h:outputLabel value="Número de Vagas" rendered="#{!CadastrarCursoBean.model.flgPossuiOficina}" />
+					<h:outputLabel value="#{CadastrarCursoBean.model.vagas}" rendered="#{!CadastrarCursoBean.model.flgPossuiOficina}" />
+
+					<h:outputLabel value="Data Realização Início:" />
+					<h:outputLabel value="#{CadastrarCursoBean.model.dtRealizacaoInicio}">
+						<f:convertDateTime pattern="dd/MM/yyyy" />
+					</h:outputLabel>
+
+
+					<h:outputLabel value="Data Realização Fim:" />
+					<h:outputLabel value="#{CadastrarCursoBean.model.dtRealizacaoFim}">
+						<f:convertDateTime pattern="dd/MM/yyyy" />
+					</h:outputLabel>
+
+					<h:outputLabel value="Período Inscrição Início:" />
+					<h:outputLabel value="#{CadastrarCursoBean.model.dtInicioInscricao}">
+						<f:convertDateTime pattern="dd/MM/yyyy" />
+					</h:outputLabel>
+
+					<p:selectOneRadio disabled="true" id="optionsInscricao" layout="pageDirection"
+						value="#{CadastrarCursoBean.idTipoInscricao}">
+						<f:selectItem itemLabel="Por Data de Fim de Inscrição" itemValue="1" />
+						<f:selectItem itemLabel="Determinada pelo Gestor" itemValue="2" />
+					</p:selectOneRadio>
+					<h:outputText value=" " />
+
+				</h:panelGrid>
+
+
+
+				<h:panelGrid id="fimInscricao" width="100%">
+					<h:panelGrid rendered="#{CadastrarCursoBean.idTipoInscricao eq 1}" columns="2" border="0"
+						columnClasses="coluna20,coluna80" width="100%">
+						<h:outputLabel value="Período Inscrição Fim:" />
+						<h:outputLabel value="#{CadastrarCursoBean.model.dtTerminoInscricao}">
+							<f:convertDateTime pattern="dd/MM/yyyy" />
+						</h:outputLabel>
+					</h:panelGrid>
+				</h:panelGrid>
+
+				<h:panelGrid columns="2" columnClasses="coluna20,coluna80" border="0" width="100%">
+					<h:outputLabel value="Habilitar Curso Por Região" />
+					<h:outputText value="Sim" rendered="#{CadastrarCursoBean.cursoPorRegiao}" />
+					<h:outputText value="Não" rendered="#{!CadastrarCursoBean.cursoPorRegiao}" />
+				</h:panelGrid>
+
+				<h:panelGrid id="regiao" width="100%">
+					<br />
+					<p:fieldset legend="Região" id="fieldRegiao" rendered="#{CadastrarCursoBean.cursoPorRegiao}">
+						<h:panelGrid columns="2" border="0" width="100%" columnClasses="coluna50,coluna50">
+							<h:panelGrid columns="1" border="0" width="100%" id="panelUf">
+								<p:dataTable paginatorAlwaysVisible="false" paginatorPosition="bottom" var="lista" id="listaUf"
+									rendered="#{!empty CadastrarCursoBean.ufCursos}" update="listaUf" styleClass="coluna100"
+									value="#{CadastrarCursoBean.ufCursos}" paginator="true" rows="5"
+									rowStyleClass="#{empty rowIx or rowIx mod 2 ne 0 ? 'linhaImpar' : 'linhaPar'}" rowIndexVar="rowIx">
+									<p:column headerText="UF" style="width:20%">
+										<h:outputText value="#{lista.uf.sigla}" />
+									</p:column>
+									<p:column headerText="Estado" style="width:60%">
+										<h:outputText value="#{lista.uf.descricao}" />
+									</p:column>
+								</p:dataTable>
+							</h:panelGrid>
+							<h:panelGrid columns="1" border="0" width="100%" id="panelMunicipio"
+								rendered="#{!empty CadastrarCursoBean.ufCursos}">
+								<p:dataTable paginatorAlwaysVisible="false" paginatorPosition="bottom" var="lista" id="listaMunicipio"
+									emptyMessage="Nenhum Município Adicionado" update="listaMunicipio" styleClass="coluna100"
+									value="#{CadastrarCursoBean.municipioCursos}" paginator="true" rows="5"
+									rowStyleClass="#{empty rowIx or rowIx mod 2 ne 0 ? 'linhaImpar' : 'linhaPar'}" rowIndexVar="rowIx">
+									<p:column headerText="Município" style="width:80%">
+										<h:outputText value="#{lista.municipio.descricao}" />
+									</p:column>
+								</p:dataTable>
+							</h:panelGrid>
+						</h:panelGrid>
+					</p:fieldset>
+				</h:panelGrid>
+
+				<h:panelGrid id="areasConhecimentoPricipal" width="100%"
+					rendered="#{not empty CadastrarCursoBean.areaConhecimentoCursos}">
+					<br />
+					<p:fieldset legend="Áreas de Conhecimento" id="fieldAreaConhecimento">
+						<h:panelGrid columns="1" id="AreasConhecimento" width="100%" columnClasses="coluna100">
+							<h:panelGrid id="panelGridTableAreaConhecimento" width="100%">
+								<p:dataTable var="areaConhecimentoCurso" id="tableAreaConhecimento"
+									emptyMessage="#{CadastrarCursoBean.emptyMessage}" update="tableAreaConhecimento" rowIndexVar="rowIx"
+									styleClass="coluna100" value="#{CadastrarCursoBean.areaConhecimentoCursos}"
+									rowStyleClass="#{empty rowIx or rowIx mod 2 ne 0 ? 'linhaImpar' : 'linhaPar'}"
+									rendered="#{not empty CadastrarCursoBean.areaConhecimentoCursos}">
+
+									<f:facet name="header">
+										<h:outputLabel value="Área de Conhecimento Adicionadas" />
+									</f:facet>
+									<p:column headerText="Descrição" style="width:90%">
+										<h:outputLabel value="#{areaConhecimentoCurso.areaConhecimento.descricao}" />
+									</p:column>
+								</p:dataTable>
+							</h:panelGrid>
+						</h:panelGrid>
+					</p:fieldset>
+					<br />
+				</h:panelGrid>
+
+				<h:panelGrid columns="3" border="0" width="100%" columnClasses="coluna48,coluna4,coluna48">
+					<p:dataTable selection="#{CadastrarCursoBean.homologacao}" id="homologacao" var="lista"
+						value="#{CadastrarCursoBean.homologacaoDataModel}" style="width:100%;">
+						<f:facet name="header">
+							<h:outputText value="Homologação" />
+						</f:facet>
+						<p:column disabledSelection="true" selectionMode="multiple" style="width:18px" />
+						<p:column headerText="Tipo de Homologação">
+							<h:outputText value="#{lista.descricao}" />
+						</p:column>
+					</p:dataTable>
+					<h:outputLabel value="" />
+					<p:dataTable selection="#{CadastrarCursoBean.esferaGoverno}" id="esferaGov" var="lista"
+						value="#{CadastrarCursoBean.esferaGovernoDataModel}" style="width:100%;">
+						<f:facet name="header">
+							<h:outputText value="Esfera de Governo" />
+						</f:facet>
+						<p:column disabledSelection="true" selectionMode="multiple" style="width:18px" />
+						<p:column headerText="Esfera">
+							<h:outputText value="#{lista.descricao}" />
+						</p:column>
+					</p:dataTable>
+				</h:panelGrid>
+				<br />
+				<h:panelGrid columns="3" border="0" width="100%" columnClasses="coluna48,coluna4,coluna48">
+					<p:dataTable id="listaEspera" var="lista" value="#{CadastrarCursoBean.opcaoDataModel}" style="width:100%;"
+						selection="#{CadastrarCursoBean.opcaoListaCandidato}">
+						<f:facet name="header">
+							<h:outputText value="Lista de Espera" />
+						</f:facet>
+						<p:column disabledSelection="true" selectionMode="single" style="width:18px" />
+						<p:column headerText="Tipo de Espera">
+							<h:outputText value="#{lista.descricao}" />
+						</p:column>
+					</p:dataTable>
+					<h:outputLabel value="" />
+					<p:dataTable selection="#{CadastrarCursoBean.campoPreenchimento}" id="listaCampo" var="lista"
+						value="#{CadastrarCursoBean.preenchimentoDataModel}" style="width:100%;">
+						<f:facet name="header">
+							<h:outputText value="Dados do Aluno Obrigatório" />
+						</f:facet>
+						<p:column disabledSelection="true" selectionMode="multiple" style="width:18px" />
+						<p:column headerText="Campo">
+							<h:outputText value="#{lista.descricao}" />
+						</p:column>
+					</p:dataTable>
+				</h:panelGrid>
+				<br />
+				<h:panelGrid width="100%" id="fieldEmail" rendered="#{CadastrarCursoBean.model.privado}">
+					<p:dataTable paginatorAlwaysVisible="false" paginatorPosition="bottom" var="lista" id="listaEmail"
+						update="listaEmail" rowsPerPageTemplate="#{CadastrarCursoBean.paginacao}" styleClass="coluna100"
+						value="#{CadastrarCursoBean.emailsCursoPrivado}" paginator="true" rows="5"
+						rowStyleClass="#{empty rowIx or rowIx mod 2 ne 0 ? 'linhaImpar' : 'linhaPar'}" rowIndexVar="rowIx">
+						<f:facet name="header">
+							<h:outputLabel value="E-mails Participantes" />
+						</f:facet>
+						<p:column headerText="Email" sortBy="#{lista.email}" filterBy="#{lista.email}" style="width:100%">
+							<h:outputLabel value="#{lista.email}" />
+						</p:column>
+					</p:dataTable>
+				</h:panelGrid>
+				<br />
+				<p:toolbar>
+					<p:toolbarGroup align="left">
+						<p:commandButton value="Voltar" immediate="true" ajax="false" action="pesquisarCurso.jsf" />
+					</p:toolbarGroup>
+				</p:toolbar>
+			</p:fieldset>
+		</h:form>
+	</ui:define>
+</ui:composition>

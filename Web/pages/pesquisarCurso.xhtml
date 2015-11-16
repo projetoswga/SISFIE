@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui"
+	template="/templates/template.xhtml">
+
+	<ui:define name="body">
+		<h:form prependId="false" id="form">
+			<p:fieldset legend="Curso" id="fieldCurso">
+				<h:panelGrid columns="2" columnClasses="coluna20,coluna80" width="100%">
+					<h:outputLabel value="Número do Projeto:" />
+					<p:inputMask mask="99.99.99.99999.99.99" value="#{pesquisarCursoBean.dto.codigo}" size="50" maxlength="255" />
+
+					<h:outputLabel value="Título:" />
+					<p:inputText value="#{pesquisarCursoBean.dto.titulo}" size="50" maxlength="255" />
+
+					<h:outputLabel value="Área:" />
+					<p:selectOneMenu id="area" style="width:300px;" value="#{pesquisarCursoBean.dto.idArea}">
+						<f:selectItem itemLabel="Selecione" itemValue="" />
+						<f:selectItems value="#{pesquisarCursoBean.areas}" var="name" itemLabel="#{name.descricao}" itemValue="#{name.id}" />
+					</p:selectOneMenu>
+
+					<h:outputLabel value="Local de realização:" />
+					<p:selectOneMenu id="local" style="width:300px;" value="#{pesquisarCursoBean.dto.idLocal}">
+						<f:selectItem itemLabel="Selecione" itemValue="" />
+						<f:selectItems value="#{pesquisarCursoBean.locais}" var="name" itemLabel="#{name.descricao}"
+							itemValue="#{name.id}" />
+					</p:selectOneMenu>
+													
+					<h:outputLabel value="Setor Responsável:"  />
+					<p:selectOneMenu id="idSetorResponsavel" required="false" requiredMessage="#{pesquisarCursoBean.requiredMessage}" effect="fade"
+						style="width:280px;" value="#{pesquisarCursoBean.dto.idSetor}">
+						<f:selectItem itemLabel="Selecione" itemValue="" />
+						<f:selectItems value="#{pesquisarCursoBean.setores}" />
+					</p:selectOneMenu>
+					
+					
+					
+				</h:panelGrid>
+
+				<h:panelGrid columns="6" border="0" columnClasses="coluna20,coluna15,coluna5,coluna5,coluna15,coluna40" width="100%">
+					<h:outputLabel value="Data Realização:" />
+					<p:calendar locale="pt" pattern="dd/MM/yyyy" id="dtRealizacao" navigator="true" maxlength="10" size="15"
+						readOnlyInputText="true" value="#{pesquisarCursoBean.dto.dtRealizacaoInicio}" mode="popup" showOn="button" />
+					<p:commandLink process="@this" title="Limpar" update="dtRealizacao">
+						<h:graphicImage name="icone-limpar.png" library="design/imagem" />
+						<f:setPropertyActionListener target="#{pesquisarCursoBean.dto.dtRealizacaoInicio}" value="" />
+					</p:commandLink>
+
+					<h:outputText value="Até" />
+
+					<p:calendar locale="pt" pattern="dd/MM/yyyy" id="dtRealizacaoFim" navigator="true" maxlength="10" size="15"
+						readOnlyInputText="true" value="#{pesquisarCursoBean.dto.dtRealizacaoFim}" mode="popup" showOn="button" />
+					<p:commandLink process="@this" title="Limpar" update="dtRealizacaoFim">
+						<h:graphicImage name="icone-limpar.png" library="design/imagem" />
+						<f:setPropertyActionListener target="#{pesquisarCursoBean.dto.dtRealizacaoFim}" value="" />
+					</p:commandLink>
+				</h:panelGrid>
+
+				<br />
+				<div align="center">
+					<p:commandButton value="Pesquisar" ajax="true" process="@form" update="@form"
+						action="#{pesquisarCursoBean.pesquisar}" />
+					<p:spacer width="10" />
+					<p:commandButton value="Limpar" immediate="true" ajax="false" action="pesquisarCurso.jsf" />
+				</div>
+				<br />
+
+				<p:dataTable paginatorAlwaysVisible="false" paginatorPosition="bottom" var="lista" id="lista"
+					emptyMessage="#{pesquisarCursoBean.emptyMessage}" update="lista"
+					rowsPerPageTemplate="#{pesquisarCursoBean.paginacao}" styleClass="coluna100"
+					value="#{pesquisarCursoBean.lazyDataModel}" paginator="true" rows="5"
+					rowStyleClass="#{empty rowIx or rowIx mod 2 ne 0 ? 'linhaImpar' : 'linhaPar'}" rowIndexVar="rowIx">
+
+					<f:facet name="header">
+						<h:outputLabel value="Lista de Cursos" />
+					</f:facet>
+					<p:column headerText="Número do Projeto" style="width:10%">
+						<h:outputLabel value="#{lista.codigo}" converter="numeroProjetoConverter"/>
+					</p:column>
+					<p:column headerText="Título" style="width:15%">
+						<h:outputLabel value="#{lista.cursoData}" />
+					</p:column>
+					<p:column headerText="Área" style="width:15%">
+						<h:outputLabel value="#{lista.area.descricao}" />
+					</p:column>
+					<p:column headerText="Local" style="width:15%">
+						<h:outputLabel value="#{lista.localizacao.descricao}" />
+					</p:column>
+					<p:column headerText="Realização Inicío" style="width:10%">
+						<h:outputLabel value="#{lista.dtRealizacaoInicio}">
+							<f:convertDateTime pattern="dd/MM/yyyy" />
+						</h:outputLabel>
+					</p:column>
+					<p:column headerText="Realização Fim" style="width:10%">
+						<h:outputLabel value="#{lista.dtRealizacaoFim}">
+							<f:convertDateTime pattern="dd/MM/yyyy" />
+						</h:outputLabel>
+					</p:column>
+					<p:column headerText="Ações" style="width:15%;text-align:center;">
+						<p:commandLink rendered="#{lista.podeEditar and !lista.somenteVisualizar and !lista.flgFinalizado}"
+							title="Editar" update="@form" process="@this" action="#{pesquisarCursoBean.loadCurso}">
+							<h:graphicImage library="design/imagem" name="icone-editar.png" />
+							<f:setPropertyActionListener target="#{pesquisarCursoBean.cursoSelect}" value="#{lista}" />
+						</p:commandLink>
+						<p:commandLink rendered="#{p:ifGranted('ROLE_CURSO_VISUALIZAR') and lista.somenteVisualizar}" title="Visualizar" update="@form"
+							process="@this" action="#{pesquisarCursoBean.visualizarCurso}">
+							<h:graphicImage library="design/imagem" name="icone-visualizar.png" />
+							<f:setPropertyActionListener target="#{pesquisarCursoBean.cursoSelect}" value="#{lista}" />
+						</p:commandLink>
+						<p:commandLink rendered="#{p:ifGranted('ROLE_CURSO_GERENCIAR_PESQ') and lista.podeGerenciar  and !lista.flgFinalizado}"
+							title="Gerenciar" update="@form" process="@this" action="#{pesquisarCursoBean.gerenciarCurso}">
+							<h:graphicImage library="design/imagem" name="icone-gerenciar.png" />
+							<f:setPropertyActionListener target="#{pesquisarCursoBean.cursoSelect}" value="#{lista}" />
+						</p:commandLink>
+						<p:commandLink title="Copiar Curso" update="@form" process="@this" action="#{pesquisarCursoBean.clonarCurso}">
+							<h:graphicImage library="design/imagem" name="icone-clone.png" />
+							<f:setPropertyActionListener target="#{pesquisarCursoBean.cursoSelect}" value="#{lista}" />
+						</p:commandLink>
+						<p:commandLink rendered="#{p:ifGranted('ROLE_CURSO_REMOVER') and lista.podeExcluir}" title="Excluir"
+							process="@this" oncomplete="confirmation.show()">
+							<h:graphicImage library="design/imagem" name="icone-excluir.png" />
+							<f:setPropertyActionListener target="#{pesquisarCursoBean.cursoSelect}" value="#{lista}" />
+						</p:commandLink>
+					</p:column>
+				</p:dataTable>
+			</p:fieldset>
+
+			<p:confirmDialog appendToBody="true" message="Confirma a Exclusão" header="Exclusão" severity="alert"
+				widgetVar="confirmation">
+				<h:panelGrid columns="2">
+					<p:commandButton value="Sim" update="lista" oncomplete="confirmation.hide()"
+						actionListener="#{pesquisarCursoBean.delete}" immediate="true" />
+					<p:commandButton value="Não" onclick="confirmation.hide()" />
+				</h:panelGrid>
+			</p:confirmDialog>
+		</h:form>
+	</ui:define>
+</ui:composition>

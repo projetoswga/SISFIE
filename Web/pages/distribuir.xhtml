@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui"
+	template="/templates/template.xhtml">
+
+	<ui:define name="body">
+		<f:loadBundle basename="constantes" var="const" />
+
+		<h:form id="formId" prependId="false">
+			<p:fieldset legend="#{distribuirBean.qualifiedName}" id="fieldPrincipal">
+				<h:panelGrid columns="3" id="panelCadastro" border="1" columnClasses="coluna20,coluna60,coluna20" width="100%">
+					<h:outputLabel value="Curso:" styleClass="icoObrigatorio" />
+					<p:selectOneMenu id="curso" style="width:450px;" value="#{distribuirBean.idCurso}"
+						requiredMessage="#{distribuirBean.requiredMessage}" required="true">
+						<f:selectItem itemLabel="Selecione" itemValue="" />
+						<f:selectItems value="#{distribuirBean.cursos}" var="name" itemLabel="#{name.titulo}" itemValue="#{name.id}" />
+					</p:selectOneMenu>
+					<p:message for="curso" />
+					<h:outputText value="" />
+
+				</h:panelGrid>
+				<br />
+				<div align="center">
+					<p:commandButton value="Limpar" immediate="true" ajax="false" action="distribuir.jsf" />
+					<p:spacer width="10" />
+					<p:commandButton value="Distribuir" process="@form" update="@form" ajax="true"
+						action="#{distribuirBean.distribuir}" />
+				</div>
+			</p:fieldset>
+		</h:form>
+	</ui:define>
+</ui:composition>

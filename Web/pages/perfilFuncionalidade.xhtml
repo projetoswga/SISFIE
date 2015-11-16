@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui"
+	template="/templates/template.xhtml">
+
+	<ui:define name="body">
+		<style type="text/css">
+.ui-tree {
+	border: none;
+	border: 0px;
+}
+</style>
+		<f:metadata>
+			<f:event type="preRenderView" listener="#{perfilFuncionalidadeBean.verificarAcesso}" />
+			<f:event type="preRenderView" listener="#{perfilFuncionalidadeBean.carregarTela}" />
+		</f:metadata>
+
+		<h:form id="formPF" prependId="false">
+			<p:fieldset>
+
+				<p:panel header="Perfil">
+					<h:panelGrid columns="3" id="panelPF" columnClasses="coluna20,coluna60,coluna20" width="100%">
+						<h:outputLabel value="Perfil:" styleClass="icoObrigatorio" />
+						<p:selectOneMenu id="idPerfil" required="true" requiredMessage="#{perfilFuncionalidadeBean.requiredMessage}"
+							effect="fade" style="width:280px;" value="#{perfilFuncionalidadeBean.idPerfilSelecionado}">
+							<f:selectItem itemLabel="Selecione" itemValue="" />
+							<f:selectItems value="#{perfilFuncionalidadeBean.perfis}" />
+							<p:ajax event="change" process="formPF" update="formPF" listener="#{perfilFuncionalidadeBean.selecionarPerfil}" />
+						</p:selectOneMenu>
+						<p:message for="idPerfil" />
+					</h:panelGrid>
+					<h:panelGrid columns="3" id="panelPFHe" columnClasses="coluna20,coluna60,coluna20" width="100%"
+						rendered="#{perfilFuncionalidadeBean.idPerfilSelecionado != null and perfilFuncionalidadeBean.idPerfilSelecionado != 0}">
+						<h:outputLabel value="Herda Funcionalidade do Perfil:" />
+						<p:selectOneMenu id="idPerfilPai" effect="fade" style="width:280px;"
+							value="#{perfilFuncionalidadeBean.idPerfilHerdado}">
+							<f:selectItem itemLabel="Selecione" itemValue="" />
+							<f:selectItems value="#{perfilFuncionalidadeBean.perfis}" />
+							<p:ajax event="change" process="idPerfilPai,panelCheck" update="idPerfilPai,panelCheck"
+								listener="#{perfilFuncionalidadeBean.selecionarPerfilPai}" />
+						</p:selectOneMenu>
+						<h:outputLabel value=" " />
+					</h:panelGrid>
+				</p:panel>
+				<br />
+				<p:panel header="Funcionalidade"
+					rendered="#{perfilFuncionalidadeBean.idPerfilSelecionado != null and perfilFuncionalidadeBean.idPerfilSelecionado != 0}">
+					<div>
+						<p:commandButton value="Limpar" action="perfilFuncionalidade.jsf" immediate="true" ajax="false" />
+						<p:commandButton value="Salvar" action="${perfilFuncionalidadeBean.save}" ajax="true" process="@form"
+							update="@form" />
+					</div>
+					<br />
+					<h:panelGrid columns="2" style="margin-bottom:10px" cellpadding="5">
+						<h:outputLabel value="Selecionar Todos: " />
+						<p:selectBooleanCheckbox value="#{perfilFuncionalidadeBean.selecionarTodos}">
+							<p:ajax update="panelCheck" listener="#{perfilFuncionalidadeBean.selecionarTodos}" />
+						</p:selectBooleanCheckbox>
+					</h:panelGrid>
+					<br />
+					<h:panelGrid columnClasses="coluna33Top,coluna33Top,coluna33Top" id="panelCheck" columns="3" width="98%">
+						<p:tree value="#{perfilFuncionalidadeBean.rootColum1}" rendered="#{perfilFuncionalidadeBean.rootColum1 != null}"
+							var="node" id="checkboxTree" selectionMode="checkbox" selection="#{perfilFuncionalidadeBean.selecionadoColum1}">
+							<p:treeNode>
+								<h:outputLabel value="#{node}" />
+							</p:treeNode>
+						</p:tree>
+						<p:tree value="#{perfilFuncionalidadeBean.rootColum2}" rendered="#{perfilFuncionalidadeBean.rootColum2 != null}"
+							var="node2" id="checkboxTree2" selectionMode="checkbox" selection="#{perfilFuncionalidadeBean.selecionadoColum2}">
+							<p:treeNode>
+								<h:outputLabel value="#{node2}" />
+							</p:treeNode>
+						</p:tree>
+
+						<p:tree value="#{perfilFuncionalidadeBean.rootColum3}" rendered="#{perfilFuncionalidadeBean.rootColum3 != null}"
+							var="node3" id="checkboxTree3" selectionMode="checkbox" selection="#{perfilFuncionalidadeBean.selecionadoColum3}">
+							<p:treeNode>
+								<h:outputLabel value="#{node3}" />
+							</p:treeNode>
+						</p:tree>
+					</h:panelGrid>
+				</p:panel>
+				<br />
+				<p:toolbar
+					rendered="#{perfilFuncionalidadeBean.idPerfilSelecionado != null and perfilFuncionalidadeBean.idPerfilSelecionado != 0}">
+					<p:toolbarGroup align="left">
+						<p:commandButton value="Limpar" action="perfilFuncionalidade.jsf" immediate="true" ajax="false" />
+						<p:commandButton value="Salvar" action="${perfilFuncionalidadeBean.save}" ajax="true" process="@form"
+							update="@form" />
+					</p:toolbarGroup>
+				</p:toolbar>
+			</p:fieldset>
+		</h:form>
+	</ui:define>
+</ui:composition>

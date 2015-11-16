@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui"
+	template="/templates/template.xhtml">
+
+
+	<ui:define name="body">
+		<f:loadBundle basename="constantes" var="const" />
+
+		<h:form id="formId" prependId="false">
+			<p:fieldset legend="#{orgaoBean.qualifiedName}" id="fieldPrincipal">
+				<h:panelGrid columns="4" id="panelCadastro" border="1" columnClasses="coluna15,coluna30,coluna20,coluna45"
+					width="100%">
+					<h:outputLabel value="Nome:" styleClass="icoObrigatorio" />
+					<p:inputText value="#{orgaoBean.model.nome}" requiredMessage="#{orgaoBean.requiredMessage}" required="true"
+						id="nome" size="50" maxlength="255" />
+					<p:message for="nome" />
+					<h:outputText value=" " />
+					
+					<h:outputLabel value="Sigla:" styleClass="icoObrigatorio" />
+					<p:inputText value="#{orgaoBean.model.sigla}" requiredMessage="#{orgaoBean.requiredMessage}" required="true"
+						id="sigla" size="50" maxlength="255" />
+					<p:message for="sigla" />
+					<h:outputText value=" " />
+					
+					<h:outputLabel value="Órgão Superior:" />
+					<p:autoComplete queryDelay="500" value="#{orgaoBean.orgaoSelecionado}" minQueryLength="2" id="idOrgaos"
+						size="70" completeMethod="#{orgaoBean.completeOrgao}" forceSelection="true" var="lista"
+						itemLabel="#{lista.nomeSiglaFormat}" itemValue="#{lista.id}" converter="OrgaoConverter" maxResults="15">
+					</p:autoComplete>
+					<h:outputText value=" " />
+					<h:outputText value=" " />
+					
+
+					<h:outputLabel value="Logradouro:"/>
+					<p:inputText value="#{orgaoBean.model.logradouro}" id="logradouro" size="50" maxlength="30" />
+					<h:outputText value=" " />
+					<h:outputText value=" " />
+
+					<h:outputLabel value="Telefone:"/>
+					<p:inputMask mask="(99)99999999?9" value="#{orgaoBean.model.telefone}" id="telefone" size="50" maxlength="255" />
+					<h:outputText value=" " />
+					<h:outputText value=" " />
+				</h:panelGrid>
+				<br />
+				<div align="center">
+					<p:commandButton value="Limpar" immediate="true" ajax="false" action="orgao.jsf?faces-redirect=true" />
+					<p:spacer width="10" />
+					<p:commandButton rendered="#{p:ifGranted('ROLE_ORGAO_CADASTRAR')}" value="Salvar" ajax="true" process="@form"
+						update="@form" action="#{orgaoBean.save}" />
+				</div>
+				<br />
+				<p:dataTable paginatorAlwaysVisible="false" paginatorPosition="bottom" var="lista" id="lista" emptyMessage="#{orgaoBean.emptyMessage}" update="lista"
+					rowsPerPageTemplate="#{orgaoBean.paginacao}" styleClass="coluna100" value="#{orgaoBean.lazyDataModel}"
+					paginator="true" rows="5" rowStyleClass="#{empty rowIx or rowIx mod 2 ne 0 ? 'linhaImpar' : 'linhaPar'}"
+					rowIndexVar="rowIx">
+
+					<f:facet name="header">
+						<h:outputLabel value="Lista de Órgãos" />
+					</f:facet>
+					<p:column headerText="Nome" sortBy="#{lista.nome}" filterBy="#{lista.nome}" style="width:25%">
+						<h:outputLabel value="#{lista.nome}" />
+					</p:column>
+					<p:column headerText="Sigla" sortBy="#{lista.sigla}" filterBy="#{lista.sigla}" style="width:20%">
+						<h:outputLabel value="#{lista.sigla}" />
+					</p:column>
+					<p:column headerText="Orgão Superior" sortBy="#{lista.orgao.nome}" filterBy="#{lista.orgao.nome}" style="width:20%">
+						<h:outputLabel value="#{lista.orgao.nome}" />
+					</p:column>
+					<p:column headerText="Logradouro" sortBy="#{lista.logradouro}" filterBy="#{lista.logradouro}" style="width:15%">
+						<h:outputLabel value="#{lista.logradouro}" />
+					</p:column>
+
+					<p:column style="width:10%;text-align:center;">
+						<f:facet name="header">
+							<h:outputLabel value="Ações" />
+						</f:facet>
+						<p:commandLink rendered="#{p:ifGranted('ROLE_ORGAO_EDITAR')}" title="Editar" 
+							update=":formId:panelCadastro" process="@this" action="#{orgaoBean.load}">
+							<h:graphicImage library="design/imagem" name="icone-editar.png" />
+							<f:setPropertyActionListener target="#{orgaoBean.model}" value="#{lista}" />
+						</p:commandLink>
+						<p:commandLink rendered="#{p:ifGranted('ROLE_ORGAO_REMOVER')}" title="Excluir" process="@this"
+							oncomplete="confirmation.show()" style="padding:5px !important;">
+							<h:graphicImage library="design/imagem" name="icone-excluir.png" />
+							<f:setPropertyActionListener target="#{orgaoBean.model}" value="#{lista}" />
+						</p:commandLink>
+						<p:commandLink rendered="#{p:ifGranted('ROLE_ORGAO_REMOVER') and lista.flgAtivo}" title="Inabilitar" process="@this"
+							oncomplete="confirmationInabilitacao.show()" >
+							<h:graphicImage library="design/imagem" name="icone-remover.png" />
+							<f:setPropertyActionListener target="#{orgaoBean.model}" value="#{lista}" />
+						</p:commandLink>
+						<p:commandLink rendered="#{p:ifGranted('ROLE_ORGAO_REMOVER') and !lista.flgAtivo}" title="Reabilitar" process="@this"
+							oncomplete="confirmationHabilitacao.show()">
+							<h:graphicImage library="design/imagem" name="icone-finalizar.png" />
+							<f:setPropertyActionListener target="#{orgaoBean.model}" value="#{lista}" />
+						</p:commandLink>
+					</p:column>
+				</p:dataTable>
+			</p:fieldset>
+			<p:confirmDialog appendToBody="true" message="Confirma a Exclusão?" header="Exclusão" severity="alert"
+				widgetVar="confirmation">
+				<h:panelGrid columns="2">
+					<p:commandButton value="Sim" update="lista,fieldPrincipal" oncomplete="confirmation.hide()" actionListener="#{orgaoBean.delete}"
+						immediate="true" />
+					<p:commandButton value="Não" onclick="confirmation.hide()" />
+				</h:panelGrid>
+			</p:confirmDialog>
+			<p:confirmDialog appendToBody="true" message="Confirma a Inabilitação?" header="Inabilitação" severity="alert"
+				widgetVar="confirmationInabilitacao">
+				<h:panelGrid columns="2">
+					<p:commandButton value="Sim" update="lista,fieldPrincipal" oncomplete="confirmationInabilitacao.hide()" actionListener="#{orgaoBean.inabilitarOrgao}"
+						immediate="true" />
+					<p:commandButton value="Não" onclick="confirmationInabilitacao.hide()" />
+				</h:panelGrid>
+			</p:confirmDialog>
+			<p:confirmDialog appendToBody="true" message="Confirma a Reabilitação?" header="Reabilitação" severity="alert"
+				widgetVar="confirmationHabilitacao">
+				<h:panelGrid columns="2">
+					<p:commandButton value="Sim" update="lista,fieldPrincipal" oncomplete="confirmationHabilitacao.hide()" actionListener="#{orgaoBean.reabilitarOrgao}"
+						immediate="true" />
+					<p:commandButton value="Não" onclick="confirmationHabilitacao.hide()" />
+				</h:panelGrid>
+			</p:confirmDialog>
+		</h:form>
+	</ui:define>
+</ui:composition>

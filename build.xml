@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="default-build" default="compile" basedir=".">
+
+	<property environment="env" />
+
+	<property file="build.properties" />
+
+	<tstamp>
+		<format property="deploy.time" pattern="yyyyMMdd_HHmmss" />
+	</tstamp>
+
+	<condition property="webXml" value="profile/${profile}/WEB-INF/web.xml" else="${web}/WEB-INF/web.xml">
+		<and>
+			<isset property="profile" />
+			<available file="profile/${profile}/WEB-INF/web.xml" />
+		</and>
+	</condition>
+
+	<path id="classpath">
+		<fileset dir="${dist}" includes="**/*.jar" />
+		<fileset dir="${lib}" includes="**/*.jar" />
+		<fileset dir="${libJBoss}" includes="**/*.jar" />
+		<fileset dir="${libLocal}" includes="**/*.jar" />
+	</path>
+
+	<target name="clean">
+		<delete dir="${build}" includes="**/*" includeemptydirs="true" />
+		<delete dir="${buildClient}" includes="**/*" includeemptydirs="true" />
+		<delete dir="${buildWeb}" includes="**/*" includeemptydirs="true" />
+		<delete dir="${dist}" includes="**/*" includeemptydirs="true" />
+	</target>
+
+	<target name="compile">
+		<mkdir dir="${build}" />
+		<javac classpathref="classpath" destdir="${build}" source="1.5" srcdir="${src}" target="1.5" encoding="latin1" debug="true" debuglevel="lines,vars,source" />
+		<copy todir="${build}">
+			<fileset dir="${resources}">
+				<exclude name="**/.svn" />
+				<include name="**/*" />
+			</fileset>
+		</copy>
+		<copy todir="${build}" failonerror="false" overwrite="true">
+			<fileset dir="profile/${profile}/resources">
+				<exclude name="**/.svn" />
+				<include name="**/*" />
+			</fileset>
+		</copy>
+	</target>
+
+	<target name="compile-client" depends="clean">
+		<mkdir dir="${buildClient}" />
+		<javac classpathref="classpath" destdir="${buildClient}" source="1.5" srcdir="${srcClient}" target="1.5" encoding="latin1" debug="true" debuglevel="lines,vars,source" />
+		<copy todir="${buildClient}">
+			<fileset dir="${resourcesClient}">
+				<exclude name="**/.svn" />
+				<include name="**/*" />
+			</fileset>
+		</copy>
+		<copy todir="${buildClient}" failonerror="false" overwrite="true">
+			<fileset dir="profile/${profile}/resources-client">
+				<exclude name="**/.svn" />
+				<include name="**/*" />
+			</fileset>
+		</copy>
+	</target>
+
+	<target name="compile-web" depends="clean, compile, compile-client">
+		<mkdir dir="${buildWeb}" />
+		<javac classpathref="classpath" destdir="${buildWeb}" source="1.5" srcdir="${srcWeb}" target="1.5" encoding="latin1" debug="true" debuglevel="lines,vars,source" />
+		<copy todir="${buildWeb}">
+			<fileset dir="${resourcesWeb}">
+				<exclude name="**/.svn" />
+				<include name="**/*" />
+			</fileset>
+		</copy>
+		<copy todir="${buildWeb}" failonerror="false" overwrite="true">
+			<fileset dir="profile/${profile}/resources-web">
+				<exclude name="**/.svn" />
+				<include name="**/*" />
+			</fileset>
+		</copy>
+	</target>
+
+	<target name="compile-all" depends="compile, compile-client, compile-web" />
+
+
+	<target name="build-web" depends="compile-web">
+		<mkdir dir="${dist}" />
+		<war destfile="${dist}/${warName}.war" webxml="${webXml}">
+			<fileset dir="${web}">
+				<exclude name="**/.svn" />
+				<exclude name="**/WEB-INF/classes/*" />
+				<exclude name="**/WEB-INF/lib/*.jar" />
+				<exclude name="**/WEB-INF/web.xml" />
+				<include name="**/*" />
+			</fileset>
+			<classes dir="${build}">
+				<exclude name="**/.svn" />
+				<include name="**/*" />
+			</classes>
+			<classes dir="${buildClient}">
+				<exclude name="**/.svn" />
+				<include name="**/*" />
+			</classes>
+			<classes dir="${buildWeb}">
+				<exclude name="**/.svn" />
+				<include name="**/*" />
+			</classes>
+			<lib dir="${lib}">
+				<exclude name="**/.svn" />
+				<exclude name="**/${name}.jar" />
+				<exclude name="**/${name}-client.jar" />
+				<exclude name="**/${warName}.jar" />
+				<include name="**/*.jar" />
+			</lib>
+			<lib dir="${libLocal}">
+				<exclude name="**/.svn" />
+				<exclude name="**/${name}.jar" />
+				<exclude name="**/${name}-client.jar" />
+				<exclude name="**/${warName}.jar" />
+				<include name="**/*.jar" />
+			</lib>
+		</war>
+	</target>
+
+	<!-- Javadoc -->
+	<target name="javadoc" depends="clean">
+		<javadoc destdir="${build}">
+			<fileset dir="${src}" defaultexcludes="yes">
+				<include name="**/*" />
+			</fileset>
+		</javadoc>
+		<zip destfile="${dist}/${name}-doc.zip">
+			<fileset dir="${build}">
+				<exclude name="**/.svn" />
+				<include name="**/*" />
+			</fileset>
+		</zip>
+	</target>
+
+	<target name="javadoc-client" depends="clean">
+		<javadoc destdir="${buildClient}">
+			<fileset dir="${srcClient}" defaultexcludes="yes">
+				<include name="**/*" />
+				<exclude name="**/client/ws/**" />
+			</fileset>
+		</javadoc>
+		<zip destfile="${dist}/${name}-client-doc.zip">
+			<fileset dir="${buildClient}">
+				<exclude name="**/.svn" />
+				<include name="**/*" />
+			</fileset>
+		</zip>
+	</target>
+
+	<!-- Deploy -->
+	<target name="backup">
+		<mkdir dir="${deploy.backup}" />
+		<copy file="${deploy.dir}/${warName}.war" tofile="${deploy.backup}/${warName}-${deploy.time}.war" failonerror="false" />
+	</target>
+
+	<target name="undeploy" depends="backup">
+		<delete file="${deploy.dir}/${warName}.war" failonerror="false" />
+	</target>
+
+	<target name="deploy" depends="build-web, undeploy">
+		<sleep seconds="5" />
+		<copy file="${dist}/${warName}.war" tofile="${deploy.dir}/${warName}.war" />
+	</target>
+
+</project>

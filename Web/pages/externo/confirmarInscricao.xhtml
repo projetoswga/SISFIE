@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui"
+	template="/templates/template-sem-menu.xhtml">
+
+	<ui:define name="body">
+		<h:form prependId="false">
+			<p:fieldset legend="Confirmar Inscrição" rendered="#{!confirmarInscricaoBean.mostrarErro}">
+				<p:panel header="Candidato">
+					<h:panelGrid columns="2" border="0" columnClasses="coluna20,coluna80" width="100%">
+						<h:outputLabel value="Nome:" />
+						<h:outputLabel value="#{confirmarInscricaoBean.model.candidato.nome}" />
+						<h:outputLabel value="Orgão:" />
+						<h:outputLabel value="#{confirmarInscricaoBean.model.candidato.orgao.nome}" />
+						<h:outputLabel value="UF:" />
+						<h:outputLabel value="#{confirmarInscricaoBean.model.candidato.municipioOrgao.uf.sigla}" />
+						<h:outputLabel value="Município:" />
+						<h:outputLabel value="#{confirmarInscricaoBean.model.candidato.municipioOrgao.descricao}" />
+						<h:outputLabel value="CPF:" rendered="#{confirmarInscricaoBean.model.candidato.cpf != null}" converter="CPFConverter"/>
+						<h:outputLabel value="#{confirmarInscricaoBean.model.candidato.cpf}"
+							rendered="#{confirmarInscricaoBean.model.candidato.cpf != null}" />
+						<h:outputLabel value="Documento Estrangeiro:"
+							rendered="#{confirmarInscricaoBean.model.candidato.docEstrangeiro != null}" />
+						<h:outputLabel value="#{confirmarInscricaoBean.model.candidato.docEstrangeiro}"
+							rendered="#{confirmarInscricaoBean.model.candidato.docEstrangeiro != null}" />
+					</h:panelGrid>
+				</p:panel>
+				<p:panel header="Curso">
+					<h:panelGrid columns="2" border="0" columnClasses="coluna20,coluna80" width="100%">
+						<h:outputLabel value="Número do Projeto:" />
+						<h:outputLabel value="#{confirmarInscricaoBean.model.curso.codigo}" converter="numeroProjetoConverter" />
+						<h:outputLabel value="Nome:" />
+						<h:outputLabel value="#{confirmarInscricaoBean.model.curso.titulo}" />
+						<h:outputLabel value="Localização:" />
+						<h:outputLabel value="#{confirmarInscricaoBean.model.curso.localizacao.descricao}" />
+						<h:outputLabel value="Inscrição:" />
+						<h:panelGrid columns="5" cellpadding="0" cellspacing="0" border="0">
+							<h:outputLabel value="#{confirmarInscricaoBean.model.curso.dtInicioInscricao}">
+								<f:convertDateTime pattern="dd/MM/yyyy" />
+							</h:outputLabel>
+							<p:spacer width="10" />
+							<h:outputLabel value=" à " rendered="#{confirmarInscricaoBean.model.curso.dtTerminoInscricao != null}" />
+							<p:spacer width="10" />
+							<h:outputLabel value="#{confirmarInscricaoBean.model.curso.dtTerminoInscricao}"
+								rendered="#{confirmarInscricaoBean.model.curso.dtRealizacaoFim != null}">
+								<f:convertDateTime pattern="dd/MM/yyyy" />
+							</h:outputLabel>
+						</h:panelGrid>
+						<h:outputLabel value="Realização:" />
+						<h:panelGrid columns="5" cellpadding="0" cellspacing="0" border="0">
+							<h:outputLabel value="#{confirmarInscricaoBean.model.curso.dtRealizacaoInicio}">
+								<f:convertDateTime pattern="dd/MM/yyyy" />
+							</h:outputLabel>
+							<p:spacer width="10" />
+							<h:outputLabel value=" à " />
+							<p:spacer width="10" />
+							<h:outputLabel value="#{confirmarInscricaoBean.model.curso.dtRealizacaoFim}">
+								<f:convertDateTime pattern="dd/MM/yyyy" />
+							</h:outputLabel>
+						</h:panelGrid>
+					</h:panelGrid>
+				</p:panel>
+				<br />
+				<p:toolbar>
+					<p:toolbarGroup>
+						<p:commandButton value="Confirmar" onclick="confirmation.show();" />
+						<p:commandButton value="Não Confirmar" onclick="confirmationNao.show();" />
+					</p:toolbarGroup>
+				</p:toolbar>
+			</p:fieldset>
+			<h:panelGrid width="100%" rendered="#{confirmarInscricaoBean.mostrarErro}">
+				<h3>Registro não encontrado ou confirmação já realizada!</h3>
+			</h:panelGrid>
+			<p:confirmDialog appendToBody="true" message="Confirma a Inscrição" header="Confirmação" severity="alert"
+				widgetVar="confirmation">
+				<h:panelGrid columns="2" style="text-align: center;">
+					<p:commandButton value="Sim" oncomplete="confirmation.hide()" action="#{confirmarInscricaoBean.confirmar}"
+						immediate="true" />
+					<p:commandButton value="Não" onclick="confirmation.hide()" />
+				</h:panelGrid>
+			</p:confirmDialog>
+			<p:confirmDialog appendToBody="true" message="Cancelar Inscrição" header="Cancelamento" severity="alert"
+				widgetVar="confirmationNao">
+				<h:panelGrid columns="2" style="text-align: center;">
+					<p:commandButton value="Sim" oncomplete="confirmationNao.hide()" action="#{confirmarInscricaoBean.naoConfirmar}"
+						immediate="true" />
+					<p:commandButton value="Não" onclick="confirmationNao.hide()" />
+				</h:panelGrid>
+			</p:confirmDialog>
+		</h:form>
+	</ui:define>
+</ui:composition>

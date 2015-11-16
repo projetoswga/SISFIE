@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui"
+	template="/templates/template.xhtml">
+
+	<ui:define name="body">
+		<h:form prependId="false" id="form">
+			<p:fieldset legend="Comunicados - Mala Direta" id="fieldPrincipal">
+
+				<h:panelGrid columns="3" border="0" columnClasses="coluna20,coluna80" width="100%">
+					<h:outputLabel value="Curso" styleClass="icoObrigatorio" />
+					<p:autoComplete dropdown="true" queryDelay="500" value="#{comunicadoBean.curso}" minQueryLength="2" id="curso"
+						size="60" completeMethod="#{comunicadoBean.completeCurso}" forceSelection="true" var="lista"
+						itemLabel="#{lista.titulo}" itemValue="#{lista.id}" converter="cursoConverter">
+						<p:ajax event="itemSelect" update="@form" process="@form" listener="#{comunicadoBean.carregarStatus}" />
+					</p:autoComplete>
+				</h:panelGrid>
+
+				<h:panelGrid columns="2" border="0" columnClasses="coluna20,coluna80" width="100%"
+					rendered="#{comunicadoBean.curso != null and comunicadoBean.curso.id  != null}">
+					<h:outputLabel value="Status" styleClass="icoObrigatorio" />
+					<p:selectOneMenu effect="fade" style="width:280px;" value="#{comunicadoBean.idStatus}" id="idStatus">
+						<f:selectItems value="#{comunicadoBean.listaStatus}" />
+						<p:ajax event="change" update="@form" process="@form" listener="#{comunicadoBean.carregarLista}" />
+					</p:selectOneMenu>
+				</h:panelGrid>
+				<h:panelGrid width="100%" rendered="#{comunicadoBean.idStatus != null and comunicadoBean.idStatus  != 0}">
+					<br />
+					<p:panel header="Informação do Curso">
+						<h:panelGrid columns="4" border="0" columnClasses="coluna25,coluna25,coluna25,coluna25" width="100%">
+							<h:outputLabel value="Curso:" />
+							<h:outputLabel value="#{comunicadoBean.curso.titulo}" />
+							<h:outputLabel value="Local:" />
+							<h:outputLabel value="#{comunicadoBean.curso.localizacao.descricao}" />
+
+							<h:outputLabel value="Vagas Preenchidas:" />
+							<h:outputLabel value="#{comunicadoBean.vagasPreencidas}" />
+							<h:outputLabel value="Vagas em Aberto:" />
+							<h:outputLabel value="#{comunicadoBean.vagasAbertas}" />
+
+							<h:outputLabel value="Data Realização Inicío:" />
+							<h:outputLabel value="#{comunicadoBean.curso.dtRealizacaoInicio}">
+								<f:convertDateTime pattern="dd/MM/yyyy" />
+							</h:outputLabel>
+							<h:outputLabel value="Data Realização Fim:" />
+							<h:outputLabel value="#{comunicadoBean.curso.dtRealizacaoFim}">
+								<f:convertDateTime pattern="dd/MM/yyyy" />
+							</h:outputLabel>
+
+							<h:outputLabel value="Data Inscrição Inicío:" />
+							<h:outputLabel value="#{comunicadoBean.curso.dtInicioInscricao}">
+								<f:convertDateTime pattern="dd/MM/yyyy" />
+							</h:outputLabel>
+							<h:outputLabel value="Data Inscrição Fim:" />
+							<h:outputLabel value="#{comunicadoBean.curso.dtTerminoInscricao}">
+								<f:convertDateTime pattern="dd/MM/yyyy" />
+							</h:outputLabel>
+
+							<h:outputLabel value="Número do Projeto:" />
+							<h:outputLabel value="#{comunicadoBean.curso.codigo}" converter="numeroProjetoConverter"/>
+							<h:outputLabel value="Gestor:" />
+							<h:outputLabel value="#{comunicadoBean.curso.usuario.nome}" />
+						</h:panelGrid>
+					</p:panel>
+					<br />
+					<p:dataTable paginatorAlwaysVisible="false" rendered="#{!comunicadoBean.cursoPrivado}" paginatorPosition="bottom"
+						emptyMessage="Nenhum Candidato Encontrado" var="lista" value="#{comunicadoBean.listaCandidato}" style="width:100%"
+						selection="#{comunicadoBean.inscricoes}"
+						rowStyleClass="#{empty rowIx or rowIx mod 2 ne 0 ? 'linhaImpar' : 'linhaPar'}" rowIndexVar="rowIx">
+
+						<f:facet name="header">
+							<h:outputLabel value="Lista de Candidatos" />
+						</f:facet>
+
+						<p:column selectionMode="multiple" style="width:4%;" />
+
+						<p:column headerText="Candidato" style="width:30%" sortBy="#{lista.candidato.nome}"
+							filterBy="#{lista.candidato.nome}">
+							<h:outputText value="#{lista.candidato.nome}" />
+						</p:column>
+						<p:column headerText="CPF" style="width:24%" sortBy="#{lista.candidato.cpf}" filterBy="#{lista.candidato.cpf}">
+							<h:outputText value="#{lista.candidato.cpf}" converter="CPFConverter"/>
+						</p:column>
+
+						<p:column headerText="Status" style="width:24%;font-size:10px;">
+							<h:outputText style="width:24%;font-size:12px;" value="#{lista.ultimoStatus.status.descricao}" />
+						</p:column>
+						<p:column headerText="Data de Inscrição" style="width:18%" sortBy="#{lista.dtCadastroFormat}">
+							<h:outputLabel value="#{lista.dtCadastroFormat}" />
+						</p:column>
+					</p:dataTable>
+					<p:dataTable paginatorAlwaysVisible="false" rendered="#{comunicadoBean.cursoPrivado}" paginatorPosition="bottom"
+						emptyMessage="Nenhum Candidato Encontrado" var="lista" value="#{comunicadoBean.listaEmails}" style="width:100%"
+						selection="#{comunicadoBean.emails}"
+						rowStyleClass="#{empty rowIx or rowIx mod 2 ne 0 ? 'linhaImpar' : 'linhaPar'}" rowIndexVar="rowIx">
+
+						<f:facet name="header">
+							<h:outputLabel value="Lista de Candidatos" />
+						</f:facet>
+
+						<p:column selectionMode="multiple" style="width:5%;" />
+
+						<p:column headerText="Email" style="width:95%" sortBy="#{lista.email}" filterBy="#{lista.email}">
+							<h:outputText value="#{lista.email}" />
+						</p:column>
+					</p:dataTable>
+					<br />
+
+					<h:panelGrid columns="3" id="panelCadastro" border="0" columnClasses="coluna15,coluna65,coluna20" width="100%">
+						<h:outputLabel value="Assunto:" styleClass="icoObrigatorio" />
+						<p:inputText value="#{comunicadoBean.assunto}" id="assunto" size="50" maxlength="255" />
+						<p:message for="assunto" />
+
+						<h:outputLabel value="E-mail:" styleClass="icoObrigatorio" />
+						<p:editor id="editor" value="#{comunicadoBean.corpoEmail}" width="600" />
+						<p:message for="editor" />
+
+
+					</h:panelGrid>
+					<br />
+					<p:toolbar>
+						<p:toolbarGroup align="left">
+							<p:commandButton value="Enviar" update="@form" process="@form" action="#{comunicadoBean.mensagemAviso}" />
+							<p:commandButton value="Limpar" immediate="true" ajax="false" action="comunicado.jsf" />
+						</p:toolbarGroup>
+					</p:toolbar>
+				</h:panelGrid>
+			</p:fieldset>
+
+			<p:confirmDialog appendToBody="true" message="Confirma Envido de E-mail?" header="Confirmação" severity="alert"
+				widgetVar="enviarEmail" id="idPopEmail" width="400">
+				<h:outputText value="#{comunicadoBean.msgAviso}" escape="false" />
+
+				<h:panelGrid columns="2">
+					<p:commandButton value="Sim" process="@form" update="fieldPrincipal" action="#{comunicadoBean.enviarEmail}"
+						onclick="enviarEmail.hide()" />
+					<p:commandButton value="Não" onclick="enviarEmail.hide()" />
+				</h:panelGrid>
+			</p:confirmDialog>
+
+		</h:form>
+	</ui:define>
+</ui:composition>

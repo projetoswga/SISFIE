@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui"
+	template="/templates/template.xhtml">
+
+
+	<ui:define name="body">
+		<f:loadBundle basename="constantes" var="const" />
+
+		<h:form id="formId" prependId="false">
+			<p:fieldset legend="#{usuarioBean.qualifiedName}" id="fieldPrincipal">
+				<h:panelGrid columns="4" id="panelCadastro" border="1" columnClasses="coluna15,coluna30,coluna20,coluna45"
+					width="100%">
+					<h:outputLabel value="Nome:" styleClass="icoObrigatorio" />
+					<p:inputText value="#{usuarioBean.model.nome}" requiredMessage="#{usuarioBean.requiredMessage}" required="true"
+						id="nome" size="50" maxlength="255" />
+					<p:message for="nome" />
+					<h:outputText value=" " />
+
+					<h:outputLabel value="E-mail:" styleClass="icoObrigatorio" />
+					<p:inputText value="#{usuarioBean.model.email}" requiredMessage="#{usuarioBean.requiredMessage}" required="true"
+						id="email" size="50" maxlength="255" />
+					<p:message for="email" />
+					<h:outputText value=" " />
+
+					<h:outputLabel value="Login:" styleClass="icoObrigatorio" />
+					<p:inputText value="#{usuarioBean.model.login}" requiredMessage="#{usuarioBean.requiredMessage}" required="true"
+						id="login" size="50" maxlength="255" />
+					<p:message for="login" />
+					<h:outputText value=" " />
+
+					<h:outputLabel value="Senha:" styleClass="icoObrigatorio" />
+					<h:outputText value="#{const.senha_default}" />
+					<h:outputText value=" " />
+					<h:outputText value=" " />
+
+					<h:outputLabel value="Perfil:" styleClass="icoObrigatorio" />
+					<p:selectOneMenu id="idPerfil" required="true" requiredMessage="#{usuarioBean.requiredMessage}" effect="fade"
+						style="width:280px;" value="#{usuarioBean.idPerfilSelecionado}">
+						<f:selectItem itemLabel="Selecione" itemValue="" />
+						<f:selectItems value="#{usuarioBean.perfis}" />
+					</p:selectOneMenu>
+					<p:message for="idPerfil" />
+					<h:outputText value=" " />
+					
+					<h:outputLabel value="Setor Responsável:" styleClass="icoObrigatorio" />
+					<p:selectOneMenu id="idSetorResponsavel" required="true" requiredMessage="#{usuarioBean.requiredMessage}" effect="fade"
+						style="width:280px;" value="#{usuarioBean.idSetorResponsavel}">
+						<f:selectItem itemLabel="Selecione" itemValue="" />
+						<f:selectItems value="#{usuarioBean.setores}" />
+					</p:selectOneMenu>
+					<p:message for="idSetorResponsavel" />
+					<h:outputText value=" " />
+
+					<h:outputLabel value="Ativo?" styleClass="icoObrigatorio" />
+					<p:selectOneRadio id="options" value="#{usuarioBean.model.flgAtivo}"
+						requiredMessage="#{usuarioBean.requiredMessage}" required="true">
+						<f:selectItem itemLabel="Sim" itemValue="true" />
+						<f:selectItem itemLabel="Não" itemValue="false" />
+					</p:selectOneRadio>
+					<p:message for="options" />
+					<h:outputText value=" " />
+
+				</h:panelGrid>
+				<br />
+				<!-- Id sendo utilizado, não alterar -->
+				<p:toolbar id="botoes">
+					<p:toolbarGroup align="left">
+						<p:commandButton value="Limpar" immediate="true" ajax="false" action="usuario.jsf" />
+						<p:commandButton rendered="#{p:ifGranted('ROLE_USUARIO_CADASTRAR')}" value="Salvar" ajax="true" process="@form"
+							update="@form" action="#{usuarioBean.save}" />
+						<p:commandButton rendered="#{p:ifGranted('ROLE_USUARIO_RESTAURAR_SENHA') and usuarioBean.model.id != null}"
+							value="Restaurar Senha Padrão" ajax="true" process="@form" update="@form" action="#{usuarioBean.restaurarSenha}" />
+					</p:toolbarGroup>
+				</p:toolbar>
+
+				<br />
+				<p:dataTable paginatorAlwaysVisible="false" paginatorPosition="bottom" var="lista" id="lista"
+					emptyMessage="#{usuarioBean.emptyMessage}" update="lista" rowsPerPageTemplate="#{usuarioBean.paginacao}"
+					styleClass="coluna100" value="#{usuarioBean.lazyDataModel}" paginator="true" rows="5"
+					rowStyleClass="#{empty rowIx or rowIx mod 2 ne 0 ? 'linhaImpar' : 'linhaPar'}" rowIndexVar="rowIx">
+
+					<f:facet name="header">
+						<h:outputLabel value="Lista de Usuários" />
+					</f:facet>
+					<p:column headerText="Nome" sortBy="#{lista.nome}" filterBy="#{lista.nome}" style="width:20%">
+						<h:outputLabel value="#{lista.nome}" />
+					</p:column>
+					<p:column headerText="Email" sortBy="#{lista.email}" filterBy="#{lista.email}" style="width:15%">
+						<h:outputLabel value="#{lista.email}" />
+					</p:column>
+					<p:column headerText="Login" sortBy="#{lista.login}" filterBy="#{lista.login}" style="width:15%">
+						<h:outputLabel value="#{lista.login}" />
+					</p:column>
+					<p:column headerText="Perfil" sortBy="#{lista.perfil.descricao}" filterBy="#{lista.perfil.descricao}"
+						style="width:15%">
+						<h:outputLabel value="#{lista.perfil.descricao}" />
+					</p:column>
+					<p:column headerText="Setor" sortBy="#{lista.setorResponsavelEsaf.nome}" filterBy="#{lista.setorResponsavelEsaf.nome}"
+						style="width:15%">
+						<h:outputLabel value="#{lista.setorResponsavelEsaf.nome}" />
+					</p:column>
+					<p:column headerText="Ativo" sortBy="#{lista.flgAtivo}" style="width:10%">
+						<h:outputLabel value="#{lista.ativoFormat}" />
+					</p:column>
+
+					<p:column style="width:10%;text-align:center;">
+						<f:facet name="header">
+							<h:outputLabel value="Ações" />
+						</f:facet>
+						<p:commandLink rendered="#{p:ifGranted('ROLE_USUARIO_EDITAR') and lista.id != 1}" title="Editar"
+							style="padding:5px !important;" update=":formId:panelCadastro,:formId:botoes" process="@this"
+							action="#{usuarioBean.load}">
+							<h:graphicImage library="design/imagem" name="icone-editar.png" />
+							<f:setPropertyActionListener target="#{usuarioBean.model}" value="#{lista}" />
+						</p:commandLink>
+						<p:commandLink rendered="#{p:ifGranted('ROLE_USUARIO_REMOVER') and lista.id != 1}" title="Excluir" process="@this"
+							oncomplete="confirmation.show()">
+							<h:graphicImage library="design/imagem" name="icone-excluir.png" />
+							<f:setPropertyActionListener target="#{usuarioBean.model}" value="#{lista}" />
+						</p:commandLink>
+					</p:column>
+				</p:dataTable>
+			</p:fieldset>
+			<p:confirmDialog appendToBody="true" message="Confirma a Exclusão" header="Exclusão" severity="alert"
+				widgetVar="confirmation">
+				<h:panelGrid columns="2">
+					<p:commandButton value="Sim" update="lista" oncomplete="confirmation.hide()" actionListener="#{usuarioBean.delete}"
+						immediate="true" />
+					<p:commandButton value="Não" onclick="confirmation.hide()" />
+				</h:panelGrid>
+			</p:confirmDialog>
+		</h:form>
+	</ui:define>
+</ui:composition>

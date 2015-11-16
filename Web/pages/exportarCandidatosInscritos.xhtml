@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui"
+	template="/templates/template.xhtml">
+
+	<ui:define name="body">
+
+		<h:form prependId="false" id="form">
+			<p:fieldset legend="Exportar candidatos Inscritos" id="fieldCandidato">
+				<br />
+
+				<h:panelGrid columns="3" columnClasses="coluna15,coluna50,coluna25" width="100%">
+					<h:outputLabel value="Curso:" styleClass="icoObrigatorio" />
+					<p:autoComplete dropdown="true" queryDelay="500" value="#{relatorioCandidatoInscritoBean.curso}" global="false"
+						minQueryLength="2" id="curso" size="60" scrollHeight="300" completeMethod="#{relatorioCandidatoInscritoBean.completeCurso}"
+						forceSelection="true" var="lista" itemLabel="#{lista.cursoData}" itemValue="#{lista.id}" converter="cursoConverter"
+						requiredMessage="#{relatorioCandidatoInscritoBean.requiredMessage}" required="true">
+						<p:ajax update="idTurma" process="@this" event="itemSelect"
+							listener="#{relatorioCandidatoInscritoBean.buscarTurma}" />
+					</p:autoComplete>
+					<p:message for="curso" />
+				</h:panelGrid>
+				
+				<h:panelGrid columns="2" columnClasses="coluna15,coluna75" width="100%">
+					
+					<h:outputLabel value="Turma:" />
+					<p:selectOneMenu id="idTurma" style="width:337px;" value="#{relatorioCandidatoInscritoBean.idTurma}">
+						<f:selectItems value="#{relatorioCandidatoInscritoBean.turmas}" />
+					</p:selectOneMenu>
+					
+					<h:outputLabel value="Situação da Inscrição:" />
+					<p:selectOneMenu id="idSituacaoInscricao" style="width:337px;" value="#{relatorioCandidatoInscritoBean.idSituacaoInscricao}">
+						<f:selectItems value="#{relatorioCandidatoInscritoBean.situacaoInscricoes}" />
+					</p:selectOneMenu>
+
+					<h:outputLabel value="Órgão Solicitante:" />
+					<p:autoComplete queryDelay="500" value="#{relatorioCandidatoInscritoBean.orgaoSolicitante}" minQueryLength="2" maxResults="15"
+						id="idOrgaoSolicitante" size="70" completeMethod="#{relatorioCandidatoInscritoBean.completeOrgao}" forceSelection="true"
+						var="lista" itemLabel="#{lista.nomeSiglaFormat}" itemValue="#{lista.id}" converter="OrgaoConverter">
+					</p:autoComplete>
+					
+					<h:outputLabel value="Órgão Candidato:" />
+					<p:autoComplete queryDelay="500" value="#{relatorioCandidatoInscritoBean.orgao}" minQueryLength="2" maxResults="15"
+						id="idOrgaos" size="70" completeMethod="#{relatorioCandidatoInscritoBean.completeOrgao}" forceSelection="true"
+						var="lista" itemLabel="#{lista.nomeSiglaFormat}" itemValue="#{lista.id}" converter="OrgaoConverter">
+					</p:autoComplete>
+
+					<h:outputLabel value="Data Início Realização" />
+					<h:panelGrid columns="2" border="0" columnClasses="coluna75,coluna25">
+						<p:calendar maxdate="#{relatorioCandidatoInscritoBean.dataHj}" yearRange="-111:+0" locale="pt"
+							pattern="dd/MM/yyyy" id="dtInicio" navigator="true" maxlength="10" size="15" readOnlyInputText="true"
+							value="#{relatorioCandidatoInscritoBean.dtInicial}" mode="popup" showOn="button" />
+						<p:commandLink process="@this" title="Limpar" update="dtInicio">
+							<h:graphicImage name="icone-limpar.png" library="design/imagem" />
+							<f:setPropertyActionListener target="#{relatorioCandidatoInscritoBean.dtInicial}" value="" />
+						</p:commandLink>
+					</h:panelGrid>
+					<h:outputLabel value="Data Fim Realização" />
+					<h:panelGrid columns="2" border="0" columnClasses="coluna75,coluna25">
+						<p:calendar maxdate="#{relatorioCandidatoInscritoBean.dataHj}" yearRange="-111:+0" locale="pt"
+							pattern="dd/MM/yyyy" id="dtFim" navigator="true" maxlength="10" size="15" readOnlyInputText="true"
+							value="#{relatorioCandidatoInscritoBean.dtFinal}" mode="popup" showOn="button" />
+						<p:commandLink process="@this" title="Limpar" update="dtFim">
+							<h:graphicImage name="icone-limpar.png" library="design/imagem" />
+							<f:setPropertyActionListener target="#{relatorioCandidatoInscritoBean.dtFinal}" value="" />
+						</p:commandLink>
+					</h:panelGrid>
+				</h:panelGrid>
+				<br />
+				<div align="center">
+					<p:commandButton value="Limpar" immediate="true" ajax="false" action="exportarCandidatosInscritos.jsf" />
+					<p:spacer width="5" />
+					<p:commandButton value="Pesquisar" process="@form" update="@form" action="#{relatorioCandidatoInscritoBean.buscarInscritos}" />
+				</div>
+				<br />
+				<h:panelGrid id="listagem">
+					<p:dataTable paginatorAlwaysVisible="false" paginatorPosition="bottom" var="listaInscritos" id="listaInscritos" emptyMessage="#{relatorioCandidatoInscritoBean.emptyMessage}" update="listaInscritos"
+						rowsPerPageTemplate="#{relatorioCandidatoInscritoBean.paginacao}" styleClass="coluna100" value="#{relatorioCandidatoInscritoBean.listaInscritos}"
+						paginator="true" rows="5" rowStyleClass="#{empty rowIx or rowIx mod 2 ne 0 ? 'linhaImpar' : 'linhaPar'}"
+						rowIndexVar="rowIx" rowKey="#{listaInscritos.id}" rendered="#{!empty relatorioCandidatoInscritoBean.listaInscritos}">
+						
+						<f:facet name="header">
+						<h:panelGrid columns="3" columnClasses="coluna5,coluna90,coluna5" width="100%">
+							<h:panelGrid width="100%">
+								<h:commandLink title="Exportar inscritos para excel">
+					           		<h:graphicImage name="icone-excel.png" library="design/imagem" width="24"/>
+					                <p:dataExporter type="xls" target="listaInscritos" fileName="Inscritos" />
+					            </h:commandLink>
+							</h:panelGrid>
+							<h:outputLabel value="Total de Inscritos Confirmados: #{relatorioCandidatoInscritoBean.countInscricao}" />
+							<h:panelGrid width="100%">
+								<h:commandLink title="Exportar inscritos para excel">
+					           		<h:graphicImage name="icone-excel.png" library="design/imagem" width="24"/>
+					                <p:dataExporter type="xls" target="listaInscritos" fileName="Inscritos" />
+					            </h:commandLink>
+							</h:panelGrid>
+						</h:panelGrid>
+						</f:facet>
+						<p:column style="width:5%;">
+							<f:facet name="header">
+				                <h:outputText value="Inscrição" />
+				            </f:facet>
+							<h:outputLabel value="#{listaInscritos.inscricao}" />
+						</p:column>
+						<p:column style="width:10%;">
+							<f:facet name="header">
+				                <h:outputText value="Nome" />
+				            </f:facet>
+							<h:outputLabel value="#{listaInscritos.nome}" />
+						</p:column>
+						<p:column style="width:10%;">
+							<f:facet name="header">
+				                <h:outputText value="CPF/Estrangeiro" />
+				            </f:facet>
+							<h:outputLabel value="#{listaInscritos.CPFDocEstrangeiro}" />
+						</p:column>
+						<p:column style="width:10%;">
+							<f:facet name="header">
+				                <h:outputText value="Matricula" />
+				            </f:facet>
+							<h:outputLabel value="#{listaInscritos.matricula}" />
+						</p:column>
+						<p:column style="width:10%;">
+							<f:facet name="header">
+				                <h:outputText value="Telefone" />
+				            </f:facet>
+							<h:outputLabel value="#{listaInscritos.telComercial}"/>
+						</p:column>
+						<p:column style="width:10%;">
+							<f:facet name="header">
+				                <h:outputText value="Email" />
+				            </f:facet>
+							<h:outputLabel value="#{listaInscritos.emailInstitucional}"/>
+						</p:column>
+						<p:column style="width:10%;">
+							<f:facet name="header">
+				                <h:outputText value="Órgão" />
+				            </f:facet>
+							<h:outputLabel value="#{listaInscritos.nomeOrgao}"/>
+						</p:column>
+						<p:column style="width:5%;">
+							<f:facet name="header">
+				                <h:outputText value="UF" />
+				            </f:facet>
+							<h:outputLabel value="#{listaInscritos.uf}" />
+						</p:column>
+						<p:column style="width:10%;">
+							<f:facet name="header">
+				                <h:outputText value="Município" />
+				            </f:facet>
+							<h:outputLabel value="#{listaInscritos.municipio}" />
+						</p:column>
+						<p:column style="width:10%;">
+							<f:facet name="header">
+				                <h:outputText value="Turma" />
+				            </f:facet>
+							<h:outputLabel value="#{listaInscritos.turma}" />
+						</p:column>
+						<p:column style="width:10%;">
+							<f:facet name="header">
+				                <h:outputText value="Curso" />
+				            </f:facet>
+							<h:outputLabel value="#{listaInscritos.curso}" />
+						</p:column>
+						<p:column style="width:10%;">
+							<f:facet name="header">
+				                <h:outputText value="Email chefia" />
+				            </f:facet>
+							<h:outputLabel value="#{listaInscritos.emailChefia}" />
+						</p:column>
+						<p:column style="width:10%;">
+							<f:facet name="header">
+				                <h:outputText value="Status" />
+				            </f:facet>
+							<h:outputLabel value="#{listaInscritos.status}" />
+						</p:column>
+					</p:dataTable>
+				</h:panelGrid>
+				<br />
+			</p:fieldset>
+		</h:form>
+	</ui:define>
+</ui:composition>

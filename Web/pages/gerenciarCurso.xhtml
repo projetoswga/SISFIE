@@ -1,0 +1,859 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui" template="/templates/template.xhtml">
+
+
+	<f:metadata>
+		<f:event type="preRenderView" listener="#{gerenciarCursoBean.mostrarMsg}" />
+	</f:metadata>
+
+
+	<ui:define name="body">
+		<script type="text/javascript">
+			$ = jQuery;
+
+			function minimizar(){
+				widgetConfirmado.toggle();
+				widgePendente.toggle();
+				widgetEspera.toggle();
+			}
+			function minimizarAbas(aba){
+				if(aba=='confirmados'){
+					widgePendente.toggle();
+					widgetEspera.toggle();
+				}else if(aba=='pendentes'){
+					widgetConfirmado.toggle();
+					widgetEspera.toggle();
+				}else if(aba=='espera'){
+					widgetConfirmado.toggle();
+					widgePendente.toggle();
+				}
+				
+			}
+
+			</script>
+
+
+		<h:form prependId="false" id="form" enctype="multipart/form-data">
+			<p:fieldset legend="Gerenciar Curso" id="fieldGerenciarCurso">
+
+				<h:panelGrid columns="2" border="0" columnClasses="coluna20,coluna80" width="100%">
+					<h:outputLabel value="Curso" styleClass="icoObrigatorio" />
+					<p:autoComplete disabled="#{gerenciarCursoBean.desabilitarCurso}" dropdown="true" queryDelay="500" value="#{gerenciarCursoBean.curso}"
+						minQueryLength="2" id="curso" size="60" scrollHeight="300" completeMethod="#{gerenciarCursoBean.completeCurso}" forceSelection="true"
+						var="lista" itemLabel="#{lista.cursoData}" itemValue="#{lista.id}" converter="cursoConverter" global="false">
+						<p:ajax event="itemSelect" update="@form" process="@form" oncomplete="minimizar();" listener="#{gerenciarCursoBean.carregarLista}" />
+					</p:autoComplete>
+				</h:panelGrid>
+				<h:panelGrid width="100%" rendered="#{gerenciarCursoBean.curso != null and gerenciarCursoBean.curso.id  != null}">
+					<br />
+					<p:panel header="Informação do Curso" toggleable="true" toggleSpeed="500" style="text-align:center;" id="informacaoCurso">
+						<h:panelGrid columns="4" border="0" columnClasses="coluna25Negrito,coluna25,coluna25Negrito,coluna25" width="100%" style="text-align:left;">
+							<h:outputLabel value="Curso:" />
+							<h:outputLabel value="#{gerenciarCursoBean.curso.cursoData}" />
+							<h:outputLabel value="Local:" />
+							<h:outputLabel value="#{gerenciarCursoBean.curso.localizacao.descricao}" />
+
+							<h:outputLabel value="Vagas Preenchidas:" />
+							<h:outputLabel value="#{gerenciarCursoBean.vagasPreencidas}" />
+							<h:outputLabel value="Vagas em Aberto:" />
+							<h:outputLabel value="#{gerenciarCursoBean.vagasAbertas}" />
+
+							<h:outputLabel value="Data Realização Inicío:" />
+							<h:outputLabel value="#{gerenciarCursoBean.curso.dtRealizacaoInicio}">
+								<f:convertDateTime pattern="dd/MM/yyyy" />
+							</h:outputLabel>
+							<h:outputLabel value="Data Realização Fim:" />
+							<h:outputLabel value="#{gerenciarCursoBean.curso.dtRealizacaoFim}">
+								<f:convertDateTime pattern="dd/MM/yyyy" />
+							</h:outputLabel>
+
+							<h:outputLabel value="Data Inscrição Inicío:" />
+							<h:outputLabel value="#{gerenciarCursoBean.curso.dtInicioInscricao}">
+								<f:convertDateTime pattern="dd/MM/yyyy" />
+							</h:outputLabel>
+							<h:outputLabel value="Data Inscrição Fim:" />
+							<h:outputLabel value="#{gerenciarCursoBean.curso.dtTerminoInscricao}">
+								<f:convertDateTime pattern="dd/MM/yyyy" />
+							</h:outputLabel>
+
+							<h:outputLabel value="Número do Projeto:" />
+							<h:outputLabel value="#{gerenciarCursoBean.curso.codigo}" converter="numeroProjetoConverter" />
+							<h:outputLabel value="Gestor:" />
+							<h:outputLabel value="#{gerenciarCursoBean.curso.usuario.nome}" />
+							<h:outputLabel value="Capacidade Máxima de Inscrições no Evento:" rendered="#{gerenciarCursoBean.curso.flgPossuiOficina}"/>
+							<h:outputLabel value="#{gerenciarCursoBean.capacidadeMaximaInscritos}" rendered="#{gerenciarCursoBean.curso.flgPossuiOficina}"/>
+							<h:outputLabel value="Vagas para parceiros (#{gerenciarCursoBean.curso.numPercentualVagasParceiro}%):" rendered="#{gerenciarCursoBean.curso.flgPossuiOficina}"/>
+							<h:outputLabel value="#{gerenciarCursoBean.vagasParceiro}" rendered="#{gerenciarCursoBean.curso.flgPossuiOficina}"/>
+						</h:panelGrid>
+						<br />
+						<p:toolbar rendered="#{!gerenciarCursoBean.cursoFinalizado}">
+							<p:toolbarGroup align="left">
+								<p:commandButton rendered="#{p:ifGranted('ROLE_CURSO_FINALIZAR_INSCRICAO') and !gerenciarCursoBean.mostarFinalizarInscricao}"
+									value="Prorrogar Inscrições" onclick="prorrogarInscricaoPop.show();" />
+								<p:commandButton rendered="#{p:ifGranted('ROLE_CURSO_FINALIZAR_INSCRICAO') and gerenciarCursoBean.mostarFinalizarInscricao}"
+									value="Finalizar Inscrições" onclick="finalizarInscricaoPop.show();" />
+								<p:commandButton rendered="#{p:ifGranted('ROLE_CURSO_FINALIZAR_CURSO')}" value="Finalizar Curso" onclick="finalizarCursoPop.show();" />
+								<p:commandButton value="Visualizar Inscrições por Oficina" oncomplete="popInformarParametro.show();"
+									rendered="#{gerenciarCursoBean.curso.flgPossuiOficina}" />
+								<p:commandButton value="Aceitar Inscrições por Órgão"
+									update="panelGridGeralVisualizacao,panelGridVisualizacaoInscricoesOficinas,panelGridAceitacoes"
+									action="#{gerenciarCursoBean.visualizarAceitacoesPorOrgao}" />
+							</p:toolbarGroup>
+						</p:toolbar>
+					</p:panel>
+					<br />
+					<p:panel header="Confirmados: #{gerenciarCursoBean.totalConfirmados}" id="panelConfirmados" toggleable="true" toggleSpeed="500"
+						style="text-align:center;" widgetVar="widgetConfirmado">
+						<p:dataTable paginatorAlwaysVisible="false" paginatorPosition="bottom" emptyMessage="Nenhum Candidato Confirmado"
+							var="listaConfirmados" value="#{gerenciarCursoBean.listaCandidatosConfirmados}" style="width:100%"
+							rowStyleClass="#{empty rowIx or rowIx mod 2 ne 0 ? 'linhaImpar' : 'linhaPar'}" rowIndexVar="rowIx" paginator="true" rows="5"
+							rowsPerPageTemplate="#{gerenciarCursoBean.paginacao}" selection="#{gerenciarCursoBean.inscricoesCursoConfirmados}">
+
+							<p:ajax event="rowSelect" update=":form:panelConfirmados" />
+							<p:ajax event="rowUnselect" update=":form:panelConfirmados" />
+
+							<p:column selectionMode="multiple" style="width:18px" rendered="#{!gerenciarCursoBean.curso.flgPossuiOficina}" />
+							<p:column headerText="Inscrição" sortBy="#{listaConfirmados.inscricao}" filterBy="#{listaConfirmados.inscricao}"
+								filterMatchMode="contains" style="width:5%;">
+								<h:outputLabel value="#{listaConfirmados.inscricao}" />
+							</p:column>
+							<p:column headerText="Nome" sortBy="#{listaConfirmados.candidato.nome}" filterBy="#{listaConfirmados.candidato.nome}"
+								filterMatchMode="contains" style="width:20%;">
+								<h:outputLabel value="#{listaConfirmados.candidato.nome}" />
+							</p:column>
+							<p:column headerText="CPF/Estrangeiro" sortBy="#{listaConfirmados.candidato.cpf}" filterBy="#{listaConfirmados.candidato.cpf}"
+								filterMatchMode="contains" style="width:10%;">
+								<h:outputText value="#{listaConfirmados.candidato.cpf}" converter="CPFConverter"
+									rendered="#{listaConfirmados.candidato.cpf != null and !empty listaConfirmados.candidato.cpf}" />
+								<h:outputText value="#{listaConfirmados.candidato.docEstrangeiro}"
+									rendered="#{listaConfirmados.candidato.docEstrangeiro != null and !empty listaConfirmados.candidato.docEstrangeiro}" />
+							</p:column>
+							<p:column headerText="Órgão" sortBy="#{listaConfirmados.candidato.orgao.nome}" filterBy="#{listaConfirmados.candidato.orgao.nome}"
+								filterMatchMode="contains" style="width:15%;">
+								<h:outputLabel value="#{listaConfirmados.candidato.orgao.nome}" />
+							</p:column>
+							<p:column headerText="Telefone" style="width:15%;">
+								<h:outputLabel value="#{listaConfirmados.candidato.telComercial}" converter="telefoneConverter" />
+							</p:column>
+							<p:column headerText="Município" style="width:15%;">
+								<h:outputLabel value="#{listaConfirmados.candidato.municipioOrgao.descricao}" />
+							</p:column>
+							<p:column headerText="UF" style="width:5%;">
+								<h:outputLabel value="#{listaConfirmados.candidato.municipioOrgao.uf.sigla}" />
+							</p:column>
+							<p:column headerText="Status" style="width:10%;">
+								<h:outputLabel value="#{listaConfirmados.ultimoStatus.status.descricao}" />
+							</p:column>
+							<p:column headerText="Turma" style="width:10%" rendered="#{!gerenciarCursoBean.curso.flgPossuiOficina}">
+								<h:outputLabel value="#{listaConfirmados.turma.descricao}" />
+							</p:column>
+							<p:column headerText="Ação" style="width:5%">
+								<p:commandLink title="Selecionar" style="padding:5px !important;" update="@form" process=":form:panelConfirmados"
+									action="#{gerenciarCursoBean.selecionar}" oncomplete="minimizarAbas('confirmados')">
+									<h:graphicImage library="design/imagem" name="icone-selecionar.png" />
+									<f:setPropertyActionListener target="#{gerenciarCursoBean.inscricaoCurso}" value="#{listaConfirmados}" />
+								</p:commandLink>
+							</p:column>
+						</p:dataTable>
+						<br />
+						<p:toolbar rendered="#{gerenciarCursoBean.totalConfirmados > 0}">
+							<p:toolbarGroup align="left">
+								<p:commandButton value="Distribuir Turmas" update="form:distribuicaoPopId" action="#{gerenciarCursoBean.abrirPopupDistribuir}"
+									rendered="#{!gerenciarCursoBean.curso.flgPossuiOficina}" />
+								<p:commandButton value="Visualizar Grade de Oficinas" ajax="true" process="@this"
+									update="panelGridGeralVisualizacao,panelGridVisualizacaoInscricoesOficinas,panelGridAceitacoes"
+									action="#{gerenciarCursoBean.visualizarInscricaoGrade}" rendered="#{gerenciarCursoBean.curso.flgPossuiOficina}" />
+								<p:commandButton value="Download Evento - Frequência" ajax="false" rendered="#{gerenciarCursoBean.curso.flgPossuiOficina}">
+									<p:fileDownload value="#{gerenciarCursoBean.arquivoEvento}" />
+								</p:commandButton>
+								<p:commandButton value="Download Turmas - Frequência" ajax="false" rendered="#{gerenciarCursoBean.curso.flgPossuiOficina}">
+									<p:fileDownload value="#{gerenciarCursoBean.arquivoTurmas}" />
+								</p:commandButton>
+								<p:commandButton value="Download Participantes - Frequência" ajax="false" rendered="#{gerenciarCursoBean.curso.flgPossuiOficina}">
+									<p:fileDownload value="#{gerenciarCursoBean.arquivoParticipantes}" />
+								</p:commandButton>
+								<p:commandButton rendered="#{gerenciarCursoBean.curso.flgPossuiOficina}" value="Importar Frequência"
+									onclick="importarFrequenciaPopup.show();" />
+							</p:toolbarGroup>
+						</p:toolbar>
+					</p:panel>
+					<br />
+					<p:panel header="Pendentes: #{gerenciarCursoBean.totalPendentes}" toggleable="true" toggleSpeed="500" style="text-align:center;"
+						widgetVar="widgePendente" id="painelPendentes">
+						<p:dataTable paginatorAlwaysVisible="false" paginatorPosition="bottom" emptyMessage="Nenhum Candidato Pendente" var="listaPendentes"
+							value="#{gerenciarCursoBean.listaCandidatoPendentes}" style="width:100%"
+							rowStyleClass="#{empty rowIx or rowIx mod 2 ne 0 ? 'linhaImpar' : 'linhaPar'}" rowIndexVar="rowIx" paginator="true" rows="5"
+							rowsPerPageTemplate="#{gerenciarCursoBean.paginacao}">
+
+							<p:ajax event="rowSelect" update=":form:painelPendentes" />
+							<p:ajax event="rowUnselect" update=":form:painelPendentes" />
+
+							<p:column headerText="Inscrição" sortBy="#{listaPendentes.inscricao}" filterBy="#{listaPendentes.inscricao}" style="width:5%;">
+								<h:outputLabel value="#{listaPendentes.inscricao}" />
+							</p:column>
+							<p:column headerText="Nome" sortBy="#{listaPendentes.candidato.nome}" filterBy="#{listaPendentes.candidato.nome}"
+								filterMatchMode="contains" style="width:25%;">
+								<h:outputLabel value="#{listaPendentes.candidato.nome}" />
+							</p:column>
+							<p:column headerText="CPF/Estrangeiro" sortBy="#{listaPendentes.candidato.cpf}" filterBy="#{listaPendentes.candidato.cpf}"
+								filterMatchMode="contains" style="width:10%;">
+								<h:outputText value="#{listaPendentes.candidato.cpf}" converter="CPFConverter"
+									rendered="#{listaPendentes.candidato.cpf != null and !empty listaPendentes.candidato.cpf}" />
+								<h:outputText value="#{listaPendentes.candidato.docEstrangeiro}"
+									rendered="#{listaPendentes.candidato.docEstrangeiro != null and !empty listaPendentes.candidato.docEstrangeiro}" />
+							</p:column>
+							<p:column headerText="Órgão" sortBy="#{listaPendentes.candidato.orgao.nome}" filterBy="#{listaPendentes.candidato.orgao.nome}"
+								filterMatchMode="contains" style="width:15%;">
+								<h:outputLabel value="#{listaPendentes.candidato.orgao.nome}" />
+							</p:column>
+							<p:column headerText="Telefone" style="width:10%;">
+								<h:outputLabel value="#{listaPendentes.candidato.telComercial}" converter="telefoneConverter" />
+							</p:column>
+							<p:column headerText="Município" style="width:15%;">
+								<h:outputLabel value="#{listaPendentes.candidato.municipioOrgao.descricao}" />
+							</p:column>
+							<p:column headerText="UF" style="width:5%;">
+								<h:outputLabel value="#{listaPendentes.candidato.municipioOrgao.uf.sigla}" />
+							</p:column>
+							<p:column headerText="Status" sortBy="#{listaPendentes.ultimoStatus.status.descricao}"
+								filterBy="#{listaPendentes.ultimoStatus.status.descricao}" filterMatchMode="contains" style="width:15%;">
+								<h:outputLabel value="#{listaPendentes.ultimoStatus.status.descricao}" />
+							</p:column>
+							<p:column headerText="Ação" style="width:5%">
+								<p:commandLink title="Selecionar" style="padding:5px !important;" update="@form" process=":form:painelPendentes"
+									action="#{gerenciarCursoBean.selecionar}" oncomplete="minimizarAbas('pendentes')">
+									<h:graphicImage library="design/imagem" name="icone-selecionar.png" />
+									<f:setPropertyActionListener target="#{gerenciarCursoBean.inscricaoCurso}" value="#{listaPendentes}" />
+								</p:commandLink>
+							</p:column>
+						</p:dataTable>
+					</p:panel>
+					<br />
+					<p:panel header="Lista de Espera: #{gerenciarCursoBean.totalEspera}" toggleable="true" toggleSpeed="500" style="text-align:center;"
+						widgetVar="widgetEspera" id="panelListaEspera">
+						<p:dataTable paginatorAlwaysVisible="false" paginatorPosition="bottom" emptyMessage="Nenhum Candidato Encontrado" var="listaEspera"
+							value="#{gerenciarCursoBean.listaEspera}" style="width:100%"
+							rowStyleClass="#{empty rowIx or rowIx mod 2 ne 0 ? 'linhaImpar' : 'linhaPar'}" rowIndexVar="rowIx" paginator="true" rows="5"
+							rowsPerPageTemplate="#{gerenciarCursoBean.paginacao}">
+
+							<p:ajax event="rowSelect" update=":form:panelListaEspera" />
+							<p:ajax event="rowUnselect" update=":form:panelListaEspera" />
+
+							<p:column headerText="Inscrição" sortBy="#{listaEspera.inscricao}" filterBy="#{listaEspera.inscricao}" filterMatchMode="contains"
+								style="width:5%;">
+								<h:outputLabel value="#{listaEspera.inscricao}" />
+							</p:column>
+							<p:column headerText="Nome" sortBy="#{listaEspera.candidato.nome}" filterBy="#{listaEspera.candidato.nome}"
+								filterMatchMode="contains" style="width:25%;">
+								<h:outputLabel value="#{listaEspera.candidato.nome}" />
+							</p:column>
+							<p:column headerText="CPF/Estrangeiro" sortBy="#{listaEspera.candidato.cpf}" filterBy="#{listaEspera.candidato.cpf}"
+								filterMatchMode="contains" style="width:10%;">
+								<h:outputText value="#{listaEspera.candidato.cpf}" converter="CPFConverter"
+									rendered="#{listaEspera.candidato.cpf != null and !empty listaEspera.candidato.cpf}" />
+								<h:outputText value="#{listaEspera.candidato.docEstrangeiro}"
+									rendered="#{listaEspera.candidato.docEstrangeiro != null and !empty listaEspera.candidato.docEstrangeiro}" />
+							</p:column>
+							<p:column headerText="Órgão" sortBy="#{listaEspera.candidato.orgao.nome}" filterBy="#{listaEspera.candidato.orgao.nome}"
+								filterMatchMode="contains" style="width:15%;">
+								<h:outputLabel value="#{listaEspera.candidato.orgao.nome}" />
+							</p:column>
+							<p:column headerText="Telefone" style="width:10%;">
+								<h:outputLabel value="#{listaEspera.candidato.telComercial}" converter="telefoneConverter" />
+							</p:column>
+							<p:column headerText="Município" style="width:15%;">
+								<h:outputLabel value="#{listaEspera.candidato.municipioOrgao.descricao}" />
+							</p:column>
+							<p:column headerText="UF" style="width:5%;">
+								<h:outputLabel value="#{listaEspera.candidato.municipioOrgao.uf.sigla}" />
+							</p:column>
+							<p:column headerText="Status" sortBy="#{listaEspera.ultimoStatus.status.descricao}"
+								filterBy="#{listaEspera.ultimoStatus.status.descricao}" filterMatchMode="contains" style="width:15%;">
+								<h:outputLabel value="#{listaEspera.ultimoStatus.status.descricao}" />
+							</p:column>
+							<p:column headerText="Ação" style="width:5%">
+								<p:commandLink title="Selecionar" style="padding:5px !important;" update="@form" process=":form:panelListaEspera"
+									action="#{gerenciarCursoBean.selecionar}" oncomplete="minimizarAbas('espera')">
+									<h:graphicImage library="design/imagem" name="icone-selecionar.png" />
+									<f:setPropertyActionListener target="#{gerenciarCursoBean.inscricaoCurso}" value="#{listaEspera}" />
+								</p:commandLink>
+							</p:column>
+						</p:dataTable>
+					</p:panel>
+
+					<h:panelGrid id="panelGridAceitacoes" width="100%">
+						<p:panel id="panelAceitacoes" header="Aceitar Inscrições por Órgão" toggleable="true" toggleSpeed="500" style="text-align:center;"
+							widgetVar="widgetHomologacoes" rendered="#{gerenciarCursoBean.mostrarPanelAceitacoes}">
+							<h:panelGrid id="panelPricinalAceitacoes" columns="1" width="100%" style="text-align: left;">
+								<br />
+								<h:panelGrid columns="2" id="panelQtdVagasHomologacoes" columnClasses="coluna20,coluna80" width="100%" border="1">
+									<h:outputLabel value="Âmbito:" styleClass="icoObrigatorio" />
+									<p:selectOneRadio effect="fade" style="width:280px;" value="#{gerenciarCursoBean.idOpcaoRegiao}" id="opcaoRegiao"
+										layout="pageDirection">
+										<f:selectItem itemLabel="Dentro da Região" itemValue="1" />
+										<f:selectItem itemLabel="Fora da Região" itemValue="2" />
+										<f:selectItem itemLabel="Ambos" itemValue="3" />
+									</p:selectOneRadio>
+									<h:outputLabel value="Quantidade de Vagas por órgão:" />
+									<p:inputMask mask="9?9999" maxlength="5" placeHolder=" " value="#{gerenciarCursoBean.quantidadeVagas}" id="qtdVagas" size="20" />
+									<br />
+									<br />
+									<h:outputLabel
+										value="Foram encontratas #{gerenciarCursoBean.totalInscricoes} inscrição(ões) com o máximo de #{gerenciarCursoBean.quantidadeVagas} por órgão/Região."
+										styleClass="textoInformativo"
+										rendered="#{gerenciarCursoBean.mostrarTextoInscricao and gerenciarCursoBean.totalInscricoes != null and gerenciarCursoBean.totalInscricoes > 0}" />
+								</h:panelGrid>
+								<br />
+							</h:panelGrid>
+							<div align="center" id="botaoVerificarAceitar">
+								<p:commandButton value="Verificar" process="@this,panelPricinalAceitacoes"
+									update="panelGridAceitacoes,panelGridAceitacoes,painelPendentes,panelListaEspera" ajax="true"
+									action="#{gerenciarCursoBean.verificarInscricoesPorOrgao}" />
+								<p:spacer width="5" />
+								<p:commandButton value="Aceitar Inscrição(ões)" process="@form" update="@form" ajax="true"
+									action="#{gerenciarCursoBean.aceitarInscricoes}"
+									rendered="#{gerenciarCursoBean.mostrarTextoInscricao and gerenciarCursoBean.totalInscricoes != null and gerenciarCursoBean.totalInscricoes > 0}" />
+							</div>
+						</p:panel>
+					</h:panelGrid>
+
+					<h:panelGrid id="panelGridVisualizacaoInscricoesOficinas" width="100%">
+						<p:panel header="Visualização Inscrições Por Oficinas" toggleable="true" toggleSpeed="500" style="text-align:center;"
+							widgetVar="widgetVisualizacaoIncricoesOficinas" id="panelVisualizacaoInscricoesOficinas"
+							rendered="#{gerenciarCursoBean.mostrarPanelVisualizacaoInscricoesOficinas}">
+							<p:dataTable var="lista" value="#{gerenciarCursoBean.listaOficinaInscritosDTOs}" style="width:100%"
+								rowStyleClass="#{empty rowIx or rowIx mod 2 ne 0 ? 'linhaImpar' : 'linhaPar'}" rowIndexVar="rowIx">
+								<p:column headerText="Oficina" style="width:70%">
+									<h:outputText value="#{lista.oficina.nomOficina}" />
+								</p:column>
+								<p:column headerText="Qtd Inscritos" style="width:30%">
+									<h:outputText value="#{lista.qtdInscritos}" />
+								</p:column>
+							</p:dataTable>
+						</p:panel>
+					</h:panelGrid>
+
+					<h:panelGrid id="panelGridGeralVisualizacao" width="100%">
+						<p:panel header="Visualização da Grade de Oficinas" toggleable="true" toggleSpeed="500" style="text-align:center;"
+							widgetVar="widgetVisualizacao" id="panelVisualizacao" rendered="#{gerenciarCursoBean.mostrarPanelVisualizacao}">
+							<p:dataTable var="lista" value="#{gerenciarCursoBean.listaInscricaoGradeDTOs}" style="width:100%"
+								rowStyleClass="#{empty rowIx or rowIx mod 2 ne 0 ? 'linhaImpar' : 'linhaPar'}" rowIndexVar="rowIx" paginatorAlwaysVisible="false"
+								paginatorPosition="bottom" paginator="true" rows="5" rowsPerPageTemplate="#{gerenciarCursoBean.paginacao}">
+								<p:column headerText="horário" style="width:10%">
+									<h:outputText value="#{lista.horario.desHorario}" />
+								</p:column>
+								<p:column headerText="Grade">
+									<p:dataTable var="subLista" value="#{lista.listaInscricaoGradePorHorario}">
+										<p:column headerText="Turma" style="width:10%">
+											<h:outputText value="#{subLista.turma.descricao}" />
+										</p:column>
+										<p:column headerText="Sala" style="width:15%">
+											<h:outputText value="#{subLista.sala.nomSala}" />
+										</p:column>
+										<p:column headerText="Oficina" style="width:30%">
+											<h:outputText value="#{subLista.oficina.nomOficina}" />
+										</p:column>
+										<p:column headerText="Professor" style="width:20%">
+											<h:outputText value="#{subLista.professorEvento.candidato.nome}" />
+										</p:column>
+										<p:column style="width:15%;text-align:center;">
+											<f:facet name="header">
+												<h:outputLabel value="Visualizar Inscritos" />
+											</f:facet>
+											<p:commandLink title="Visualizar Candidatos" process="@form" update="@form" oncomplete="popCandidatosDistribuidos.show()">
+												<h:graphicImage library="design/imagem" name="icone-visualizar.png" />
+												<f:setPropertyActionListener target="#{gerenciarCursoBean.inscricaoGradeDTO}" value="#{subLista}" />
+											</p:commandLink>
+										</p:column>
+
+									</p:dataTable>
+								</p:column>
+							</p:dataTable>
+						</p:panel>
+					</h:panelGrid>
+					<br />
+					<p:accordionPanel cache="false" activeIndex="-1" id="acordions">
+						<p:tab title="Dados de Identificação"
+							rendered="#{gerenciarCursoBean.inscricaoCurso != null and gerenciarCursoBean.inscricaoCurso.id != null}">
+							<h:panelGrid columns="4" border="0" columnClasses="coluna25,coluna25,coluna25,coluna25" width="100%">
+								<h:outputLabel value="Candidato:" />
+								<h:outputLabel value="#{gerenciarCursoBean.inscricaoCurso.candidato.nome}" />
+								<h:outputLabel value="Nacionalidade:" />
+								<h:outputLabel value="Brasileiro" rendered="#{gerenciarCursoBean.inscricaoCurso.candidato.nacionalidadeBrasil}" />
+								<h:outputLabel value="Estrangeiro" rendered="#{!gerenciarCursoBean.inscricaoCurso.candidato.nacionalidadeBrasil}" />
+
+								<h:outputLabel value="CPF:" />
+								<h:outputLabel value="#{gerenciarCursoBean.inscricaoCurso.candidato.cpf}" converter="CPFConverter" />
+								<h:outputLabel value="Endereço:" />
+								<h:outputLabel
+									value="#{gerenciarCursoBean.inscricaoCurso.candidato.logradouro}-#{gerenciarCursoBean.inscricaoCurso.candidato.complemento}" />
+
+								<h:outputLabel value="Orgão:" />
+								<h:outputLabel value="#{gerenciarCursoBean.inscricaoCurso.candidato.orgao.nome}" />
+								<h:outputLabel value="Município Endereço" />
+								<h:outputLabel
+									value="#{gerenciarCursoBean.inscricaoCurso.candidato.municipioEndereco.descricao}-#{gerenciarCursoBean.inscricaoCurso.candidato.municipioEndereco.uf.sigla}" />
+
+								<h:outputLabel value="Telefone Comercial:" />
+								<h:outputLabel value="#{gerenciarCursoBean.inscricaoCurso.candidato.telComercial}" converter="telefoneConverter" />
+								<h:outputLabel value="Telefone Residencia:" />
+								<h:outputLabel value="#{gerenciarCursoBean.inscricaoCurso.candidato.telResidencial}" converter="telefoneConverter" />
+								<h:outputLabel value="Telefone Celular:" />
+								<h:outputLabel value="#{gerenciarCursoBean.inscricaoCurso.candidato.telCelular}" converter="telefoneConverter" />
+								<h:outputLabel value="E-mail Pessoal:" />
+								<h:outputLabel value="#{gerenciarCursoBean.inscricaoCurso.candidato.emailPessoal}" />
+
+								<h:outputLabel value="E-mail Institucional:" />
+								<h:outputLabel value="#{gerenciarCursoBean.inscricaoCurso.candidato.emailInstitucional}" />
+								<h:outputLabel value="Data Inscrição:" />
+								<h:outputLabel value="#{gerenciarCursoBean.inscricaoCurso.dtCadastroFormat}" />
+
+								<h:outputLabel value="Número da Inscrição:" rendered="#{gerenciarCursoBean.inscricaoCurso.inscricao != null}"
+									style="font-weight: bold;color: black;" />
+								<h:outputLabel value="#{gerenciarCursoBean.inscricaoCurso.inscricao}"
+									rendered="#{gerenciarCursoBean.inscricaoCurso.inscricao != null}" style="font-weight: bold;color: black;" />
+							</h:panelGrid>
+							<br />
+							<p:fieldset legend="Dados Bancário(s)"
+								rendered="#{gerenciarCursoBean.candidatoComplemento.banco != null and gerenciarCursoBean.mostrarDadosBancario}">
+								<h:panelGrid columns="2" border="0" columnClasses="coluna20,coluna80" width="100%">
+									<h:outputLabel value="Número Banco:" />
+									<h:outputLabel value="#{gerenciarCursoBean.candidatoComplemento.banco}" size="20" maxlength="10" />
+									<h:outputLabel value="Agência:" />
+									<h:outputLabel value="#{gerenciarCursoBean.candidatoComplemento.agencia}" size="20" maxlength="10" />
+									<h:outputLabel value="Conta Corrente:" />
+									<h:outputLabel value="#{gerenciarCursoBean.candidatoComplemento.contaCorrente}" size="20" maxlength="15" />
+								</h:panelGrid>
+							</p:fieldset>
+							<br />
+							<p:fieldset legend="Nível Ensino"
+								rendered="#{gerenciarCursoBean.candidatoComplemento.nomeInstituicao != null and gerenciarCursoBean.mostrarNivelEnsino}">
+								<h:panelGrid columns="2" border="0" columnClasses="coluna20,coluna80" width="100%">
+									<h:outputLabel value="Nome da Instituição:" />
+									<h:outputLabel value="#{gerenciarCursoBean.candidatoComplemento.nomeInstituicao}" size="50" maxlength="255" />
+									<h:outputLabel value="Curso de Formação:" />
+									<h:outputLabel value="#{gerenciarCursoBean.candidatoComplemento.nomeCurso}" size="50" maxlength="255" />
+									<h:outputLabel value="Nível Escolaridade:" />
+									<p:selectOneRadio value="#{gerenciarCursoBean.candidatoComplemento.codEducacional}" disabled="true">
+										<f:selectItem itemLabel="Ensino Fundamental" itemValue="EF" />
+										<f:selectItem itemLabel="Ensino Médio" itemValue="EM" />
+										<f:selectItem itemLabel="Ensino Superior" itemValue="ES" />
+										<f:selectItem itemLabel="Mestrador" itemValue="ME" />
+										<f:selectItem itemLabel="Doutorado" itemValue="DO" />
+										<f:selectItem itemLabel="Pós Doutorado" itemValue="PD" />
+									</p:selectOneRadio>
+								</h:panelGrid>
+							</p:fieldset>
+							<br />
+							<p:fieldset legend="Experiência Profissional"
+								rendered="#{gerenciarCursoBean.candidatoComplemento.experienciaProfissionalAnterior != null and gerenciarCursoBean.mostrarExperienciaProfissional}">
+								<h:panelGrid columns="2" border="0" columnClasses="coluna20,coluna80" width="100%">
+									<h:outputLabel value="Experiência Anterior:" />
+									<p:inputTextarea autoResize="false" cols="70" rows="8" readonly="true"
+										value="#{gerenciarCursoBean.candidatoComplemento.experienciaProfissionalAnterior}" />
+									<h:outputLabel value="Experiência Atual:" />
+									<p:inputTextarea autoResize="false" cols="70" rows="8" readonly="true"
+										value="#{gerenciarCursoBean.candidatoComplemento.experienciaProfissionalAtual}" />
+								</h:panelGrid>
+							</p:fieldset>
+						</p:tab>
+
+						<p:tab title="Comprovante(s) e/ou Documentação exigida" id="tabComprovantesDocumentos"
+							rendered="#{!empty gerenciarCursoBean.inscricaoCurso.comprovantes or !empty gerenciarCursoBean.inscricaoCurso.documentos or gerenciarCursoBean.inscricaoCurso.curso.flgExigeDocumentacao or gerenciarCursoBean.inscricaoCurso.ultimoStatus.status.id eq 1 or gerenciarCursoBean.inscricaoCurso.ultimoStatus.status.id eq 14}">
+							<p:fieldset legend="Comprovante(s) de Pagamento"
+								rendered="#{!empty gerenciarCursoBean.inscricaoCurso.comprovantes or gerenciarCursoBean.inscricaoCurso.ultimoStatus.status.id eq 1 or gerenciarCursoBean.inscricaoCurso.ultimoStatus.status.id eq 14}">
+								<h:panelGrid columns="1" id="panelPopAnexo" width="100%"
+									rendered="#{gerenciarCursoBean.inscricaoCurso.ultimoStatus.status.id eq 1 or gerenciarCursoBean.inscricaoCurso.ultimoStatus.status.id eq 14}">
+									<p:fileUpload mode="advanced" auto="true" fileUploadListener="#{gerenciarCursoBean.anexarComprovante}" width="100%"
+										label="Anexar..." cancelLabel="Cancelar" uploadLabel="Enviar" sizeLimit="#{const.tamArquivoByte}"
+										invalidSizeMessage="Tamanho limite excedido" update=":form:acordions:listaAnexo"
+										allowTypes="/(\.|\/)(csv|txt|jpeg|jpg|png|doc|docx|pdf|CSV|TXT|JPEG|JPG|PNG|DOC|DOCX|PDF)$/"
+										invalidFileMessage="Tipo de arquivo inválido." id="uploadComprovante" />
+								</h:panelGrid>
+								<br />
+								<h:panelGrid width="100%" id="panelListaComprovante">
+									<p:dataTable paginatorAlwaysVisible="false" paginatorPosition="bottom" var="listaAnexo" id="listaAnexo"
+										emptyMessage="#{gerenciarCursoBean.emptyMessage}" update="listaAnexo" styleClass="coluna100"
+										value="#{gerenciarCursoBean.inscricaoCurso.comprovantes}"
+										rowStyleClass="#{empty rowIx or rowIx mod 2 ne 0 ? 'linhaImpar' : 'linhaPar'}" paginator="true" rows="10" rowIndexVar="rowIx">
+										<p:column headerText="Nome" style="width:75%">
+											<p:commandLink target="_blank" value="#{listaAnexo.nome}" process="@this"
+												action="#{gerenciarCursoBean.baixarComprovante(listaAnexo.id , 'comprovante')}" rendered="#{listaAnexo.id ne null}" />
+											<h:outputLabel value="#{listaAnexo.nome}" rendered="#{listaAnexo.id eq null}" />
+										</p:column>
+										<p:column headerText="Data" style="width:15%">
+											<h:outputLabel value="#{listaAnexo.dtCadastro}">
+												<f:convertDateTime pattern="dd/MM/yyyy" />
+											</h:outputLabel>
+										</p:column>
+										<p:column headerText="Ação" style="width:10%;text-align:center;">
+											<p:commandLink rendered="#{listaAnexo.id == null}" title="Excluir" update=":form:acordions:panelListaComprovante"
+												process=":form:acordions:panelListaComprovante" action="#{gerenciarCursoBean.deleteComprovante}">
+												<h:graphicImage library="design/imagem" name="icone-excluir.png" />
+												<f:setPropertyActionListener target="#{gerenciarCursoBean.comprovanteExcluir}" value="#{listaAnexo}" />
+											</p:commandLink>
+										</p:column>
+									</p:dataTable>
+								</h:panelGrid>
+								<br />
+								<br />
+								<p:fieldset legend="Informações Órgão Pagante" style="width:98%" rendered="#{gerenciarCursoBean.mostrarInformacaoPagamento}"
+									id="fieldsetOrgaoPagante">
+									<h:panelGrid id="infoOrgaoPagante" columns="4" border="0" columnClasses="coluna15,coluna50,coluna15,coluna20" width="100%">
+										<h:outputLabel value="orgão:" styleClass="icoObrigatorio" />
+										<p:inputText readonly="true" title="#{gerenciarCursoBean.inscricaoInfoComplementar.orgao.nome}" size="40"
+											value="#{gerenciarCursoBean.inscricaoInfoComplementar.orgao.nome}"
+											rendered="#{gerenciarCursoBean.inscricaoInfoComplementar.id != null}" />
+										<p:autoComplete queryDelay="500" value="#{gerenciarCursoBean.inscricaoInfoComplementar.orgao}" minQueryLength="2" size="70"
+											completeMethod="#{gerenciarCursoBean.completeOrgao}" forceSelection="true" var="lista" itemLabel="#{lista.nomeSiglaFormat}"
+											itemValue="#{lista.id}" maxResults="15" converter="OrgaoConverter"
+											rendered="#{gerenciarCursoBean.inscricaoInfoComplementar.id == null}">
+										</p:autoComplete>
+
+										<h:outputLabel value="Número Empenho/GRU:" styleClass="icoObrigatorio" />
+										<p:inputText readonly="#{gerenciarCursoBean.inscricaoInfoComplementar.id != null}"
+											title="#{gerenciarCursoBean.inscricaoInfoComplementar.numeroEmpenho}" size="40"
+											value="#{gerenciarCursoBean.inscricaoInfoComplementar.numeroEmpenho}" />
+
+										<h:outputLabel value="Endereço Órgão:" styleClass="icoObrigatorio" />
+										<p:inputText readonly="#{gerenciarCursoBean.inscricaoInfoComplementar.id != null}"
+											title="#{gerenciarCursoBean.inscricaoInfoComplementar.enderecoOrgaoComplemento}" size="70"
+											value="#{gerenciarCursoBean.inscricaoInfoComplementar.enderecoOrgaoComplemento}" />
+
+										<h:outputLabel value="CNPJ:" styleClass="icoObrigatorio" />
+										<p:inputMask mask="99.999.999/9999-99" title="#{gerenciarCursoBean.inscricaoInfoComplementar.cnpj}"
+											readonly="#{gerenciarCursoBean.inscricaoInfoComplementar.id != null}"
+											value="#{gerenciarCursoBean.inscricaoInfoComplementar.cnpj}" />
+
+										<h:outputLabel value="Contato:" />
+										<p:inputText readonly="#{gerenciarCursoBean.inscricaoInfoComplementar.id != null}"
+											title="#{gerenciarCursoBean.inscricaoInfoComplementar.contato}" value="#{gerenciarCursoBean.inscricaoInfoComplementar.contato}" />
+
+										<h:outputLabel value="Telefone Financeiro:" />
+										<p:inputMask mask="(99)99999999?9" readonly="#{gerenciarCursoBean.inscricaoInfoComplementar.id != null}"
+											title="#{gerenciarCursoBean.inscricaoInfoComplementar.telefoneFinanceiro}"
+											value="#{gerenciarCursoBean.inscricaoInfoComplementar.telefoneFinanceiro}" />
+									</h:panelGrid>
+									<br />
+									<div align="center">
+										<p:commandButton value="Salvar Informações do Órgão Pagante" action="#{gerenciarCursoBean.salvarIncricaoInfoComplementar}"
+											update="@this,infoOrgaoPagante,fieldsetOrgaoPagante" rendered="#{gerenciarCursoBean.mostrarBotaoSalvarInfoComplementar}"
+											process="@this,infoOrgaoPagante" />
+									</div>
+									<br />
+								</p:fieldset>
+							</p:fieldset>
+							<br />
+							<br />
+							<br />
+							<p:fieldset legend="Documentação Exigida pelo Curso"
+								rendered="#{!empty gerenciarCursoBean.inscricaoCurso.documentos or gerenciarCursoBean.inscricaoCurso.ultimoStatus.status.id eq 1 or gerenciarCursoBean.inscricaoCurso.ultimoStatus.status.id eq 14 and gerenciarCursoBean.inscricaoCurso.curso.flgExigeDocumentacao}">
+								<h:panelGrid columns="1" id="panelPopAnexoDocumento" width="100%"
+									rendered="#{gerenciarCursoBean.inscricaoCurso.ultimoStatus.status.id eq 1 or gerenciarCursoBean.inscricaoCurso.ultimoStatus.status.id eq 14 and gerenciarCursoBean.inscricaoCurso.curso.flgExigeDocumentacao}">
+									<p:fileUpload mode="advanced" auto="true" fileUploadListener="#{gerenciarCursoBean.anexarDocumento}" width="100%" label="Anexar..."
+										cancelLabel="Cancelar" uploadLabel="Enviar" sizeLimit="#{const.tamArquivoByte}" invalidSizeMessage="Tamanho limite excedido"
+										update="listaDocumento" allowTypes="/(\.|\/)(csv|txt|jpeg|jpg|png|doc|docx|pdf|CSV|TXT|JPEG|JPG|PNG|DOC|DOCX|PDF)$/"
+										invalidFileMessage="Tipo de arquivo inválido." id="uploadDocumento" />
+								</h:panelGrid>
+								<br />
+								<h:panelGrid width="100%" id="panelListaDocumento">
+									<p:dataTable paginatorAlwaysVisible="false" paginatorPosition="bottom" var="listaDocumento" id="listaDocumento"
+										emptyMessage="#{gerenciarCursoBean.emptyMessage}" update="listaDocumento" styleClass="coluna100"
+										value="#{gerenciarCursoBean.inscricaoCurso.documentos}"
+										rowStyleClass="#{empty rowIx or rowIx mod 2 ne 0 ? 'linhaImpar' : 'linhaPar'}" paginator="true" rows="10" rowIndexVar="rowIx">
+										<p:column headerText="Nome" style="width:75%">
+											<h:commandLink target="_blank" value="#{listaDocumento.nomArquivo}"
+												action="#{gerenciarCursoBean.baixarComprovante(listaDocumento.id , 'documento')}" rendered="#{listaDocumento.id ne null}" />
+											<h:outputLabel value="#{listaDocumento.nomArquivo}" rendered="#{listaDocumento.id eq null}" />
+										</p:column>
+										<p:column headerText="Data" style="width:15%">
+											<h:outputLabel value="#{listaDocumento.dtCadastro}">
+												<f:convertDateTime pattern="dd/MM/yyyy" />
+											</h:outputLabel>
+										</p:column>
+										<p:column headerText="Ação" style="width:10%;text-align:center;">
+											<p:commandLink rendered="#{listaDocumento.id == null}" title="Excluir" update=":form:acordions:panelListaDocumento"
+												process=":form:acordions:panelListaDocumento" action="#{gerenciarCursoBean.deleteDocumento}">
+												<h:graphicImage library="design/imagem" name="icone-excluir.png" />
+												<f:setPropertyActionListener target="#{gerenciarCursoBean.documentoExcluir}" value="#{listaDocumento}" />
+											</p:commandLink>
+										</p:column>
+									</p:dataTable>
+								</h:panelGrid>
+								<br />
+							</p:fieldset>
+							<br />
+							<br />
+							<div align="center">
+								<p:commandButton value="Salvar Comprovante(s) e/ou Documentação exigida" action="#{gerenciarCursoBean.salvarAnexos}" update="@form"
+									process="tabComprovantesDocumentos"
+									rendered="#{gerenciarCursoBean.inscricaoCurso.ultimoStatus.status.id eq 1 or gerenciarCursoBean.inscricaoCurso.ultimoStatus.status.id eq 14}" />
+							</div>
+							<br />
+						</p:tab>
+					</p:accordionPanel>
+				</h:panelGrid>
+				<br />
+
+				<h:panelGrid rendered="#{!gerenciarCursoBean.cursoFinalizado}" width="100%">
+					<p:toolbar
+						rendered="#{gerenciarCursoBean.inscricaoCurso != null and gerenciarCursoBean.inscricaoCurso.id != null or gerenciarCursoBean.desabilitarCurso}">
+						<p:toolbarGroup align="left">
+
+							<p:commandButton rendered="#{gerenciarCursoBean.inscricaoCurso.ultimoStatus.status.id eq 12}" value="Confirmar Candidato"
+								onclick="confirmarCandidatoPop.show();" />
+
+							<p:commandButton
+								rendered="#{p:ifGranted('ROLE_CURSO_HOMOLOGAR') and gerenciarCursoBean.inscricaoCurso.ultimoStatus.status.id eq 15 or gerenciarCursoBean.inscricaoCurso.ultimoStatus.status.id eq 16 or gerenciarCursoBean.inscricaoCurso.ultimoStatus.status.id eq 8 or gerenciarCursoBean.inscricaoCurso.ultimoStatus.status.id eq 10}"
+								value="Homologar" onclick="homologacaoPop.show();" />
+
+							<p:commandButton rendered="#{gerenciarCursoBean.inscricaoCurso.ultimoStatus.status.id eq 17}" value="Aceitar Inscrição"
+								onclick="autorizarPagamentoPop.show();" />
+
+							<p:commandButton rendered="#{p:ifGranted('ROLE_CURSO_ELEGER') and gerenciarCursoBean.inscricaoCurso.situacao.id eq 1}"
+								value="Eleger Candidato" onclick="elegerPop.show();" />
+
+							<p:commandButton rendered="#{p:ifGranted('ROLE_CURSO_CANCELAR_INSCRICAO') and  gerenciarCursoBean.inscricaoCurso.situacao != null}"
+								value="Cancelar Inscrição" onclick="cancelarPop.show();" />
+
+							<p:commandButton
+								rendered="#{p:ifGranted('ROLE_CURSO_INVALIDAR_COMPROVANTE') and gerenciarCursoBean.inscricaoCurso.ultimoStatus.status.id eq 15}"
+								value="Invalidar Comprovante" onclick="invalidarPop.show();" />
+
+							<p:commandButton rendered="#{gerenciarCursoBean.desabilitarCurso}" value="Voltar" immediate="true" ajax="false"
+								action="pesquisarCurso.jsf" />
+						</p:toolbarGroup>
+					</p:toolbar>
+				</h:panelGrid>
+				<h:panelGrid rendered="#{gerenciarCursoBean.cursoFinalizado and gerenciarCursoBean.desabilitarCurso}" width="100%">
+					<p:toolbar>
+						<p:toolbarGroup align="left">
+							<p:commandButton value="Voltar" immediate="true" ajax="false" action="pesquisarCurso.jsf" />
+						</p:toolbarGroup>
+					</p:toolbar>
+				</h:panelGrid>
+
+			</p:fieldset>
+
+			<p:confirmDialog appendToBody="true" message="Confirmar Candidato" header="Confirmação" severity="alert"
+				widgetVar="confirmarCandidatoPop">
+				<div style="text-align: right">
+					<p:commandButton value="Sim" process="@form" update="fieldGerenciarCurso" action="#{gerenciarCursoBean.confirmarCandidato}"
+						onclick="confirmarCandidatoPop.hide()" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+					<p:commandButton value="Não" onclick="confirmarCandidatoPop.hide()" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+				</div>
+			</p:confirmDialog>
+
+			<p:confirmDialog appendToBody="true" message="Homologar Candidato" header="Confirmação" severity="alert" widgetVar="homologacaoPop">
+				<div style="text-align: right">
+					<p:commandButton value="Sim" process="@form" update="fieldGerenciarCurso" action="#{gerenciarCursoBean.homologar}"
+						onclick="homologacaoPop.hide()" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+					<p:commandButton value="Não" onclick="homologacaoPop.hide()" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+				</div>
+			</p:confirmDialog>
+
+			<p:confirmDialog appendToBody="true" message="Aceitar pré-Inscrição?" header="Confirmação" severity="alert"
+				widgetVar="autorizarPagamentoPop">
+				<div style="text-align: right">
+					<p:commandButton value="Sim" process="@form" update="fieldGerenciarCurso" action="#{gerenciarCursoBean.autorizarPagamento}"
+						onclick="autorizarPagamentoPop.hide()" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+					<p:commandButton value="Não" onclick="autorizarPagamentoPop.hide()" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+				</div>
+			</p:confirmDialog>
+
+			<p:confirmDialog appendToBody="true" message="Distribuição Automática" header="Confirmação" severity="alert"
+				widgetVar="distribuicaoPopConf">
+				<h:outputText style="color:red;" value="Todos os candidatos serão distribuidos de forma igual para as turmas cadastradas para o curso." />
+				<br />
+				<h:outputText style="color:red;" value=" Confirma a Operação?" />
+				<div align="right">
+					<p:commandButton value="Sim" process="@form" update="@form" action="#{gerenciarCursoBean.distribuirAuto}"
+						onclick="distribuicaoPopConf.hide()" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+					<p:commandButton value="Não" onclick="distribuicaoPopConf.hide()" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+				</div>
+			</p:confirmDialog>
+
+
+			<p:confirmDialog appendToBody="true" message="Deseja finalizar as Inscrições?" header="Confirmação" severity="alert"
+				widgetVar="finalizarInscricaoPop">
+				<div style="text-align: right">
+					<p:commandButton value="Sim" process="@form" update="fieldGerenciarCurso" styleClass="ui-confirmdialog-yes" icon="ui-icon-check"
+						action="#{gerenciarCursoBean.finalizarInscricao}" onclick="finalizarInscricaoPop.hide()" />
+					<p:commandButton value="Não" onclick="finalizarInscricaoPop.hide()" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+				</div>
+			</p:confirmDialog>
+
+			<p:confirmDialog appendToBody="true" message="Deseja finalizar o curso?" header="Confirmação" severity="alert"
+				widgetVar="finalizarCursoPop">
+				<div style="text-align: right">
+					<p:commandButton value="Sim" process="@form" update="fieldGerenciarCurso" styleClass="ui-confirmdialog-yes" icon="ui-icon-check"
+						action="#{gerenciarCursoBean.finalizarCurso}" onclick="finalizarCursoPop.hide()" />
+					<p:commandButton value="Não" onclick="finalizarCursoPop.hide()" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+				</div>
+			</p:confirmDialog>
+
+			<p:confirmDialog appendToBody="true" message="Eleger Candidato" header="Confirmação" severity="alert" widgetVar="elegerPop">
+				<div style="text-align: right">
+					<p:commandButton value="Sim" process="@form" update="fieldGerenciarCurso" styleClass="ui-confirmdialog-yes" icon="ui-icon-check"
+						action="#{gerenciarCursoBean.elegerCandidato}" onclick="elegerPop.hide()" />
+					<p:commandButton value="Não" onclick="elegerPop.hide()" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+				</div>
+			</p:confirmDialog>
+
+			<p:dialog appendToBody="false" modal="false" header="Invalidar Comprovante" widgetVar="invalidarPop" width="600" height="400">
+				<h:panelGrid columns="2" columnClasses="coluna20,coluna80">
+					<h:outputLabel value="Corpo Email:" styleClass="icoObrigatorio" />
+					<p:inputTextarea value="#{gerenciarCursoBean.textoInvalidarComprovante}" autoResize="false" cols="50" rows="7" />
+				</h:panelGrid>
+				<br />
+				<br />
+				<div style="text-align: center">
+					<p:commandButton value="Enviar Email" process="@form" action="#{gerenciarCursoBean.invalidarComprovante}" onclick="invalidarPop.hide()" />
+					<p:commandButton value="Fechar" onclick="invalidarPop.hide()" />
+				</div>
+			</p:dialog>
+
+			<p:dialog appendToBody="false" modal="false" header="Cancelar Comprovante" widgetVar="cancelarPop" width="600" height="400">
+				<h:panelGrid columns="2" columnClasses="coluna20,coluna80">
+					<h:outputLabel value="Corpo Email: " styleClass="icoObrigatorio" />
+					<p:inputTextarea value="#{gerenciarCursoBean.textoCancelar}" autoResize="false" cols="50" rows="7" />
+				</h:panelGrid>
+				<br />
+				<br />
+				<div style="text-align: center">
+					<p:commandButton value="Enviar Email" process="@form" action="#{gerenciarCursoBean.cancelarInscricao}" onclick="cancelarPop.hide()" />
+					<p:commandButton value="Fechar" onclick="cancelarPop.hide()" />
+				</div>
+			</p:dialog>
+
+
+			<p:dialog appendToBody="false" modal="false" header="Distribuir Turmas" widgetVar="distribuicaoPop" id="distribuicaoPopId" width="600"
+				height="200">
+				<h:panelGrid columns="2" columnClasses="coluna20,coluna80">
+					<h:outputLabel value="Turma:" styleClass="icoObrigatorio" />
+					<p:selectOneMenu effect="fade" style="width:280px;" value="#{gerenciarCursoBean.idTurma}" id="selectTurma">
+						<f:selectItem itemLabel="Selecione" itemValue="" />
+						<f:selectItems value="#{gerenciarCursoBean.turmas}" var="objeto" itemLabel="#{objeto.descricao}" itemValue="#{objeto.id}" />
+					</p:selectOneMenu>
+				</h:panelGrid>
+				<br />
+				<br />
+				<div style="text-align: center">
+					<p:commandButton value="Distribuir" process="@form" action="#{gerenciarCursoBean.distribuirManual}" onclick="distribuicaoPop.hide()"
+						update="panelConfirmados" />
+					<p:commandButton value="Fechar" onclick="distribuicaoPop.hide()" />
+				</div>
+			</p:dialog>
+
+			<p:dialog header="Prorrogar o prazo para inscrições" widgetVar="prorrogarInscricaoPop" width="400" showEffect="slide" hideEffect="slide"
+				appendToBody="false">
+				<p:fieldset id="idPPI">
+					<h:panelGrid columns="3" id="panelPPI" columnClasses="coluna20,coluna15,coluna5,coluna60" width="100%">
+						<h:outputLabel value="Período Inscrição Fim:" styleClass="icoObrigatorio" />
+						<p:calendar mindate="#{gerenciarCursoBean.curso.dtTerminoInscricao}" locale="pt" pattern="dd/MM/yyyy" id="dtInscricaoFim"
+							navigator="true" maxlength="10" size="15" readOnlyInputText="true" value="#{gerenciarCursoBean.dtInscricaoFim}" mode="popup"
+							showOn="button" />
+						<p:commandLink process="@this" title="Limpar" update="dtInscricaoFim">
+							<h:graphicImage name="icone-limpar.png" library="design/imagem" />
+							<f:setPropertyActionListener target="#{gerenciarCursoBean.dtInscricaoFim}" value="" />
+						</p:commandLink>
+						<p:message for="dtInscricaoFim" />
+					</h:panelGrid>
+					<br />
+					<div style="text-align: center">
+						<p:commandButton value="Prorrogar" process="@form" actionListener="#{gerenciarCursoBean.prorrogarInscricao}" update="@form"
+							onsuccess="prorrogarInscricaoPop.hide();" />
+						<p:commandButton value="Fechar" onclick="prorrogarInscricaoPop.hide();" process="@this" update="dtInscricaoFim">
+							<f:setPropertyActionListener target="#{gerenciarCursoBean.dtInscricaoFim}" value="" />
+						</p:commandButton>
+					</div>
+					<br />
+				</p:fieldset>
+			</p:dialog>
+
+			<p:dialog appendToBody="false" header="Informar a Situação dos Candidatos" widgetVar="popInformarParametro" width="400"
+				showEffect="slide" hideEffect="slide">
+				<h:panelGrid>
+					<h:outputLabel value="Informe a situação dos candidatos para a visualização!" />
+				</h:panelGrid>
+				<br />
+				<h:panelGrid id="gridSelect" columns="2" columnClasses="coluna20,coluna80" width="100%">
+					<h:outputLabel value="Candidatos:" />
+					<p:selectOneMenu id="options" value="#{gerenciarCursoBean.idSituacaoCandidatoSelecionado}" style="width: 250px;">
+						<f:selectItems value="#{gerenciarCursoBean.listaSituacaoCandidatos}" />
+					</p:selectOneMenu>
+				</h:panelGrid>
+				<br />
+				<br />
+				<div style="text-align: center">
+					<p:commandButton value="Pesquisar" process="@form"
+						update="panelGridGeralVisualizacao,panelGridVisualizacaoInscricoesOficinas,panelGridAceitacoes"
+						actionListener="#{gerenciarCursoBean.visualizarInscricoesOficinas}" onclick="popInformarParametro.hide();" />
+					<p:commandButton value="Cancelar" oncomplete="popInformarParametro.hide();" />
+				</div>
+			</p:dialog>
+
+			<p:dialog appendToBody="false" header="Visualizar Inscritos" widgetVar="popCandidatosDistribuidos" width="500">
+				<h:panelGrid>
+					<h:outputLabel value="Informações dos candidatos da grade de oficinas!" styleClass="textoInformativoBlack" />
+				</h:panelGrid>
+				<br />
+				<h:panelGrid columns="2" columnClasses="colunaLabelVisualizarInscritos">
+					<h:outputLabel value="Horário:" />
+					<h:outputLabel value="#{gerenciarCursoBean.inscricaoGradeDTO.horario.desHorario}" />
+					<h:outputLabel value="Sala:" />
+					<h:outputLabel value="#{gerenciarCursoBean.inscricaoGradeDTO.sala.nomSala}" />
+					<h:outputLabel value="Turma:" />
+					<h:outputLabel value="#{gerenciarCursoBean.inscricaoGradeDTO.turma.descricao}" />
+					<h:outputLabel value="Professor:" />
+					<h:outputLabel value="#{gerenciarCursoBean.inscricaoGradeDTO.professorEvento.candidato.nome}" />
+					<h:outputLabel value="Oficina:" />
+					<h:outputLabel value="#{gerenciarCursoBean.inscricaoGradeDTO.oficina.nomOficina}" />
+					<h:outputLabel value="Total de Inscritos: " />
+					<h:outputLabel value="#{gerenciarCursoBean.inscricaoGradeDTO.listaInscricaoCursos.size()}" />
+				</h:panelGrid>
+				<br />
+				<h:panelGrid id="gridCandDistribuidos" width="100%">
+					<p:dataTable var="listaCand" value="#{gerenciarCursoBean.inscricaoGradeDTO.listaInscricaoCursos}" style="width:100%"
+						rowStyleClass="#{empty rowIx or rowIx mod 2 ne 0 ? 'linhaImpar' : 'linhaPar'}" rowIndexVar="rowIx" paginatorAlwaysVisible="false"
+						paginatorPosition="bottom" paginator="true" rows="5">
+						<p:column headerText="Inscrição" style="width:20%">
+							<h:outputText value="#{listaCand.inscricao}" />
+						</p:column>
+						<p:column headerText="Nome" style="width:80%">
+							<h:outputText value="#{listaCand.candidato.nome}" />
+						</p:column>
+					</p:dataTable>
+				</h:panelGrid>
+				<br />
+				<div style="text-align: center">
+					<p:commandButton value="Fechar" oncomplete="popCandidatosDistribuidos.hide();" />
+				</div>
+			</p:dialog>
+
+			<p:dialog appendToBody="false" header="Importar Arquivo de Frequência" widgetVar="importarFrequenciaPopup" width="500" showEffect="slide"
+				hideEffect="slide">
+				<h:panelGrid>
+					<h:outputLabel value="Selecione o arquivo de frequência para importação!" />
+				</h:panelGrid>
+				<br />
+				<h:panelGrid width="100%">
+					<p:fileUpload mode="advanced" auto="true" fileUploadListener="#{gerenciarCursoBean.importarFrequencia}" width="100%"
+						label="Importar..." cancelLabel="Cancelar" uploadLabel="Enviar" sizeLimit="#{const.tamArquivoByte}"
+						invalidSizeMessage="Tamanho limite excedido"
+						allowTypes="/(\.|\/)(csv|txt|jpeg|jpg|png|doc|docx|pdf|CSV|TXT|JPEG|JPG|PNG|DOC|DOCX|PDF)$/"
+						invalidFileMessage="Tipo de arquivo inválido." id="fileImportFrequencia" oncomplete="importarFrequenciaPopup.hide();" />
+				</h:panelGrid>
+				<br />
+				<br />
+				<div style="text-align: center">
+					<p:commandButton value="Cancelar" oncomplete="importarFrequenciaPopup.hide();" />
+				</div>
+				<br />
+				<br />
+			</p:dialog>
+		</h:form>
+	</ui:define>
+</ui:composition>

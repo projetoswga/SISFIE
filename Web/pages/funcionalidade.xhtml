@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui"
+	template="/templates/template.xhtml">
+
+	<ui:define name="body">
+		<h:form id="formF" prependId="false">
+			<p:fieldset legend="Funcionalidade" id="fieldFuncionalidade">
+				<h:panelGrid columns="2" id="panelFunc" columnClasses="coluna20,coluna80" width="100%">
+					<h:outputLabel value="Ação:" styleClass="icoObrigatorio" />
+					<p:inputText value="#{funcionalidadeBean.model.nome}" id="nome" size="50" maxlength="255" />
+
+					<h:outputLabel value="ROLE:" styleClass="icoObrigatorio" />
+					<p:inputText value="#{funcionalidadeBean.model.role}" id="role" size="45" maxlength="40"
+						style="text-transform:uppercase" />
+
+					<h:outputLabel value="Detalhamento:" />
+					<p:inputTextarea value="#{funcionalidadeBean.model.detalhamento}" cols="100" autoResize="false" />
+				</h:panelGrid>
+				<br />
+				<br />
+				<div align="center">
+					<p:panel header="Ação" id="panelAcao" style="width:80%">
+						<h:panelGrid columns="3" id="panelGridAcao" columnClasses="coluna20,coluna60,coluna20" width="100%">
+							<h:outputLabel value="Ação:" styleClass="icoObrigatorio" />
+							<p:inputText value="#{funcionalidadeBean.filho.nome}" id="acao" size="50" maxlength="255" />
+							<p:message for="acao" />
+
+							<h:outputLabel value="ROLE:" styleClass="icoObrigatorio" />
+							<p:inputText value="#{funcionalidadeBean.filho.role}" id="roleAcao" size="45" maxlength="40"
+								style="text-transform:uppercase" />
+							<p:message for="roleAcao" />
+
+							<h:outputLabel value="Detalhamento:" />
+							<p:inputTextarea value="#{funcionalidadeBean.filho.detalhamento}" cols="100" autoResize="false" />
+
+						</h:panelGrid>
+						<br />
+						<p:toolbar>
+							<p:toolbarGroup align="center">
+								<p:commandButton value="Adicionar" ajax="true" process="panelAcao" update="panelAcao,:formF:listaAcao"
+									actionListener="#{funcionalidadeBean.adicionarAcao}" />
+							</p:toolbarGroup>
+						</p:toolbar>
+
+						<br />
+						<p:dataTable var="lista" id="listaAcao" emptyMessage="#{funcionalidadeBean.emptyMessage}" update="listaAcao"
+							styleClass="coluna100" value="#{funcionalidadeBean.model.filhos}" paginator="true" rows="5"
+							rowStyleClass="#{empty rowIx or rowIx mod 2 ne 0 ? 'linhaImpar' : 'linhaPar'}" rowIndexVar="rowIx">
+
+							<p:column headerText="Ação" sortBy="#{lista.nome}" filterBy="#{lista.nome}" style="width:20%">
+								<h:outputLabel value="#{lista.nome}" />
+							</p:column>
+							<p:column headerText="ROLE" sortBy="#{lista.role}" filterBy="#{lista.role}" style="width:20%">
+								<h:outputLabel value="#{lista.role}" />
+							</p:column>
+
+							<p:column headerText="Detalhamento" sortBy="#{lista.detalhamento}" filterBy="#{lista.detalhamento}"
+								style="width:50%">
+								<h:outputText value="#{lista.detalhamento}" />
+							</p:column>
+
+							<p:column style="width:10%;text-align:center;">
+								<f:facet name="header">
+									<h:outputLabel value="Ação" />
+								</f:facet>
+								<p:commandLink style="padding:5px !important;" title="Excluir" rocess="@this" oncomplete="confirmation.show()">
+									<h:graphicImage library="design/imagem" name="icone-excluir.png" />
+									<f:setPropertyActionListener target="#{funcionalidadeBean.filho}" value="#{lista}" />
+								</p:commandLink>
+							</p:column>
+						</p:dataTable>
+					</p:panel>
+				</div>
+				<br />
+				<p:toolbar>
+					<p:toolbarGroup align="left">
+						<p:commandButton value="Limpar" immediate="true" ajax="false" action="funcionalidade.jsf" />
+						<p:commandButton value="Salvar" ajax="true" process="@form" update="@form" action="#{funcionalidadeBean.save}" />
+					</p:toolbarGroup>
+				</p:toolbar>
+			</p:fieldset>
+			<br />
+			<p:dataTable var="tipo" id="lista" emptyMessage="#{funcionalidadeBean.emptyMessage}" update="lista"
+				rowsPerPageTemplate="#{perfilBean.paginacao}" styleClass="coluna100" value="#{funcionalidadeBean.lazyDataModel}"
+				paginator="true" rows="5" rowStyleClass="#{empty rowIx or rowIx mod 2 ne 0 ? 'linhaImpar' : 'linhaPar'}"
+				rowIndexVar="rowIx">
+
+				<p:column headerText="Ação" style="width:20%" sortBy="#{tipo.nome}" filterBy="#{tipo.nome}">
+					<h:outputLabel value="#{tipo.nome}" />
+				</p:column>
+				<p:column headerText="ROLE" style="width:20%" sortBy="#{tipo.role}" filterBy="#{tipo.role}">
+					<h:outputLabel value="#{tipo.role}" />
+				</p:column>
+
+				<p:column headerText="Detalhamento" sortBy="#{tipo.detalhamento}" filterBy="#{tipo.detalhamento}" style="width:50%">
+					<h:outputText value="#{tipo.detalhamento}" />
+				</p:column>
+
+				<p:column style="width:10%;text-align:center;">
+					<f:facet name="header">
+						<h:outputLabel value="Ações" />
+					</f:facet>
+					<p:commandLink rendered="#{tipo.id != 1}" style="padding:5px !important;" title="Editar" process="@this"
+						update=":formF:panelFunc,:formF:panelAcao" action="#{funcionalidadeBean.load}">
+						<h:graphicImage library="design/imagem" name="icone-editar.png" />
+						<f:setPropertyActionListener target="#{funcionalidadeBean.model}" value="#{tipo}" />
+					</p:commandLink>
+					<p:commandLink rendered="#{tipo.id != 1}" style="font-size: 8px;" process="@this" title="Excluir"
+						oncomplete="confirmationPag.show()">
+						<h:graphicImage library="design/imagem" name="icone-excluir.png" />
+						<f:setPropertyActionListener target="#{funcionalidadeBean.model.id}" value="#{tipo.id}" />
+					</p:commandLink>
+				</p:column>
+			</p:dataTable>
+			<p:confirmDialog appendToBody="true" message="Confirma a Exclusão" header="Exclusão" severity="alert"
+				widgetVar="confirmation">
+				<h:panelGrid columns="2">
+					<p:commandButton value="Sim" update="panelAcao,listaAcao" oncomplete="confirmation.hide()"
+						actionListener="#{funcionalidadeBean.deleteAcao}" immediate="true" />
+					<p:commandButton value="Não" onclick="confirmation.hide()" />
+				</h:panelGrid>
+			</p:confirmDialog>
+			<p:confirmDialog appendToBody="true" message="Confirma a Exclusão" header="Exclusão" severity="alert"
+				widgetVar="confirmationPag">
+				<h:panelGrid columns="2">
+					<p:commandButton value="Sim" update=":formF:panelFunc,:formF:panelAcao,:formF:lista"
+						oncomplete="confirmationPag.hide()" actionListener="#{funcionalidadeBean.delete}" immediate="true" />
+					<p:commandButton value="Não" onclick="confirmationPag.hide()" />
+				</h:panelGrid>
+			</p:confirmDialog>
+		</h:form>
+	</ui:define>
+</ui:composition>

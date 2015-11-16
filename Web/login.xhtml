@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui"
+	template="/templates/template-login.xhtml">
+
+	<ui:define name="body">
+		<f:metadata>
+			<f:event type="preRenderView" listener="#{login.verificarSessionInvalidate}" />
+		</f:metadata>
+
+		<p:growl id="msgs" autoUpdate="false" showDetail="true" globalOnly="false" life="#{const.growlTime}" />
+
+		<h:form id="formLogin" prependId="false">
+
+			<div align="center">
+				<table width="70%" border="0" cellspacing="0" cellpadding="0" style="border: none;">
+					<tr>
+						<td rowspan="6"><h:graphicImage library="design/imagem-default" name="esaf-logo.png"
+								style="width:500px;height:250" alt="ESAF Logo" /></td>
+						<td colspan="2" align="center" bgcolor="#96C0C5"><strong class="titulo-label">Área Restrita</strong></td>
+					</tr>
+					<tr>
+						<td colspan="2" bgcolor="#96C0C5">&nbsp;</td>
+					</tr>
+					<tr>
+						<td align="right" bgcolor="#96C0C5"><h:graphicImage library="design/imagem-default" name="icone_usuario.png" /></td>
+						<td bgcolor="#96C0C5"><p:inputText id="login" value="${login.model.login}" maxlength="20" size="20" /></td>
+					</tr>
+					<tr>
+						<td colspan="2" bgcolor="#96C0C5">&nbsp;</td>
+					</tr>
+					<tr>
+						<td align="right" bgcolor="#96C0C5"><h:graphicImage library="design/imagem-default" name="icone_senha.png" /></td>
+						<td bgcolor="#96C0C5"><p:password feedback="false" id="senha" value="${login.model.senha}" maxlength="20"
+								size="20" /></td>
+					</tr>
+					<tr>
+
+						<td colspan="2" align="center" bgcolor="#96C0C5"><p:commandButton value="Acessar" action="${login.logar}"
+								ajax="false" update="msgs" /> <br /> <p:commandLink id="trocar" styleClass="semLink" update="msgs2"
+								oncomplete="dialogSenha.show()" actionListener="#{login.limpar}" value="Trocar Senha" /> <h:outputText
+								value=" | " styleClass="semLink" /> <p:commandLink styleClass="semLink" update="msgsemail"
+								oncomplete="emailDialog.show()" actionListener="#{login.limpar}" value="Esqueci minha senha" /></td>
+					</tr>
+				</table>
+			</div>
+
+
+			<p:dialog header="Esqueci Minha Senha" id="emailDialogId" widgetVar="emailDialog" width="400" closable="true"
+				showEffect="slide">
+				<p:messages id="msgsemail" showDetail="true" globalOnly="true" autoUpdate="false" />
+
+				<h:panelGrid columns="2" id="panelEMail" columnClasses="coluna20,coluna80" width="100%">
+					<h:outputText value="Login" styleClass="icoObrigatorio" />
+					<p:inputText id="userNameEmail" value="#{login.userName}" />
+
+					<h:outputText value="Email" styleClass="icoObrigatorio" />
+					<p:inputText value="#{login.email}" />
+				</h:panelGrid>
+				<div align="center">
+					<p:commandButton value="Enviar" process="emailDialogId" actionListener="#{login.sendMail}"
+						update="msgsemail,panelEMail" />
+				</div>
+			</p:dialog>
+
+
+			<p:dialog header="Trocar senha" widgetVar="dialogSenha" width="400" closable="true"
+				showEffect="slide" hideEffect="slide">
+				<p:fieldset id="idTT">
+					<p:messages id="msgs2" showDetail="true" globalOnly="true" autoUpdate="false" />
+
+					<h:panelGrid columns="3" id="panelTT" columnClasses="coluna20,coluna20,coluna60" width="100%">
+
+						<h:outputText value="Usuário" styleClass="icoObrigatorio" />
+						<p:inputText id="userNameTroca" value="#{login.userName}" />
+						<p:message for="userNameTroca" />
+
+						<h:outputText value="Senha Atual" styleClass="icoObrigatorio" />
+						<p:password feedback="false" minLength="6" id="senhaAnterior" value="#{login.senhaAnterior}" autocomplete="off" />
+						<p:message for="senhaAnterior" />
+
+						<h:outputText value="Nova Senha:" styleClass="icoObrigatorio" />
+						<p:password minLength="6" feedback="true" autocomplete="off" value="#{login.senha}" id="senhanova"
+							promptLabel="Por favor insira a senha" weakLabel="Fraca" goodLabel="Boa" strongLabel="Forte" />
+						<p:message for="senhanova" />
+
+						<h:outputText value="Confirmação:" styleClass="icoObrigatorio" />
+						<p:password feedback="false" minLength="6" autocomplete="off" id="senhaconfirma" value="#{login.senha2}"
+							promptLabel="Por favor insira a senha" />
+						<p:message for="senhaconfirma" />
+					</h:panelGrid>
+					<div align="center">
+						<p:commandButton value="Salvar" process="idTT" actionListener="#{login.saveDadosAlterarSenha}" update="idTT" />
+					</div>
+					<br />
+				</p:fieldset>
+			</p:dialog>
+			<div align="center">
+				<h:outputText style="color:red;font-size:16px;" value="#{const.timeSessionvalue}"
+					rendered="#{login.mostrarMsgInvalidate}" />
+			</div>
+		</h:form>
+	</ui:define>
+</ui:composition>
