@@ -32,7 +32,8 @@
 						<f:selectItem itemLabel="Selecione" itemValue="" />
 						<f:selectItems value="#{registrarFrequenciaBean.listaTurma}" var="nameTurma" itemLabel="#{nameTurma.descricao}"
 							itemValue="#{nameTurma.id}" />
-						<p:ajax event="change" update="@form" process="@form" global="false" listener="#{registrarFrequenciaBean.verificarExistenciaTurmasHorarios}"/>
+						<p:ajax event="change" update="@form" process="@form" global="false"
+							listener="#{registrarFrequenciaBean.verificarExistenciaTurmasHorarios}" />
 					</p:selectOneMenu>
 
 					<h:outputLabel value="Horário:" styleClass="icoObrigatorio" rendered="#{registrarFrequenciaBean.exibirHorario}" />
@@ -41,7 +42,7 @@
 						<f:selectItem itemLabel="Selecione" itemValue="" />
 						<f:selectItems value="#{registrarFrequenciaBean.listaHorario}" var="nameHorarioTurma" itemLabel="#{nameHorarioTurma.desHorario}"
 							itemValue="#{nameHorarioTurma.id}" />
-						<p:ajax event="change" update="@form" process="@form" global="false" listener="#{registrarFrequenciaBean.renderizarCampoInscricao}"/>
+						<p:ajax event="change" update="@form" process="@form" global="false" listener="#{registrarFrequenciaBean.renderizarCampoInscricao}" />
 					</p:selectOneMenu>
 				</h:panelGrid>
 
@@ -53,7 +54,7 @@
 							onkeyup="verificarQuantidadeDigitosExecutarEnter()" />
 					</h:panelGrid>
 				</h:panelGroup>
-				
+
 				<br />
 
 				<h:panelGroup id="grupoInformacoesInscricao">
@@ -95,23 +96,60 @@
 					<p:separator rendered="#{registrarFrequenciaBean.inscricaoCurso != null and registrarFrequenciaBean.inscricaoCurso.id != null}" />
 				</h:panelGroup>
 
-				<br />
-				<center>
+				<p:spacer height="30" />
+				<div align="center">
 					<p:commandButton value="Limpar" immediate="true" ajax="false" action="registrarFrequencia.jsf" />
 					<p:spacer width="10" />
 					<p:commandButton id="btnPesquisar" value="Pesquisar" process="@form"
-						update="grupoInscricao, grupoInformacoesInscricao, grupoInformacoesTurma, botoesRegistros" action="#{registrarFrequenciaBean.pesquisar}" />
+						update="grupoInscricao, grupoInformacoesInscricao, grupoInformacoesTurma, botoesRegistros, botaoFinalizar, listagem"
+						action="#{registrarFrequenciaBean.pesquisar}" />
 					<h:panelGroup id="botoesRegistros">
 						<h:panelGroup rendered="#{registrarFrequenciaBean.inscricaoCurso != null and registrarFrequenciaBean.inscricaoCurso.id != null}">
 							<p:spacer width="10" />
-							<p:commandButton id="btnRegistrar" value="Registrar" process="@form"
-								update="grupoInscricao, grupoInformacoesInscricao, grupoInformacoesTurma" action="#{registrarFrequenciaBean.registrar}" />
-							<p:spacer width="10" />
-							<p:commandButton id="btnFinalizar" value="Finalizar Frequência" process="@form"
-								update="grupoInscricao, grupoInformacoesInscricao, grupoInformacoesTurma" action="#{registrarFrequenciaBean.finalizarFrequencia}" />
+							<p:commandButton id="btnRegistrar" value="Registrar" process="@form" update="@form" action="#{registrarFrequenciaBean.registrar}" />
 						</h:panelGroup>
 					</h:panelGroup>
-				</center>
+					<h:panelGroup id="botaoFinalizar">
+						<h:panelGroup rendered="#{!empty registrarFrequenciaBean.listaFrequencia}">
+							<p:spacer width="10" />
+							<p:commandButton id="btnFinalizar" value="Finalizar Frequência Turma" process="@form" update="@form"
+								action="#{registrarFrequenciaBean.finalizarFrequencia}" />
+						</h:panelGroup>
+					</h:panelGroup>
+				</div>
+				<p:spacer height="30" />
+				<h:panelGroup id="listagem">
+					<h:panelGroup rendered="#{!empty registrarFrequenciaBean.listaFrequencia}">
+						<p:dataTable paginatorAlwaysVisible="false" paginatorPosition="bottom" var="listaFrequencia" id="listaFrequencia"
+							emptyMessage="#{registrarFrequenciaBean.emptyMessage}" update="listaFrequencia"
+							rowsPerPageTemplate="#{registrarFrequenciaBean.paginacao}" styleClass="coluna100" value="#{registrarFrequenciaBean.listaFrequencia}"
+							paginator="true" rows="5" rowStyleClass="#{empty rowIx or rowIx mod 2 ne 0 ? 'linhaImpar' : 'linhaPar'}" rowIndexVar="rowIx">
+
+							<f:facet name="header">
+								<h:outputLabel value="Lista de Frequência" />
+							</f:facet>
+							<p:column headerText="Inscrição">
+								<h:outputLabel value="#{listaFrequencia.numIncricao}" />
+							</p:column>
+							<p:column headerText="Participante">
+								<h:outputLabel value="#{listaFrequencia.inscricaoCurso.candidato.nome}" />
+							</p:column>
+							<p:column headerText="Turma">
+								<h:outputLabel value="#{listaFrequencia.gradeOficina.turma.descricao}" />
+							</p:column>
+							<p:column headerText="Horário Entrada">
+								<h:outputLabel value="#{listaFrequencia.horarioEntrada}">
+									<f:convertDateTime pattern="dd/MM/yyyy HH:mm:ss" timeZone="America/Sao_Paulo" />
+								</h:outputLabel>
+							</p:column>
+							<p:column headerText="Horário Saída">
+								<h:outputLabel value="#{listaFrequencia.horarioSaida}">
+									<f:convertDateTime pattern="dd/MM/yyyy HH:mm:ss" timeZone="America/Sao_Paulo" />
+								</h:outputLabel>
+							</p:column>
+						</p:dataTable>
+					</h:panelGroup>
+				</h:panelGroup>
 				<br />
 			</p:fieldset>
 		</h:form>

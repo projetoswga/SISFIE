@@ -1,17 +1,13 @@
-package br.com.sisfie.service;
+package br.com.sisfie.DAO;
 
 import java.util.List;
 
 import br.com.sisfie.entidade.Frequencia;
 
-public interface FrequenciaService {
-	
-	void salvarListaFrequencia(List<Frequencia> listaFrequencias) throws Exception;
+public interface FrequenciaDAO {
 
 	Frequencia recuperarUltimaFrequencia(String inscricao);
 
 	List<Frequencia> listarFrequencias(Integer idGradeOficina) throws Exception ;
-
-	void salvar(Frequencia frequencia) throws Exception;
 
 }

@@ -1,6 +1,8 @@
 package br.com.sisfie.bean;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -14,11 +16,13 @@ import br.com.arquitetura.util.FacesMessagesUtil;
 import br.com.sisfie.entidade.Credenciamento;
 import br.com.sisfie.entidade.Curso;
 import br.com.sisfie.entidade.Frequencia;
+import br.com.sisfie.entidade.GradeOficina;
 import br.com.sisfie.entidade.Horario;
 import br.com.sisfie.entidade.InscricaoCurso;
 import br.com.sisfie.entidade.InscricaoGrade;
 import br.com.sisfie.entidade.Turma;
 import br.com.sisfie.service.CursoService;
+import br.com.sisfie.service.FrequenciaService;
 import br.com.sisfie.service.HorarioService;
 import br.com.sisfie.service.InscricaoCursoService;
 import br.com.sisfie.service.TurmaService;
@@ -40,14 +44,19 @@ public class RegistrarFrequenciaBean extends PaginableBean<Frequencia> {
 	
 	@ManagedProperty(value = "#{inscricaoCursoService}")
 	protected InscricaoCursoService inscricaoCursoService;
+	
+	@ManagedProperty(value = "#{frequenciaService}")
+	protected FrequenciaService frequenciaService;
 
 	private Curso curso;
 	private Turma turma;
 	private Horario horario;
+	private Frequencia frequencia;
 	private InscricaoGrade inscricaoGrade;
 	private InscricaoCurso inscricaoCurso;
 	private List<Turma> listaTurma;
 	private List<Horario> listaHorario;
+	private List<Frequencia> listaFrequencia;
 	private Integer quantidadeInscritos;
 	private boolean exibirTurma;
 	private boolean exibirHorario;
@@ -61,6 +70,8 @@ public class RegistrarFrequenciaBean extends PaginableBean<Frequencia> {
 		inscricaoCurso = new InscricaoCurso();
 		listaTurma = new ArrayList<Turma>();
 		listaHorario = new ArrayList<Horario>();
+		listaFrequencia = new ArrayList<Frequencia>();
+		frequencia = new Frequencia();
 	}
 
 	public List<Curso> completeCurso(String query) {
@@ -97,7 +108,45 @@ public class RegistrarFrequenciaBean extends PaginableBean<Frequencia> {
 	}
 	
 	public void registrar() {
-		// TODO: Implementar.......
+		try {
+			frequencia = frequenciaService.recuperarUltimaFrequencia(inscricaoCurso.getInscricao());
+			verificandoComoSeraRegistradoFrequencia();
+			listaFrequencia = frequenciaService.listarFrequencias(inscricaoGrade.getGradeOficina().getId());
+			limparCampos();
+		} catch (Exception e) {
+			ExcecaoUtil.tratarExcecao(e);
+		}
+	}
+
+	private void limparCampos() {
+		inscricaoCurso = new InscricaoCurso();
+		inscricaoGrade = new InscricaoGrade();
+		getModel().setNumIncricao(null);
+	}
+
+	private void verificandoComoSeraRegistradoFrequencia() throws Exception {
+		if (frequencia != null && frequencia.getId() != null){
+			// Quando não registrou a saída, somente altera o registro.
+			if (frequencia.getHorarioSaida() == null){
+				frequencia.setHorarioSaida(new Timestamp(new Date().getTime()));
+				frequenciaService.salvar((Frequencia) frequencia.clone());
+			} else {
+				// Se já foi registrado a saída é necessário criar um novo registro.
+				Frequencia frequenciaClone = (Frequencia) frequencia.clone();
+				frequenciaClone.setId(null);
+				frequenciaClone.setHorarioEntrada(new Timestamp(new Date().getTime()));
+				frequenciaClone.setHorarioSaida(null);
+				frequenciaService.salvar(frequenciaClone);
+			}
+		} else {
+			// Caso não exita nenhum registro ainda.
+			Frequencia frequenciaNova = new Frequencia();
+			frequenciaNova.setHorarioEntrada(new Timestamp(new Date().getTime()));
+			frequenciaNova.setHorarioSaida(null);
+			frequenciaNova.setNumIncricao(inscricaoCurso.getInscricao());
+			frequenciaNova.setGradeOficina(new GradeOficina(inscricaoGrade.getGradeOficina().getId()));
+			frequenciaService.salvar(frequenciaNova);
+		}
 	}
 	
 	public void finalizarFrequencia() {
@@ -112,6 +161,7 @@ public class RegistrarFrequenciaBean extends PaginableBean<Frequencia> {
 			if (!validarCredenciamento()) {
 				return;
 			}
+			listaFrequencia = frequenciaService.listarFrequencias(inscricaoGrade.getGradeOficina().getId());
 		} catch (Exception e) {
 			ExcecaoUtil.tratarExcecao(e);
 		}
@@ -320,5 +370,29 @@ public class RegistrarFrequenciaBean extends PaginableBean<Frequencia> {
 
 	public void setInscricaoCursoService(InscricaoCursoService inscricaoCursoService) {
 		this.inscricaoCursoService = inscricaoCursoService;
+	}
+
+	public List<Frequencia> getListaFrequencia() {
+		return listaFrequencia;
+	}
+
+	public void setListaFrequencia(List<Frequencia> listaFrequencia) {
+		this.listaFrequencia = listaFrequencia;
+	}
+
+	public FrequenciaService getFrequenciaService() {
+		return frequenciaService;
+	}
+
+	public void setFrequenciaService(FrequenciaService frequenciaService) {
+		this.frequenciaService = frequenciaService;
+	}
+
+	public Frequencia getFrequencia() {
+		return frequencia;
+	}
+
+	public void setFrequencia(Frequencia frequencia) {
+		this.frequencia = frequencia;
 	}
 }
