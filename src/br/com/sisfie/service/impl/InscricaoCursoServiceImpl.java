@@ -305,4 +305,14 @@ public class InscricaoCursoServiceImpl implements InscricaoCursoService {
 		Hibernate.initialize(inscricaoCurso.getDocumentos());
 		return inscricaoCurso;
 	}
+
+	@Override
+	public InscricaoCurso recupararInscricao(String numInscricao, Integer idCurso, Integer idTurma, Integer idHorario) {
+		return inscricaoCursoDAO.recupararInscricao(numInscricao, idCurso, idTurma, idHorario);
+	}
+
+	@Override
+	public InscricaoGrade recupararInscricaoGrade(String numInscricao, Integer idCurso, Integer idTurma, Integer idHorario) {
+		return inscricaoCursoDAO.recupararInscricaoGrade(numInscricao, idCurso, idTurma, idHorario);
+	}
 }

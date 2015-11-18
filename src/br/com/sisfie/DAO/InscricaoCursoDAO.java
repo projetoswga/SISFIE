@@ -42,4 +42,8 @@ public interface InscricaoCursoDAO {
 
 	Long recuperInscricoesSemUltimoStatus(Curso curso);
 
+	InscricaoCurso recupararInscricao(String numInscricao, Integer idCurso, Integer idTurma, Integer idHorario);
+
+	InscricaoGrade recupararInscricaoGrade(String numInscricao, Integer idCurso, Integer idTurma, Integer idHorario);
+
 }

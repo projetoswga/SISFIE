@@ -12,6 +12,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import org.hibernate.envers.Audited;
 
@@ -42,6 +43,9 @@ public class Frequencia extends Entidade<Integer> {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "id_grade_oficina")
 	private GradeOficina gradeOficina;
+	
+	@Transient
+	private InscricaoCurso inscricaoCurso;
 
 	public Frequencia() {
 	}
@@ -88,6 +92,14 @@ public class Frequencia extends Entidade<Integer> {
 
 	public void setGradeOficina(GradeOficina gradeOficina) {
 		this.gradeOficina = gradeOficina;
+	}
+
+	public InscricaoCurso getInscricaoCurso() {
+		return inscricaoCurso;
+	}
+
+	public void setInscricaoCurso(InscricaoCurso inscricaoCurso) {
+		this.inscricaoCurso = inscricaoCurso;
 	}
 
 }

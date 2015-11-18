@@ -53,4 +53,8 @@ public interface InscricaoCursoService {
 
 	InscricaoCurso recuperarInscricaoComColecoes(Integer idInscricao);
 
+	InscricaoCurso recupararInscricao(String numInscricao, Integer idCurso, Integer idTurma, Integer idHorario);
+
+	InscricaoGrade recupararInscricaoGrade(String numInscricao, Integer idCurso, Integer idTurma, Integer idHorario);
+
 }

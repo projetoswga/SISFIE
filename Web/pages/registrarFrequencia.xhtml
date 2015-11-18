@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui" template="/templates/template.xhtml">
+
+	<ui:define name="body">
+
+		<script type="text/javascript">
+			$ = jQuery;
+			function verificarQuantidadeDigitosExecutarEnter(){
+				if ($('#numInscricao').val().length == 14){
+					$('#btnPesquisar').click();
+				}
+			}
+		</script>
+
+		<f:loadBundle basename="constantes" var="const" />
+
+		<h:form id="formId" prependId="false">
+			<p:fieldset legend="#{registrarFrequenciaBean.qualifiedName}" id="fieldPrincipal">
+				<h:panelGrid id="panelSelecao" columns="2" border="0" columnClasses="coluna20,coluna80" width="100%">
+					<h:outputLabel value="Curso" styleClass="icoObrigatorio" />
+					<p:autoComplete dropdown="true" queryDelay="500" value="#{registrarFrequenciaBean.curso}" minQueryLength="2" id="curso" size="68"
+						scrollHeight="300" completeMethod="#{registrarFrequenciaBean.completeCurso}" forceSelection="true" var="lista"
+						itemLabel="#{lista.cursoData}" itemValue="#{lista.id}" converter="cursoConverter" global="false">
+						<p:ajax event="itemSelect" update="@form" process="@form" listener="#{registrarFrequenciaBean.verificarExistenciaTurmasHorarios}" />
+					</p:autoComplete>
+
+					<h:outputLabel value="Turma:" styleClass="icoObrigatorio" rendered="#{registrarFrequenciaBean.exibirTurma}" />
+					<p:selectOneMenu id="turma" style="width:450px;" value="#{registrarFrequenciaBean.turma.id}"
+						rendered="#{registrarFrequenciaBean.exibirTurma}">
+						<f:selectItem itemLabel="Selecione" itemValue="" />
+						<f:selectItems value="#{registrarFrequenciaBean.listaTurma}" var="nameTurma" itemLabel="#{nameTurma.descricao}"
+							itemValue="#{nameTurma.id}" />
+						<p:ajax event="change" update="@form" process="@form" global="false" listener="#{registrarFrequenciaBean.verificarExistenciaTurmasHorarios}"/>
+					</p:selectOneMenu>
+
+					<h:outputLabel value="Horário:" styleClass="icoObrigatorio" rendered="#{registrarFrequenciaBean.exibirHorario}" />
+					<p:selectOneMenu id="horario" style="width:450px;" value="#{registrarFrequenciaBean.horario.id}"
+						rendered="#{registrarFrequenciaBean.exibirHorario}">
+						<f:selectItem itemLabel="Selecione" itemValue="" />
+						<f:selectItems value="#{registrarFrequenciaBean.listaHorario}" var="nameHorarioTurma" itemLabel="#{nameHorarioTurma.desHorario}"
+							itemValue="#{nameHorarioTurma.id}" />
+						<p:ajax event="change" update="@form" process="@form" global="false" listener="#{registrarFrequenciaBean.renderizarCampoInscricao}"/>
+					</p:selectOneMenu>
+				</h:panelGrid>
+
+				<h:panelGroup id="grupoInscricao">
+					<h:panelGrid id="panelInscricao" columns="2" border="0" columnClasses="coluna20,coluna80" width="100%"
+						rendered="#{registrarFrequenciaBean.exibirInscricao}">
+						<h:outputLabel value="Inscrição" styleClass="icoObrigatorio" />
+						<p:inputText id="numInscricao" value="#{registrarFrequenciaBean.model.numIncricao}" maxlength="14"
+							onkeyup="verificarQuantidadeDigitosExecutarEnter()" />
+					</h:panelGrid>
+				</h:panelGroup>
+				
+				<br />
+
+				<h:panelGroup id="grupoInformacoesInscricao">
+					<p:panel header="Dados da inscrição selecionada"
+						rendered="#{registrarFrequenciaBean.inscricaoCurso != null and registrarFrequenciaBean.inscricaoCurso.id != null}">
+						<h:panelGrid columns="2" border="0" columnClasses="coluna20,coluna80" width="100%">
+							<h:outputLabel value="Curso:" />
+							<h:outputText value="#{registrarFrequenciaBean.inscricaoCurso.curso.cursoData}" />
+							<h:outputLabel value="Inscrição" />
+							<h:outputText value="#{registrarFrequenciaBean.inscricaoCurso.inscricao}" />
+							<h:outputLabel value="Candidato:" />
+							<h:outputText value="#{registrarFrequenciaBean.inscricaoCurso.candidato.nome}" />
+							<h:outputLabel value="Órgão:" />
+							<h:outputText value="#{registrarFrequenciaBean.inscricaoCurso.candidato.orgao.nomeSiglaFormat}" />
+						</h:panelGrid>
+					</p:panel>
+				</h:panelGroup>
+
+				<h:panelGroup id="grupoInformacoesTurma">
+					<p:panel header="Dados da turma selecionada"
+						rendered="#{registrarFrequenciaBean.inscricaoCurso != null and registrarFrequenciaBean.inscricaoCurso.id != null and registrarFrequenciaBean.exibirTurma}">
+						<h:panelGrid columns="2" border="0" columnClasses="coluna20,coluna80" width="100%">
+							<h:outputLabel value="Turma:" />
+							<h:outputText value="#{registrarFrequenciaBean.inscricaoGrade.gradeOficina.turma.descricao}" />
+							<h:outputLabel value="Conteúdo" />
+							<h:outputText value="#{registrarFrequenciaBean.inscricaoGrade.gradeOficina.oficina.nomOficina}" />
+							<h:outputLabel value="Horário:" />
+							<h:outputText value="#{registrarFrequenciaBean.inscricaoGrade.gradeOficina.horario.desHorario}" />
+							<h:outputLabel value="Instrutor:" />
+							<h:outputText value="#{registrarFrequenciaBean.inscricaoGrade.gradeOficina.professorEvento.candidato.nome}" />
+							<h:outputLabel value="Sala" />
+							<h:outputText value="#{registrarFrequenciaBean.inscricaoGrade.gradeOficina.sala.nomSala}" />
+							<h:outputLabel value="Capacidade" />
+							<h:outputText value="#{registrarFrequenciaBean.inscricaoGrade.gradeOficina.sala.numCapacidade}" />
+							<h:outputLabel value="Inscrito" />
+							<h:outputText value="#{registrarFrequenciaBean.quantidadeInscritos}" />
+						</h:panelGrid>
+					</p:panel>
+					<p:separator rendered="#{registrarFrequenciaBean.inscricaoCurso != null and registrarFrequenciaBean.inscricaoCurso.id != null}" />
+				</h:panelGroup>
+
+				<br />
+				<center>
+					<p:commandButton value="Limpar" immediate="true" ajax="false" action="registrarFrequencia.jsf" />
+					<p:spacer width="10" />
+					<p:commandButton id="btnPesquisar" value="Pesquisar" process="@form"
+						update="grupoInscricao, grupoInformacoesInscricao, grupoInformacoesTurma, botoesRegistros" action="#{registrarFrequenciaBean.pesquisar}" />
+					<h:panelGroup id="botoesRegistros">
+						<h:panelGroup rendered="#{registrarFrequenciaBean.inscricaoCurso != null and registrarFrequenciaBean.inscricaoCurso.id != null}">
+							<p:spacer width="10" />
+							<p:commandButton id="btnRegistrar" value="Registrar" process="@form"
+								update="grupoInscricao, grupoInformacoesInscricao, grupoInformacoesTurma" action="#{registrarFrequenciaBean.registrar}" />
+							<p:spacer width="10" />
+							<p:commandButton id="btnFinalizar" value="Finalizar Frequência" process="@form"
+								update="grupoInscricao, grupoInformacoesInscricao, grupoInformacoesTurma" action="#{registrarFrequenciaBean.finalizarFrequencia}" />
+						</h:panelGroup>
+					</h:panelGroup>
+				</center>
+				<br />
+			</p:fieldset>
+		</h:form>
+	</ui:define>
+</ui:composition>

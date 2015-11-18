@@ -32,6 +32,9 @@ public class MenuBean {
 	public void carregarMenu() {
 		menu = new DefaultMenuModel();
 
+		/**
+		 * CURSO
+		 */
 		Submenu Curso = new Submenu();
 		Curso.setLabel("Curso");
 
@@ -58,14 +61,12 @@ public class MenuBean {
 			item.setUrl("/pages/gerenciarCurso.jsf");
 			Curso.getChildren().add(item);
 		}
-		
-		//if (acessoBean.verificarAcesso("ROLE_GERENCIAR_CURSO_COM_OFICINA")) {
-			item = new MenuItem();
-			item.setId("MontarGrades");
-			item.setValue("Montar Grades");
-			item.setUrl("/pages/gerenciarCursoComOficina.jsf");
-			Curso.getChildren().add(item);
-		//}
+
+		item = new MenuItem();
+		item.setId("MontarGrades");
+		item.setValue("Montar Grades");
+		item.setUrl("/pages/gerenciarCursoComOficina.jsf");
+		Curso.getChildren().add(item);
 
 		if (acessoBean.verificarAcesso("ROLE_COMUNICADO_MALA_DIRETA")) {
 			item = new MenuItem();
@@ -77,26 +78,27 @@ public class MenuBean {
 
 		menu.addSubmenu(Curso);
 
+		/**
+		 * CANDIDATO
+		 */
 		Submenu candidato = new Submenu();
 		candidato.setLabel("Candidato");
 
-		// if (acessoBean.verificarAcesso("ROLE_PESQUISAR_CANDIDATO")) {
 		item = new MenuItem();
 		item.setValue("Pesquisar Candidato");
 		item.setUrl("/pages/pesquisarCandidato.jsf");
 		candidato.getChildren().add(item);
-		// }
+
 		item = new MenuItem();
 		item.setValue("Excluir Candidato");
 		item.setUrl("/pages/excluirCandidato.jsf");
 		candidato.getChildren().add(item);
-		// if (acessoBean.verificarAcesso("ROLE_PESQUISAR_INSCRICAO_CANDIDATO"))
-		// {
+
 		item = new MenuItem();
 		item.setValue("Pesquisar Inscrição");
 		item.setUrl("/pages/pesquisarInscricaoCandidato.jsf");
 		candidato.getChildren().add(item);
-		// }
+
 		item = new MenuItem();
 		item.setValue("Pesquisar Parceiros");
 		item.setUrl("/pages/pesquisarParceiros.jsf");
@@ -104,6 +106,9 @@ public class MenuBean {
 
 		menu.addSubmenu(candidato);
 
+		/**
+		 * APOIO
+		 */
 		Submenu Apoio = new Submenu();
 		Apoio.setLabel("Apoio");
 
@@ -113,12 +118,10 @@ public class MenuBean {
 			item.setUrl("/pages/area.jsf");
 			Apoio.getChildren().add(item);
 		}
-		//if (acessoBean.verificarAcesso("ROLE_AREA_CONHECIMENTO")) {
-			item = new MenuItem();
-			item.setValue("Área de Conhecimento");
-			item.setUrl("/pages/areaConhecimento.jsf");
-			Apoio.getChildren().add(item);
-		//}
+		item = new MenuItem();
+		item.setValue("Área de Conhecimento");
+		item.setUrl("/pages/areaConhecimento.jsf");
+		Apoio.getChildren().add(item);
 		if (acessoBean.verificarAcesso("ROLE_ATUACAO")) {
 			item = new MenuItem();
 			item.setValue("Atuação");
@@ -142,7 +145,7 @@ public class MenuBean {
 		}
 		if (acessoBean.verificarAcesso("ROLE_ORGAO")) {
 			item = new MenuItem();
-			item.setValue("Órgão");
+			item.setValue("Õrgão");
 			item.setUrl("/pages/orgao.jsf");
 			Apoio.getChildren().add(item);
 		}
@@ -153,92 +156,47 @@ public class MenuBean {
 			Apoio.getChildren().add(item);
 		}
 
-		
-		/*if (acessoBean.verificarAcesso("ROLE_SALA")) {
-			item = new MenuItem();
-			item.setValue("Sala");
-			item.setUrl("/pages/sala.jsf");
-			Apoio.getChildren().add(item);
-		}
-		if (acessoBean.verificarAcesso("ROLE_OFICINA")) {
-			item = new MenuItem();
-			item.setValue("Oficina");
-			item.setUrl("/pages/oficina.jsf");
-			Apoio.getChildren().add(item);
-		}
-		if (acessoBean.verificarAcesso("ROLE_PACOTE")) {
-			item = new MenuItem();
-			item.setValue("Pacote");
-			item.setUrl("/pages/pacote.jsf");
-			Apoio.getChildren().add(item);
-		}
-		if (acessoBean.verificarAcesso("ROLE_HORARIO")) {
-			item = new MenuItem();
-			item.setValue("Horário");
-			item.setUrl("/pages/horario.jsf");
-			Apoio.getChildren().add(item);
-		}*/
-
 		menu.addSubmenu(Apoio);
 
-//		Submenu grade = new Submenu();
-//		grade.setLabel("Grades");
-//
-//		// if (acessoBean.verificarAcesso("ROLE_GRADE_PACOTE")) {
-//		item = new MenuItem();
-//		item.setValue("Grade de Pacotes");
-//		item.setUrl("/pages/gradePacotes.jsf");
-//		grade.getChildren().add(item);
-//		// }
-//
-//		// if (acessoBean.verificarAcesso("ROLE_GRADE_OFICINA")) {
-//		item = new MenuItem();
-//		item.setValue("Grade de Oficinas");
-//		item.setUrl("/pages/gradeOficinas.jsf");
-//		grade.getChildren().add(item);
-//		// }
-//
-//		menu.addSubmenu(grade);
-
-//		Submenu distribuir = new Submenu();
-//		distribuir.setLabel("Distribuir");
-//
-//		if (acessoBean.verificarAcesso("ROLE_DISTRIBUIR")) {
-//			item = new MenuItem();
-//			item.setValue("Distribuir Inscritos");
-//			item.setUrl("/pages/distribuir.jsf");
-//			distribuir.getChildren().add(item);
-//		}
-//
-//		menu.addSubmenu(distribuir);
-
+		/**
+		 * RELATÓRIOS
+		 */
 		Submenu relatorios = new Submenu();
 		relatorios.setLabel("Relatórios");
 
-		// if (acessoBean.verificarAcesso("ROLE_GERAR_RELATORIOS")) {
 		item = new MenuItem();
 		item.setValue("Candidatos inscritos");
 		item.setUrl("/pages/gerarRelatorioCandicadosInscritos.jsf");
 		relatorios.getChildren().add(item);
-		// }
-		
+
 		item = new MenuItem();
 		item.setValue("Exportar Inscritos");
 		item.setUrl("/pages/exportarCandidatosInscritos.jsf");
 		relatorios.getChildren().add(item);
 
 		menu.addSubmenu(relatorios);
-		
+
+		/**
+		 * FREQUÊNCIA
+		 */
 		Submenu frequencia = new Submenu();
 		frequencia.setLabel("Frequência");
 
 		item = new MenuItem();
+		item.setValue("Registrar");
+		item.setUrl("/pages/registrarFrequencia.jsf");
+		frequencia.getChildren().add(item);
+		
+		item = new MenuItem();
 		item.setValue("Credenciamento");
 		item.setUrl("/pages/credenciamento.jsf");
 		frequencia.getChildren().add(item);
-		
+
 		menu.addSubmenu(frequencia);
 
+		/**
+		 * ACESSO
+		 */
 		Submenu acesso = new Submenu();
 		acesso.setLabel("Acesso");
 
@@ -248,21 +206,18 @@ public class MenuBean {
 			item.setUrl("/pages/perfil.jsf");
 			acesso.getChildren().add(item);
 		}
-		
 
-		
 		if (acessoBean.verificarAcesso("ROLE_USUARIO")) {
 
 			item = new MenuItem();
 			item.setValue("Usuário");
 			item.setUrl("/pages/usuario.jsf");
 			acesso.getChildren().add(item);
-//			if (acessoBean.verificarAcesso("ROLE_SETOR_RESPONSAVEL")) {
-				item = new MenuItem();
-				item.setValue("Setor Responsável ESAF");
-				item.setUrl("/pages/setorResponsavel.jsf");
-				acesso.getChildren().add(item);
-//			}
+
+			item = new MenuItem();
+			item.setValue("Setor Responsável ESAF");
+			item.setUrl("/pages/setorResponsavel.jsf");
+			acesso.getChildren().add(item);
 		}
 		if (acessoBean.verificarAcesso("ROLE_PERFIL_FUNCIONALIDADE")) {
 			item = new MenuItem();
@@ -274,36 +229,37 @@ public class MenuBean {
 
 		menu.addSubmenu(acesso);
 
-		try{
+		/**
+		 * BD
+		 */
+		try {
 			Usuario user = (Usuario) getSessionMap().get(Constantes.USUARIO_SESSAO);
 			if (user.getPerfil().getDescricao().equals(Constantes.PERFIL_SISFIE)) {
-				
+
 				Submenu BD = new Submenu();
 				BD.setLabel("BD");
-				
+
 				item = new MenuItem();
 				item.setValue("Sequence");
 				item.setUrl("/pages/sequence.jsf");
 				BD.getChildren().add(item);
-				
+
 				item = new MenuItem();
 				item.setValue("Atualizar Último Status");
 				item.setUrl("/pages/atualizarUltimoStatusInscricao.jsf");
 				BD.getChildren().add(item);
-				
+
 				menu.addSubmenu(BD);
 			}
-		}catch (Exception e) {
-			//nao trata a exceção do menu BD
-			//Menu interno do sisfie.
+		} catch (Exception e) {
+			// nao trata a exceÃ§Ã£o do menu BD Menu interno do sisfie.
 		}
-	
-
 	}
 
 	@SuppressWarnings("rawtypes")
 	protected Map getSessionMap() {
-		if (FacesContext.getCurrentInstance() != null && FacesContext.getCurrentInstance().getExternalContext().getSessionMap() != null) {
+		if (FacesContext.getCurrentInstance() != null
+				&& FacesContext.getCurrentInstance().getExternalContext().getSessionMap() != null) {
 			return FacesContext.getCurrentInstance().getExternalContext().getSessionMap();
 		} else {
 			return null;
@@ -325,5 +281,4 @@ public class MenuBean {
 	public void setAcessoBean(AcessoBean acessoBean) {
 		this.acessoBean = acessoBean;
 	}
-
 }

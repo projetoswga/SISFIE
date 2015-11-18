@@ -51,7 +51,8 @@ public class InscricaoCursoDAOImpl extends HibernateDaoSupport implements Inscri
 	}
 
 	@Override
-	public Long countPesquisaInscricaoCandidato(InscricaoCurso model, Integer idStatus, List<Curso> listaCursos, boolean semSelecaoOficina) {
+	public Long countPesquisaInscricaoCandidato(InscricaoCurso model, Integer idStatus, List<Curso> listaCursos,
+			boolean semSelecaoOficina) {
 		Criteria c = retornarCriteria(model, idStatus, listaCursos, semSelecaoOficina);
 		c.setProjection(Projections.rowCount());
 
@@ -510,16 +511,16 @@ public class InscricaoCursoDAOImpl extends HibernateDaoSupport implements Inscri
 			criteria.createAlias("ic.curso", "c");
 			criteria.add(Restrictions.in("c.id", listaIdsCursos));
 		}
-		
+
 		criteria.createAlias("ic.ultimoStatus", "us");
 		criteria.createAlias("us.status", "s");
 		criteria.add(Restrictions.eq("s.id", Status.PRESENCA_CONFIRMADA));
 		criteria.setProjection(Projections.distinct(Projections.property("ic.id")));
-		
+
 		List<Integer> idsInscritos = criteria.list();
-		if (idsInscritos != null && !idsInscritos.isEmpty()){
+		if (idsInscritos != null && !idsInscritos.isEmpty()) {
 			Criteria criteriaInscrito = getSession().createCriteria(InscricaoCurso.class);
-			criteriaInscrito.add(Restrictions.in("id",idsInscritos));
+			criteriaInscrito.add(Restrictions.in("id", idsInscritos));
 			return criteriaInscrito.list();
 		}
 		return null;
@@ -566,5 +567,45 @@ public class InscricaoCursoDAOImpl extends HibernateDaoSupport implements Inscri
 		criteria.setProjection(Projections.rowCount());
 		Long result = (Long) criteria.list().get(0);
 		return result;
+	}
+
+	@Override
+	public InscricaoCurso recupararInscricao(String numInscricao, Integer idCurso, Integer idTurma, Integer idHorario) {
+		StringBuilder sql = new StringBuilder();
+		sql.append(" select ic.* from inscricao_curso ic ");
+		sql.append(" join inscricao_grade ig on ig.id_inscricao_curso = ic.id_inscricao_curso ");
+		sql.append(" join grade_oficina gro on gro.id_grade_oficina = ig.id_grade_oficina ");
+		sql.append(" join turma t on t.id_turma = gro.id_turma ");
+		sql.append(" join horario h on h.id_horario = gro.id_horario ");
+		sql.append(" join curso c on c.id_curso = ic.id_curso ");
+		sql.append(" where c.id_curso = " + idCurso);
+		sql.append(" and ic.num_inscricao like '" + numInscricao + "' ");
+		if (idTurma != null && idTurma > 0) {
+			sql.append(" and t.id_turma = " + idTurma);
+		}
+		if (idHorario != null && idHorario > 0) {
+			sql.append(" and h.id_horario = " + idHorario);
+		}
+		return (InscricaoCurso) getSession().createSQLQuery(sql.toString()).addEntity(InscricaoCurso.class).uniqueResult();
+	}
+
+	@Override
+	public InscricaoGrade recupararInscricaoGrade(String numInscricao, Integer idCurso, Integer idTurma, Integer idHorario) {
+		StringBuilder sql = new StringBuilder();
+		sql.append(" select ig.* from inscricao_grade ig ");
+		sql.append(" join inscricao_curso ic on ic.id_inscricao_curso = ig.id_inscricao_curso ");
+		sql.append(" join grade_oficina gro on gro.id_grade_oficina = ig.id_grade_oficina ");
+		sql.append(" join turma t on t.id_turma = gro.id_turma ");
+		sql.append(" join horario h on h.id_horario = gro.id_horario ");
+		sql.append(" join curso c on c.id_curso = ic.id_curso ");
+		sql.append(" where c.id_curso = " + idCurso);
+		sql.append(" and ic.num_inscricao like '" + numInscricao + "' ");
+		if (idTurma != null && idTurma > 0) {
+			sql.append(" and t.id_turma = " + idTurma);
+		}
+		if (idHorario != null && idHorario > 0) {
+			sql.append(" and h.id_horario = " + idHorario);
+		}
+		return (InscricaoGrade) getSession().createSQLQuery(sql.toString()).addEntity(InscricaoGrade.class).uniqueResult();
 	}
 }
