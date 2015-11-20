@@ -32,12 +32,16 @@ public class CredenciamentoBean extends PaginableBean<Credenciamento> {
 	@SuppressWarnings("unchecked")
 	public void pesquisar() {
 		try {
-			inscricaoCurso.setInscricao(getModel().getNumInscricao());
-			List<InscricaoCurso> listaConsulta = universalManager.listBy(inscricaoCurso);
-			if (listaConsulta != null && !listaConsulta.isEmpty()) {
-				inscricaoCurso = listaConsulta.get(0);
+			if (getModel().getNumInscricao() != null && !getModel().getNumInscricao().isEmpty()){
+				inscricaoCurso.setInscricao(getModel().getNumInscricao());
+				List<InscricaoCurso> listaConsulta = universalManager.listBy(inscricaoCurso);
+				if (listaConsulta != null && !listaConsulta.isEmpty()) {
+					inscricaoCurso = listaConsulta.get(0);
+				} else {
+					FacesMessagesUtil.addErrorMessage("Credenciamento", "Inscrição não encontrada!");
+				}
 			} else {
-				FacesMessagesUtil.addErrorMessage("Credenciamento", "Inscrição não encontrada!");
+				FacesMessagesUtil.addErrorMessage("Credenciamento", "É necessário informar um número de inscrição!");
 			}
 		} catch (Exception e) {
 			ExcecaoUtil.tratarExcecao(e);
