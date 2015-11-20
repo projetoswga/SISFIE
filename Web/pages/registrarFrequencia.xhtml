@@ -126,7 +126,7 @@
 							paginator="true" rows="5" rowStyleClass="#{empty rowIx or rowIx mod 2 ne 0 ? 'linhaImpar' : 'linhaPar'}" rowIndexVar="rowIx">
 
 							<f:facet name="header">
-								<h:outputLabel value="Lista de Frequência" />
+								<h:outputLabel value="Participantes com registro de frequência: #{registrarFrequenciaBean.listaFrequencia.size()}" />
 							</f:facet>
 							<p:column headerText="Inscrição">
 								<h:outputLabel value="#{listaFrequencia.numIncricao}" />
