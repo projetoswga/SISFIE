@@ -1,8 +1,6 @@
 /META-INF/
 /applicationContext-dao-teste.xml
-/applicationContext-dao.xml
 /applicationContext-hibernate-teste.xml
-/applicationContext-hibernate.xml
 /applicationContext-resource-teste.xml
 /applicationContext-resource.xml
 /applicationContext-security.xml
@@ -11,4 +9,3 @@
 /applicationContext-teste.xml
 /applicationContext.xml
 /br/
-/constantes.properties

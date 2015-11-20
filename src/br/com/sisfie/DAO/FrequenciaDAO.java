@@ -10,4 +10,6 @@ public interface FrequenciaDAO {
 
 	List<Frequencia> listarFrequencias(Integer idGradeOficina) throws Exception ;
 
+	List<Frequencia> pesquisarFrequenciasAbertas(Integer idGradeOficina);
+
 }

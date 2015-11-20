@@ -23,10 +23,15 @@ import br.com.sisfie.entidade.InscricaoGrade;
 import br.com.sisfie.entidade.Turma;
 import br.com.sisfie.service.CursoService;
 import br.com.sisfie.service.FrequenciaService;
+import br.com.sisfie.service.GradeOficinaService;
 import br.com.sisfie.service.HorarioService;
 import br.com.sisfie.service.InscricaoCursoService;
 import br.com.sisfie.service.TurmaService;
 
+/**
+ * @author Wesley Marra
+ *
+ */
 @ManagedBean(name = "registrarFrequenciaBean")
 @ViewScoped
 public class RegistrarFrequenciaBean extends PaginableBean<Frequencia> {
@@ -41,12 +46,15 @@ public class RegistrarFrequenciaBean extends PaginableBean<Frequencia> {
 
 	@ManagedProperty(value = "#{horarioService}")
 	protected HorarioService horarioService;
-	
+
 	@ManagedProperty(value = "#{inscricaoCursoService}")
 	protected InscricaoCursoService inscricaoCursoService;
-	
+
 	@ManagedProperty(value = "#{frequenciaService}")
 	protected FrequenciaService frequenciaService;
+	
+	@ManagedProperty(value = "#{gradeOficinaService}")
+	protected GradeOficinaService gradeOficinaService;
 
 	private Curso curso;
 	private Turma turma;
@@ -61,6 +69,7 @@ public class RegistrarFrequenciaBean extends PaginableBean<Frequencia> {
 	private boolean exibirTurma;
 	private boolean exibirHorario;
 	private boolean exibirInscricao;
+	private boolean exibirBotaoFinalizar;
 
 	public RegistrarFrequenciaBean() {
 		curso = new Curso();
@@ -103,10 +112,43 @@ public class RegistrarFrequenciaBean extends PaginableBean<Frequencia> {
 		}
 	}
 
-	public void renderizarCampoInscricao() {
+	public void renderizarCampoInscricaoVisualizarBotaoFinalizar() {
 		exibirInscricao = Boolean.TRUE;
+		visualizaBotaoFinalizar();
 	}
-	
+
+	private void visualizaBotaoFinalizar() {
+		exibirBotaoFinalizar = Boolean.FALSE;
+		if (curso != null && curso.getId() != null) {
+			/**
+			 * Caso o curso seja composto por oficina, para visualizar o botão finalizar é necessário que o usuario tenha selecionado uma
+			 * turma e um horário.
+			 */
+			if (curso.getFlgPossuiOficina()) {
+				if (turma != null && turma.getId() != null) {
+					if (horario != null && horario.getId() != null) {
+						exibirBotaoFinalizar = Boolean.TRUE;
+					}
+				}
+			} else {
+				/**
+				 * Se o curso não for composto por oficina mas tenha turmas, para visualizar o botão finalizar é necessário que o usuario
+				 * tenha selecionado uma turma.
+				 */
+				if (curso.getTurmas() != null && !curso.getTurmas().isEmpty()) {
+					if (turma != null && turma.getId() != null) {
+						exibirBotaoFinalizar = Boolean.TRUE;
+					}
+					/**
+					 * Senão basta ter selecionado um curso.
+					 */
+				} else {
+					exibirBotaoFinalizar = Boolean.TRUE;
+				}
+			}
+		}
+	}
+
 	public void registrar() {
 		try {
 			frequencia = frequenciaService.recuperarUltimaFrequencia(inscricaoCurso.getInscricao());
@@ -125,9 +167,9 @@ public class RegistrarFrequenciaBean extends PaginableBean<Frequencia> {
 	}
 
 	private void verificandoComoSeraRegistradoFrequencia() throws Exception {
-		if (frequencia != null && frequencia.getId() != null){
+		if (frequencia != null && frequencia.getId() != null) {
 			// Quando não registrou a saída, somente altera o registro.
-			if (frequencia.getHorarioSaida() == null){
+			if (frequencia.getHorarioSaida() == null) {
 				frequencia.setHorarioSaida(new Timestamp(new Date().getTime()));
 				frequenciaService.salvar((Frequencia) frequencia.clone());
 			} else {
@@ -148,9 +190,35 @@ public class RegistrarFrequenciaBean extends PaginableBean<Frequencia> {
 			frequenciaService.salvar(frequenciaNova);
 		}
 	}
-	
+
 	public void finalizarFrequencia() {
-		// TODO: Implementar.......
+		try {
+			if (curso.getFlgPossuiOficina()) {
+				
+				GradeOficina gradeOficina = gradeOficinaService.recupararGradeOficina(curso.getId(), turma.getId(),
+						horario.getId());
+				if (gradeOficina != null && gradeOficina.getId() != null) {
+					
+					List<Frequencia> listaFrequenciaEmAberto = frequenciaService
+							.pesquisarFrequenciasAbertas(gradeOficina.getId());
+
+					if (listaFrequenciaEmAberto != null && !listaFrequenciaEmAberto.isEmpty()) {
+						for (Frequencia frequencia : listaFrequenciaEmAberto) {
+							Frequencia frequenciaClone = (Frequencia) frequencia.clone();
+							frequenciaClone.setHorarioSaida(new Timestamp(new Date().getTime()));
+							frequenciaService.salvar(frequenciaClone);
+						}
+						FacesMessagesUtil.addInfoMessage("", "Frequência da turma finalizada com sucesso.");
+					} else {
+						FacesMessagesUtil.addErrorMessage("", "Não há inscrições para serem finalizadas.");
+					}
+				}
+			} else {
+				// TODO: Implementar quando não for curso composto por oficina. Porém terá que rever a modelagem
+			}
+		} catch (Exception e) {
+			ExcecaoUtil.tratarExcecao(e);
+		}
 	}
 
 	public void pesquisar() {
@@ -206,14 +274,18 @@ public class RegistrarFrequenciaBean extends PaginableBean<Frequencia> {
 		}
 
 		if (getModel() != null && getModel().getNumIncricao() != null && !getModel().getNumIncricao().isEmpty()) {
-			if (curso.getFlgPossuiOficina()){
-				inscricaoCurso = inscricaoCursoService.recupararInscricao(getModel().getNumIncricao(), curso.getId(), turma.getId(), horario.getId());
-				inscricaoGrade = inscricaoCursoService.recupararInscricaoGrade(getModel().getNumIncricao(), curso.getId(), turma.getId(), horario.getId());
+			if (curso.getFlgPossuiOficina()) {
+				inscricaoCurso = inscricaoCursoService.recupararInscricao(getModel().getNumIncricao(), curso.getId(),
+						turma.getId(), horario.getId());
+				inscricaoGrade = inscricaoCursoService.recupararInscricaoGrade(getModel().getNumIncricao(), curso.getId(),
+						turma.getId(), horario.getId());
 			} else {
-				if (curso.getTurmas() != null && !curso.getTurmas().isEmpty()){
-					inscricaoCurso = inscricaoCursoService.recupararInscricao(getModel().getNumIncricao(), curso.getId(), turma.getId(), null);
+				if (curso.getTurmas() != null && !curso.getTurmas().isEmpty()) {
+					inscricaoCurso = inscricaoCursoService.recupararInscricao(getModel().getNumIncricao(), curso.getId(),
+							turma.getId(), null);
 				} else {
-					inscricaoCurso = inscricaoCursoService.recupararInscricao(getModel().getNumIncricao(), curso.getId(), null, null);
+					inscricaoCurso = inscricaoCursoService.recupararInscricao(getModel().getNumIncricao(), curso.getId(), null,
+							null);
 				}
 			}
 			if (inscricaoCurso == null || inscricaoCurso.getId() == null || inscricaoCurso.getId() == 0) {
@@ -394,5 +466,21 @@ public class RegistrarFrequenciaBean extends PaginableBean<Frequencia> {
 
 	public void setFrequencia(Frequencia frequencia) {
 		this.frequencia = frequencia;
+	}
+
+	public boolean isExibirBotaoFinalizar() {
+		return exibirBotaoFinalizar;
+	}
+
+	public void setExibirBotaoFinalizar(boolean exibirBotaoFinalizar) {
+		this.exibirBotaoFinalizar = exibirBotaoFinalizar;
+	}
+
+	public GradeOficinaService getGradeOficinaService() {
+		return gradeOficinaService;
+	}
+
+	public void setGradeOficinaService(GradeOficinaService gradeOficinaService) {
+		this.gradeOficinaService = gradeOficinaService;
 	}
 }

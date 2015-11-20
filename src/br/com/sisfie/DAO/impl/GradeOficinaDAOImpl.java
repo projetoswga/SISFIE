@@ -148,4 +148,16 @@ public class GradeOficinaDAOImpl extends HibernateDaoSupport implements GradeOfi
 		}
 		return null;
 	}
+
+	@Override
+	public GradeOficina recupararGradeOficina(Integer idCurso, Integer idTurma, Integer idHorario) {
+		Criteria criteria = getSession().createCriteria(GradeOficina.class);
+		criteria.createAlias("turma", "t");
+		criteria.createAlias("t.curso", "c");
+		criteria.add(Restrictions.eq("c.id", idCurso));
+		criteria.add(Restrictions.eq("t.id", idTurma));
+		criteria.createAlias("horario", "h");
+		criteria.add(Restrictions.eq("h.id", idHorario));
+		return (GradeOficina) criteria.uniqueResult();
+	}
 }

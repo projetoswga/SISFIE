@@ -64,4 +64,9 @@ public class FrequenciaServiceImpl implements FrequenciaService {
 	public void salvar(Frequencia frequencia) throws Exception {
 		dao.save(frequencia);
 	}
+
+	@Override
+	public List<Frequencia> pesquisarFrequenciasAbertas(Integer idGradeOficina) {
+		return frequenciaDAO.pesquisarFrequenciasAbertas(idGradeOficina);
+	}
 }

@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.hibernate.Criteria;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -78,5 +79,16 @@ public class FrequenciaDAOImpl extends HibernateDaoSupport implements Frequencia
 			}
 		}
 		return listaFrequencia;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<Frequencia> pesquisarFrequenciasAbertas(Integer idGradeOficina) {
+		Criteria criteria = getSession().createCriteria(Frequencia.class);
+		criteria.createAlias("gradeOficina", "go");
+		criteria.add(Restrictions.eq("go.id", idGradeOficina));
+		criteria.add(Restrictions.isNull("horarioSaida"));
+		criteria.addOrder(Order.asc("horarioEntrada"));
+		return criteria.list();
 	}
 }

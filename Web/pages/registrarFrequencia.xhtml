@@ -42,7 +42,7 @@
 						<f:selectItem itemLabel="Selecione" itemValue="" />
 						<f:selectItems value="#{registrarFrequenciaBean.listaHorario}" var="nameHorarioTurma" itemLabel="#{nameHorarioTurma.desHorario}"
 							itemValue="#{nameHorarioTurma.id}" />
-						<p:ajax event="change" update="@form" process="@form" global="false" listener="#{registrarFrequenciaBean.renderizarCampoInscricao}" />
+						<p:ajax event="change" update="@form" process="@form" global="false" listener="#{registrarFrequenciaBean.renderizarCampoInscricaoVisualizarBotaoFinalizar}" />
 					</p:selectOneMenu>
 				</h:panelGrid>
 
@@ -110,7 +110,7 @@
 						</h:panelGroup>
 					</h:panelGroup>
 					<h:panelGroup id="botaoFinalizar">
-						<h:panelGroup rendered="#{!empty registrarFrequenciaBean.listaFrequencia}">
+						<h:panelGroup rendered="#{registrarFrequenciaBean.exibirBotaoFinalizar}">
 							<p:spacer width="10" />
 							<p:commandButton id="btnFinalizar" value="Finalizar Frequência Turma" process="@form" update="@form"
 								action="#{registrarFrequenciaBean.finalizarFrequencia}" />

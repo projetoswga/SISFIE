@@ -599,7 +599,9 @@ public class InscricaoCursoDAOImpl extends HibernateDaoSupport implements Inscri
 		sql.append(" join horario h on h.id_horario = gro.id_horario ");
 		sql.append(" join curso c on c.id_curso = ic.id_curso ");
 		sql.append(" where c.id_curso = " + idCurso);
-		sql.append(" and ic.num_inscricao like '" + numInscricao + "' ");
+		if (numInscricao != null && !numInscricao.isEmpty()){
+			sql.append(" and ic.num_inscricao like '" + numInscricao + "' ");
+		}
 		if (idTurma != null && idTurma > 0) {
 			sql.append(" and t.id_turma = " + idTurma);
 		}

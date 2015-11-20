@@ -25,4 +25,6 @@ public interface GradeOficinaService {
 
 	Integer recuperarCapacidadeMaximaInscritos(Integer idCurso);
 
+	GradeOficina recupararGradeOficina(Integer idCurso, Integer idTurma, Integer idHorario);
+
 }

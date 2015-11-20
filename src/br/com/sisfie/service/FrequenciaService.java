@@ -14,4 +14,6 @@ public interface FrequenciaService {
 
 	void salvar(Frequencia frequencia) throws Exception;
 
+	List<Frequencia> pesquisarFrequenciasAbertas(Integer idGradeOficina);
+
 }

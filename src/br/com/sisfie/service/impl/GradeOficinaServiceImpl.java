@@ -88,4 +88,9 @@ public class GradeOficinaServiceImpl implements GradeOficinaService {
 	public Integer recuperarCapacidadeMaximaInscritos(Integer idCurso) {
 		return gradeOficinaDAO.recuperarCapacidadeMaximaInscritos(idCurso);
 	}
+
+	@Override
+	public GradeOficina recupararGradeOficina(Integer idCurso, Integer idTurma, Integer idHorario) {
+		return gradeOficinaDAO.recupararGradeOficina(idCurso, idTurma, idHorario);
+	}
 }
