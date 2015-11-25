@@ -610,4 +610,42 @@ public class InscricaoCursoDAOImpl extends HibernateDaoSupport implements Inscri
 		}
 		return (InscricaoGrade) getSession().createSQLQuery(sql.toString()).addEntity(InscricaoGrade.class).uniqueResult();
 	}
+
+	@Override
+	public InscricaoCurso recuperarInscricao(Integer idCurso, Integer idTurma, Integer idTurno) {
+		Criteria criteria = getSession().createCriteria(InscricaoCurso.class);
+		criteria.createAlias("curso", "c");
+		criteria.add(Restrictions.eq("c.id", idCurso));
+		if (idTurma != null && idTurma != 0){
+			criteria.createAlias("turma", "ta");
+			criteria.add(Restrictions.eq("ta.id", idTurma));
+		}
+		if (idTurno != null && idTurno != 0){
+			criteria.createAlias("c.turno", "to");
+			criteria.add(Restrictions.eq("tu.id", idTurno));
+		}
+		return (InscricaoCurso) criteria.uniqueResult();
+	}
+
+	@Override
+	public InscricaoCurso recupararInscricaoSemOficina(String inscricao, Integer idCurso, Integer idTurma, Integer idTurno) {
+		StringBuilder sql = new StringBuilder();
+		sql.append(" select ic.* from inscricao_curso ic ");
+		sql.append(" join curso c on c.id_curso = ic.id_curso ");
+		if (idTurma != null && idTurma > 0) {
+			sql.append(" join turma ta on ta.id_turma = ic.id_turma ");
+		}
+		if (idTurno != null && idTurno > 0) {
+			sql.append(" join turno tu on tu.id_turno = c.id_turno ");
+		}
+		sql.append(" where c.id_curso = " + idCurso);
+		sql.append(" and ic.num_inscricao like '" + inscricao + "' ");
+		if (idTurma != null && idTurma > 0) {
+			sql.append(" and ta.id_turma = " + idTurma);
+		}
+		if (idTurno != null && idTurno > 0) {
+			sql.append(" and tu.id_turno = " + idTurno);
+		}
+		return (InscricaoCurso) getSession().createSQLQuery(sql.toString()).addEntity(InscricaoCurso.class).uniqueResult();
+	}
 }

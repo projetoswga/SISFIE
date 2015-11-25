@@ -315,4 +315,14 @@ public class InscricaoCursoServiceImpl implements InscricaoCursoService {
 	public InscricaoGrade recupararInscricaoGrade(String numInscricao, Integer idCurso, Integer idTurma, Integer idHorario) {
 		return inscricaoCursoDAO.recupararInscricaoGrade(numInscricao, idCurso, idTurma, idHorario);
 	}
+
+	@Override
+	public InscricaoCurso recuperarInscricao(Integer idCurso, Integer idTurma, Integer idTurno) {
+		return inscricaoCursoDAO.recuperarInscricao(idCurso, idTurma, idTurno);
+	}
+
+	@Override
+	public InscricaoCurso recupararInscricaoSemOficina(String inscricao, Integer idCurso, Integer idTurma, Integer idTurno) {
+		return inscricaoCursoDAO.recupararInscricaoSemOficina(inscricao, idCurso, idTurma, idTurno);
+	}
 }

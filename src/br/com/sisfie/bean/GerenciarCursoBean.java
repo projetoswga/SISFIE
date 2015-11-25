@@ -1763,7 +1763,12 @@ public class GerenciarCursoBean extends BaseBean<Curso> {
 			for (String[] colums : data) {
 				Frequencia frequencia = new Frequencia();
 				frequencia.setGradeOficina(new GradeOficina(Integer.parseInt(colums[0].trim())));
-				frequencia.setNumIncricao(colums[1].trim());
+				
+				InscricaoCurso inscricaoCurso = new InscricaoCurso();
+				inscricaoCurso.setInscricao(colums[1].trim());
+				List<InscricaoCurso> listaConsulta = universalManager.listBy(inscricaoCurso);
+				
+				frequencia.setInscricaoCurso(new InscricaoCurso(listaConsulta.get(0).getId()));
 				frequencia.setHorarioEntrada(new Timestamp(Long.parseLong(colums[2].trim())));
 				frequencia.setHorarioSaida(new Timestamp(Long.parseLong(colums[3].trim())));
 

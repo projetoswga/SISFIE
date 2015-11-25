@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import br.com.arquitetura.DAO.UniversalDAO;
 import br.com.sisfie.DAO.FrequenciaDAO;
 import br.com.sisfie.entidade.Frequencia;
+import br.com.sisfie.entidade.InscricaoCurso;
 import br.com.sisfie.service.FrequenciaService;
 
 @Service(value = "frequenciaService")
@@ -68,5 +69,15 @@ public class FrequenciaServiceImpl implements FrequenciaService {
 	@Override
 	public List<Frequencia> pesquisarFrequenciasAbertas(Integer idGradeOficina) {
 		return frequenciaDAO.pesquisarFrequenciasAbertas(idGradeOficina);
+	}
+
+	@Override
+	public List<Frequencia> listarFrequenciasSemOficina(InscricaoCurso inscricaoCurso) {
+		return frequenciaDAO.listarFrequenciasSemOficina(inscricaoCurso);
+	}
+
+	@Override
+	public List<Frequencia> pesquisarFrequenciasAbertasSemOficina(Integer idInscricaoCurso) {
+		return frequenciaDAO.pesquisarFrequenciasAbertasSemOficina(idInscricaoCurso);
 	}
 }

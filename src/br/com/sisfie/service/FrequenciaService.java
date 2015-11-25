@@ -3,6 +3,7 @@ package br.com.sisfie.service;
 import java.util.List;
 
 import br.com.sisfie.entidade.Frequencia;
+import br.com.sisfie.entidade.InscricaoCurso;
 
 public interface FrequenciaService {
 	
@@ -15,5 +16,9 @@ public interface FrequenciaService {
 	void salvar(Frequencia frequencia) throws Exception;
 
 	List<Frequencia> pesquisarFrequenciasAbertas(Integer idGradeOficina);
+
+	List<Frequencia> listarFrequenciasSemOficina(InscricaoCurso inscricaoCurso);
+
+	List<Frequencia> pesquisarFrequenciasAbertasSemOficina(Integer idInscricaoCurso);
 
 }
