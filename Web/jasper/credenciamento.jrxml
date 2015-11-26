@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Inscritos" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="842" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="827347bd-da27-4b70-9a4e-b1969941ff39">
+	<property name="ireport.zoom" value="0.6209213230591601"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<import value="net.sf.jasperreports.engine.data.JRBeanCollectionDataSource"/>
+	<style name="table">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_TH" mode="Opaque" backcolor="#F0F8FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_CH" mode="Opaque" backcolor="#BFE1FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 1">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 1_TH" mode="Opaque" backcolor="#F0F8FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 1_CH" mode="Opaque" backcolor="#BFE1FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 1_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<subDataset name="dataset1" whenResourceMissingType="Empty" uuid="98ee937b-c39a-4bf5-b5fc-c0a55140e11e">
+		<queryString>
+			<![CDATA[]]>
+		</queryString>
+		<field name="nome" class="java.lang.String"/>
+	</subDataset>
+	<subDataset name="Table Dataset 1" uuid="b210602d-8d98-4dfe-b204-dd496f710b8d"/>
+	<subDataset name="dataset2" uuid="e3ce004c-6898-4d00-ab1c-5f88a72e21da"/>
+	<subDataset name="Table Dataset 2" uuid="05a63cc6-ea5a-4028-8766-7eb5d12fc7cc"/>
+	<subDataset name="dataset3" uuid="e7ef3207-ef3d-4a58-a3b8-7d5da35753e9"/>
+	<subDataset name="dataset4" uuid="d17317b3-9b4f-48f3-a18f-825da13ffac4"/>
+	<subDataset name="dataset5" uuid="690518b1-d043-4057-a4f7-522bf61567cc"/>
+	<parameter name="image" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="SUBREPORT" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="lista" class="java.util.Collection" isForPrompting="false"/>
+	<parameter name="tituloDescricaoSemana" class="java.lang.String"/>
+	<parameter name="tituloDataLocal" class="java.lang.String"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band splitType="Stretch"/>
+	</title>
+	<pageHeader>
+		<band/>
+	</pageHeader>
+	<detail>
+		<band height="162" splitType="Stretch">
+			<staticText>
+				<reportElement uuid="cf3039c1-0dc4-4bff-b123-3f849b7e2b1b" key="inscricao" positionType="Float" mode="Opaque" x="60" y="96" width="258" height="28" backcolor="#CCCCCC"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="14" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Inscrição]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="9ff56bd8-6ff2-4e5f-8173-3074bc04d293" key="inscricao" positionType="Float" mode="Opaque" x="0" y="96" width="60" height="28" backcolor="#CCCCCC"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="14" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Ordem]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="1bc20335-4105-44be-b4e7-facb057b6e3e" key="inscricao" positionType="Float" mode="Opaque" x="318" y="96" width="231" height="28" backcolor="#CCCCCC"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="14" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Nome Completo]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="f450468e-b31a-429f-ab38-fef3f19446c9" key="inscricao" positionType="Float" mode="Opaque" x="549" y="96" width="292" height="28" backcolor="#CCCCCC"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="14" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Orgão]]></text>
+			</staticText>
+			<subreport>
+				<reportElement uuid="e714d72c-6da3-44d4-a07b-eb13902182d4" positionType="Float" x="0" y="124" width="840" height="38"/>
+				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource((Collection)$P{lista})]]></dataSourceExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT}+"subCredenciamento.jasper"]]></subreportExpression>
+			</subreport>
+			<image scaleImage="RealSize" hAlign="Center" vAlign="Middle" isUsingCache="false">
+				<reportElement uuid="2d6d4d2d-f9c2-4b93-addb-777f530222d1" positionType="Float" mode="Opaque" x="3" y="4" width="143" height="80" backcolor="#FFFFFF"/>
+				<imageExpression><![CDATA[$P{image}]]></imageExpression>
+			</image>
+			<textField>
+				<reportElement uuid="323407e5-4327-4b76-bfc3-ad003408ac2b" x="175" y="18" width="664" height="22"/>
+				<textElement textAlignment="Center">
+					<font size="16" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{tituloDescricaoSemana}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="1e163b56-73ec-4291-abbb-cbd78e196726" x="175" y="40" width="664" height="22"/>
+				<textElement textAlignment="Center">
+					<font size="16" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{tituloDataLocal}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="d91d044c-fcc5-43b6-99d7-f656e17cd6cc" x="175" y="62" width="664" height="22"/>
+				<textElement textAlignment="Center">
+					<font size="16" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Credenciamento - Inclusões
+]]></text>
+			</staticText>
+		</band>
+	</detail>
+	<pageFooter>
+		<band/>
+	</pageFooter>
+</jasperReport>

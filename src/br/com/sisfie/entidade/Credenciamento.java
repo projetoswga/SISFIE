@@ -13,6 +13,7 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 
 import org.hibernate.envers.Audited;
 
@@ -44,6 +45,9 @@ public class Credenciamento extends Entidade<Integer> {
 
 	@Column(name = "num_inscricao")
 	private String numInscricao;
+
+	@Transient
+	private InscricaoCurso inscricaoCurso;
 
 	public Credenciamento() {
 	}
@@ -90,5 +94,13 @@ public class Credenciamento extends Entidade<Integer> {
 
 	public void setNumInscricao(String numInscricao) {
 		this.numInscricao = numInscricao;
+	}
+
+	public InscricaoCurso getInscricaoCurso() {
+		return inscricaoCurso;
+	}
+
+	public void setInscricaoCurso(InscricaoCurso inscricaoCurso) {
+		this.inscricaoCurso = inscricaoCurso;
 	}
 }

@@ -186,12 +186,24 @@ public class MenuBean {
 		item.setValue("Registrar");
 		item.setUrl("/pages/registrarFrequencia.jsf");
 		frequencia.getChildren().add(item);
-		
+
 		item = new MenuItem();
 		item.setValue("Credenciamento");
 		item.setUrl("/pages/credenciamento.jsf");
 		frequencia.getChildren().add(item);
 
+		/**
+		 * RELATÓRIOS FREQUÊNCIA
+		 */
+		Submenu relatoriosFrequencia = new Submenu();
+		relatoriosFrequencia.setLabel("Relatórios");
+
+		item = new MenuItem();
+		item.setValue("Credenciamento");
+		item.setUrl("/pages/relatorioCredenciamento.jsf");
+		relatoriosFrequencia.getChildren().add(item);
+
+		frequencia.getChildren().add(relatoriosFrequencia);
 		menu.addSubmenu(frequencia);
 
 		/**
