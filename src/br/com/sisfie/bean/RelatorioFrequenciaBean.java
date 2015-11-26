@@ -19,6 +19,8 @@ import br.com.arquitetura.excecao.ExcecaoUtil;
 import br.com.arquitetura.util.FacesMessagesUtil;
 import br.com.arquitetura.util.RelatorioUtil;
 import br.com.sisfie.dto.CredenciamentoDTO;
+import br.com.sisfie.dto.EtiquetaDTO;
+import br.com.sisfie.entidade.Candidato;
 import br.com.sisfie.entidade.Credenciamento;
 import br.com.sisfie.entidade.Curso;
 import br.com.sisfie.entidade.Frequencia;
@@ -26,6 +28,7 @@ import br.com.sisfie.entidade.InscricaoCurso;
 import br.com.sisfie.entidade.Turma;
 import br.com.sisfie.service.CredenciamentoService;
 import br.com.sisfie.service.CursoService;
+import br.com.sisfie.service.InscricaoCursoService;
 import br.com.sisfie.service.TurmaService;
 
 /**
@@ -47,17 +50,25 @@ public class RelatorioFrequenciaBean extends PaginableBean<Frequencia> {
 	@ManagedProperty(value = "#{credenciamentoService}")
 	protected CredenciamentoService credenciamentoService;
 
+	@ManagedProperty(value = "#{inscricaoCursoService}")
+	protected InscricaoCursoService inscricaoCursoService;
+
 	private Curso curso;
+	private InscricaoCurso inscricaoCurso;
 	private Integer idTurma;
 	private String formato;
 	private List<Turma> turmas;
 	private List<Credenciamento> listaCredenciamento;
+	private List<InscricaoCurso> listaInscricaoCurso;
 	private boolean exibirBotaoGerarCredenciamento;
 
 	public RelatorioFrequenciaBean() {
 		curso = new Curso();
+		inscricaoCurso = new InscricaoCurso();
+		inscricaoCurso.setCandidato(new Candidato());
 		turmas = new ArrayList<Turma>();
 		listaCredenciamento = new ArrayList<Credenciamento>();
+		listaInscricaoCurso = new ArrayList<InscricaoCurso>();
 	}
 
 	@PostConstruct
@@ -97,13 +108,37 @@ public class RelatorioFrequenciaBean extends PaginableBean<Frequencia> {
 		}
 	}
 
+	public void gerarRelatorioEtiqueta() {
+		try {
+			if (!validarCurso()) {
+				return;
+			}
+
+			listaInscricaoCurso = inscricaoCursoService.listarInscricoes(curso, inscricaoCurso, idTurma);
+
+			if (listaInscricaoCurso != null && !listaInscricaoCurso.isEmpty()) {
+				List<EtiquetaDTO> listaEtiquetaDTO = new ArrayList<EtiquetaDTO>();
+				for (InscricaoCurso inscricaoCurso : listaInscricaoCurso) {
+					listaEtiquetaDTO.add(new EtiquetaDTO(inscricaoCurso.getCandidato().getNome(), inscricaoCurso.getInscricao()));
+				}
+
+				String caminho = "/jasper/etiqueta.jasper";
+				String nomeRelatorio = "Etiqueta";
+				
+				RelatorioUtil.gerarRelatorio(listaEtiquetaDTO, caminho, nomeRelatorio, formato);
+			} else {
+				FacesMessagesUtil.addErrorMessage("", "Não há candidatos para gerar etiquetas.");
+			}
+		} catch (Exception e) {
+			ExcecaoUtil.tratarExcecao(e);
+		}
+	}
+
 	public void gerarRelatorioCredenciamento() {
 		try {
 			if (!validarCurso()) {
 				return;
 			}
-			String caminho = "/jasper/credenciamento.jasper";
-			String nomeRelatorio = "Credenciamento";
 
 			listaCredenciamento = credenciamentoService.listarCredenciamento(curso.getId(), idTurma);
 
@@ -118,11 +153,15 @@ public class RelatorioFrequenciaBean extends PaginableBean<Frequencia> {
 							inscricaoCurso.getInscricao(), inscricaoCurso.getCandidato().getNome(),
 							inscricaoCurso.getCandidato().getOrgao().getNomeSiglaFormat()));
 				}
+				
+				String caminho = "/jasper/credenciamento.jasper";
+				String nomeRelatorio = "Credenciamento";
 
 				Map<String, Object> map = new HashMap<String, Object>();
 				map.put("image", FacesContext.getCurrentInstance().getExternalContext()
 						.getRealPath("/resources/design/imagem-default/logo_esaf_relatorio.png"));
-				map.put("SUBREPORT",FacesContext.getCurrentInstance().getExternalContext().getRealPath("/jasper/") + File.separator);
+				map.put("SUBREPORT",
+						FacesContext.getCurrentInstance().getExternalContext().getRealPath("/jasper/") + File.separator);
 				map.put("tituloDescricaoSemana", curso.getTitulo());
 				map.put("tituloDataLocal", curso.getCursoData());
 				map.put("lista", listaCredenciamentoDTO);
@@ -238,5 +277,29 @@ public class RelatorioFrequenciaBean extends PaginableBean<Frequencia> {
 
 	public void setCredenciamentoService(CredenciamentoService credenciamentoService) {
 		this.credenciamentoService = credenciamentoService;
+	}
+
+	public InscricaoCurso getInscricaoCurso() {
+		return inscricaoCurso;
+	}
+
+	public void setInscricaoCurso(InscricaoCurso inscricaoCurso) {
+		this.inscricaoCurso = inscricaoCurso;
+	}
+
+	public List<InscricaoCurso> getListaInscricaoCurso() {
+		return listaInscricaoCurso;
+	}
+
+	public void setListaInscricaoCurso(List<InscricaoCurso> listaInscricaoCurso) {
+		this.listaInscricaoCurso = listaInscricaoCurso;
+	}
+
+	public InscricaoCursoService getInscricaoCursoService() {
+		return inscricaoCursoService;
+	}
+
+	public void setInscricaoCursoService(InscricaoCursoService inscricaoCursoService) {
+		this.inscricaoCursoService = inscricaoCursoService;
 	}
 }

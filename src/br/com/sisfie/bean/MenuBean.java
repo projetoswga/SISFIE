@@ -202,8 +202,14 @@ public class MenuBean {
 		item.setValue("Credenciamento");
 		item.setUrl("/pages/relatorioCredenciamento.jsf");
 		relatoriosFrequencia.getChildren().add(item);
+		
+		item = new MenuItem();
+		item.setValue("Etiquetas");
+		item.setUrl("/pages/relatorioEtiqueta.jsf");
+		relatoriosFrequencia.getChildren().add(item);
 
 		frequencia.getChildren().add(relatoriosFrequencia);
+		
 		menu.addSubmenu(frequencia);
 
 		/**

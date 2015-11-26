@@ -50,4 +50,6 @@ public interface InscricaoCursoDAO {
 
 	InscricaoCurso recupararInscricaoSemOficina(String inscricao, Integer idCurso, Integer idTurma, Integer idTurno);
 
+	List<InscricaoCurso> listarInscricoes(Curso curso, InscricaoCurso inscricaoCurso, Integer idTurma);
+
 }

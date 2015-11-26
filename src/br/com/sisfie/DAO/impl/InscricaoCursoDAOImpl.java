@@ -7,6 +7,7 @@ import org.hibernate.Criteria;
 import org.hibernate.Hibernate;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.ProjectionList;
 import org.hibernate.criterion.Projections;
@@ -60,7 +61,8 @@ public class InscricaoCursoDAOImpl extends HibernateDaoSupport implements Inscri
 		return result;
 	}
 
-	private Criteria retornarCriteria(InscricaoCurso model, Integer idStatus, List<Curso> listaCursos, boolean semSelecaoOficina) {
+	private Criteria retornarCriteria(InscricaoCurso model, Integer idStatus, List<Curso> listaCursos,
+			boolean semSelecaoOficina) {
 		Criteria criteria = getSession().createCriteria(InscricaoCurso.class);
 		criteria.createAlias("curso", "c");
 		if (listaCursos != null && !listaCursos.isEmpty()) {
@@ -191,8 +193,8 @@ public class InscricaoCursoDAOImpl extends HibernateDaoSupport implements Inscri
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<InscricaoCurso> paginatePesquisaInscricaoCandidato(int first, int pageSize, InscricaoCurso model, Integer cancelada,
-			Integer paga, Integer homologada) {
+	public List<InscricaoCurso> paginatePesquisaInscricaoCandidato(int first, int pageSize, InscricaoCurso model,
+			Integer cancelada, Integer paga, Integer homologada) {
 		Criteria c = retornarCriteria(model, cancelada, paga, homologada);
 
 		if (first != 0)
@@ -268,8 +270,8 @@ public class InscricaoCursoDAOImpl extends HibernateDaoSupport implements Inscri
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<InscricaoCurso> paginatePesquisaInscricaoCandidato(int first, int pageSize, InscricaoCurso model, Integer idStatus,
-			List<Curso> listaCursos, boolean semSelecaoOficina) {
+	public List<InscricaoCurso> paginatePesquisaInscricaoCandidato(int first, int pageSize, InscricaoCurso model,
+			Integer idStatus, List<Curso> listaCursos, boolean semSelecaoOficina) {
 		Criteria c = retornarCriteria(model, idStatus, listaCursos, semSelecaoOficina);
 
 		if (first != 0)
@@ -429,7 +431,8 @@ public class InscricaoCursoDAOImpl extends HibernateDaoSupport implements Inscri
 
 					DetachedCriteria subCriteriaStatusInscricao = DetachedCriteria.forClass(StatusInscricao.class);
 					subCriteriaStatusInscricao.createAlias("inscricaoCurso", "sic");
-					subCriteriaStatusInscricao.add(Restrictions.eqProperty("sic.id", Property.forName("ici.id").getPropertyName()));
+					subCriteriaStatusInscricao
+							.add(Restrictions.eqProperty("sic.id", Property.forName("ici.id").getPropertyName()));
 					subCriteriaStatusInscricao.add(Restrictions.eq("sic.curso.id", idCurso));
 					subCriteriaStatusInscricao.setProjection(Projections.max("id"));
 					criteria.add((Property.forName("ic.id").in(subCriteriaStatusInscricao)));
@@ -599,7 +602,7 @@ public class InscricaoCursoDAOImpl extends HibernateDaoSupport implements Inscri
 		sql.append(" join horario h on h.id_horario = gro.id_horario ");
 		sql.append(" join curso c on c.id_curso = ic.id_curso ");
 		sql.append(" where c.id_curso = " + idCurso);
-		if (numInscricao != null && !numInscricao.isEmpty()){
+		if (numInscricao != null && !numInscricao.isEmpty()) {
 			sql.append(" and ic.num_inscricao like '" + numInscricao + "' ");
 		}
 		if (idTurma != null && idTurma > 0) {
@@ -616,11 +619,11 @@ public class InscricaoCursoDAOImpl extends HibernateDaoSupport implements Inscri
 		Criteria criteria = getSession().createCriteria(InscricaoCurso.class);
 		criteria.createAlias("curso", "c");
 		criteria.add(Restrictions.eq("c.id", idCurso));
-		if (idTurma != null && idTurma != 0){
+		if (idTurma != null && idTurma != 0) {
 			criteria.createAlias("turma", "ta");
 			criteria.add(Restrictions.eq("ta.id", idTurma));
 		}
-		if (idTurno != null && idTurno != 0){
+		if (idTurno != null && idTurno != 0) {
 			criteria.createAlias("c.turno", "to");
 			criteria.add(Restrictions.eq("tu.id", idTurno));
 		}
@@ -647,5 +650,46 @@ public class InscricaoCursoDAOImpl extends HibernateDaoSupport implements Inscri
 			sql.append(" and tu.id_turno = " + idTurno);
 		}
 		return (InscricaoCurso) getSession().createSQLQuery(sql.toString()).addEntity(InscricaoCurso.class).uniqueResult();
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<InscricaoCurso> listarInscricoes(Curso curso, InscricaoCurso inscricaoCurso, Integer idTurma) {
+		Criteria criteria = getSession().createCriteria(InscricaoCurso.class);
+		criteria.createAlias("ultimoStatus", "us");
+		criteria.createAlias("us.status", "s");
+		criteria.add(Restrictions.eq("s.id", Status.PRESENCA_CONFIRMADA));
+		criteria.createAlias("curso", "c");
+		criteria.add(Restrictions.eq("c.id", curso.getId()));
+		if (inscricaoCurso != null) {
+			if (inscricaoCurso.getInscricao() != null && !inscricaoCurso.getInscricao().isEmpty()) {
+				criteria.add(Restrictions.like("inscricao", inscricaoCurso.getInscricao()));
+			}
+			if (inscricaoCurso.getCandidato() != null && inscricaoCurso.getCandidato().getNome() != null
+					&& !inscricaoCurso.getCandidato().getNome().isEmpty()) {
+				criteria.createAlias("candidato", "cand");
+				criteria.add(Restrictions.like("cand.nome", inscricaoCurso.getCandidato().getNome()));
+			}
+		}
+		if (idTurma != null && idTurma > 0) {
+			if (curso.getFlgPossuiOficina()){
+				Criteria c = getSession().createCriteria(InscricaoGrade.class);
+				c.createAlias("gradeOficina", "gro");
+				c.createAlias("gro.turma", "tu");
+				c.add(Restrictions.eq("tu.id", idTurma));
+				c.createAlias("inscricaoCurso", "ic");
+				c.setProjection(Projections.distinct(Projections.property("ic.id")));
+				List<Integer> idsInscricaoCurso = c.list();
+				if (idsInscricaoCurso != null && !idsInscricaoCurso.isEmpty()){
+					criteria.add(Restrictions.in("id", idsInscricaoCurso));
+				} else {
+					return null;
+				}
+			} else {
+				criteria.createAlias("turma", "t");
+				criteria.add(Restrictions.eq("t.id", idTurma));
+			}
+		}
+		return criteria.list();
 	}
 }
