@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="cracha_subreport1" pageWidth="211" pageHeight="594" columnWidth="211" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="b955157a-b4a2-48fe-bb67-299db1634051">
+	<property name="ireport.zoom" value="2.593742460100004"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<field name="desHorario" class="java.lang.String"/>
+	<field name="nomOficina" class="java.lang.String"/>
+	<field name="desLocalSala" class="java.lang.String"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<detail>
+		<band height="32">
+			<textField>
+				<reportElement uuid="b30089a1-3a58-4dcc-9349-85e0afd27e38" x="0" y="2" width="211" height="11" isRemoveLineWhenBlank="true"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{desHorario}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="76a66a9b-6d00-407f-b535-92518856a275" x="0" y="13" width="211" height="9" isRemoveLineWhenBlank="true"/>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{nomOficina}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="d6b2e885-30b1-49e0-a2b4-72a74afdae14" x="0" y="22" width="211" height="10" isRemoveLineWhenBlank="true"/>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{desLocalSala}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement uuid="1a3d3fae-12a1-4433-b5cf-3a9261cd680a" x="0" y="0" width="211" height="1"/>
+			</line>
+		</band>
+	</detail>
+</jasperReport>

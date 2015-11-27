@@ -207,6 +207,11 @@ public class MenuBean {
 		item.setValue("Etiquetas");
 		item.setUrl("/pages/relatorioEtiqueta.jsf");
 		relatoriosFrequencia.getChildren().add(item);
+		
+		item = new MenuItem();
+		item.setValue("Crachás");
+		item.setUrl("/pages/relatorioCrachas.jsf");
+		relatoriosFrequencia.getChildren().add(item);
 
 		frequencia.getChildren().add(relatoriosFrequencia);
 		

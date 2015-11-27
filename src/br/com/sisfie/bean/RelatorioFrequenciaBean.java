@@ -1,7 +1,11 @@
 package br.com.sisfie.bean;
 
 import java.io.File;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,13 +22,17 @@ import br.com.arquitetura.bean.PaginableBean;
 import br.com.arquitetura.excecao.ExcecaoUtil;
 import br.com.arquitetura.util.FacesMessagesUtil;
 import br.com.arquitetura.util.RelatorioUtil;
+import br.com.sisfie.dto.CrachaDTO;
 import br.com.sisfie.dto.CredenciamentoDTO;
 import br.com.sisfie.dto.EtiquetaDTO;
+import br.com.sisfie.dto.OficinaDTO;
 import br.com.sisfie.entidade.Candidato;
 import br.com.sisfie.entidade.Credenciamento;
 import br.com.sisfie.entidade.Curso;
 import br.com.sisfie.entidade.Frequencia;
+import br.com.sisfie.entidade.Horario;
 import br.com.sisfie.entidade.InscricaoCurso;
+import br.com.sisfie.entidade.InscricaoGrade;
 import br.com.sisfie.entidade.Turma;
 import br.com.sisfie.service.CredenciamentoService;
 import br.com.sisfie.service.CursoService;
@@ -59,7 +67,8 @@ public class RelatorioFrequenciaBean extends PaginableBean<Frequencia> {
 	private String formato;
 	private List<Turma> turmas;
 	private List<Credenciamento> listaCredenciamento;
-	private List<InscricaoCurso> listaInscricaoCurso;
+	private List<InscricaoCurso> listaEtiquetas;
+	private List<InscricaoCurso> listaCrachas;
 	private boolean exibirBotaoGerarCredenciamento;
 
 	public RelatorioFrequenciaBean() {
@@ -68,7 +77,8 @@ public class RelatorioFrequenciaBean extends PaginableBean<Frequencia> {
 		inscricaoCurso.setCandidato(new Candidato());
 		turmas = new ArrayList<Turma>();
 		listaCredenciamento = new ArrayList<Credenciamento>();
-		listaInscricaoCurso = new ArrayList<InscricaoCurso>();
+		listaEtiquetas = new ArrayList<InscricaoCurso>();
+		listaCrachas = new ArrayList<InscricaoCurso>();
 	}
 
 	@PostConstruct
@@ -108,23 +118,101 @@ public class RelatorioFrequenciaBean extends PaginableBean<Frequencia> {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
+	public void gerarRelatorioCrachas() {
+		try {
+			if (!validarCurso()) {
+				return;
+			}
+
+			listaCrachas = inscricaoCursoService.listarInscricoes(curso, inscricaoCurso, idTurma);
+
+			DateFormat hf = new SimpleDateFormat("HH:mm");
+
+			if (listaCrachas != null && !listaCrachas.isEmpty()) {
+				Horario h;
+				int q = 0;
+				CrachaDTO crachaDTO;
+				List<CrachaDTO> listaCrachaDTO = new ArrayList<CrachaDTO>();
+
+				for (InscricaoCurso inscricaoCurso : listaCrachas) {
+					listaCrachaDTO
+							.add(crachaDTO = new CrachaDTO(inscricaoCurso.getInscricao(), inscricaoCurso.getCandidato().getNome(),
+									inscricaoCurso.getCandidato().getOrgao().getNomeSiglaFormat(),
+									inscricaoCurso.getCandidato().getNome().split(" ")[0], null));
+
+					InscricaoGrade inscricaoGradeConsulta = new InscricaoGrade();
+					inscricaoGradeConsulta.setInscricaoCurso(new InscricaoCurso(inscricaoCurso.getId()));
+					List<InscricaoGrade> listaInscricaoGrade = universalManager.listBy(inscricaoGradeConsulta);
+
+					if (listaInscricaoGrade != null && !listaInscricaoGrade.isEmpty()) {
+
+						Collections.sort(listaInscricaoGrade, new Comparator<InscricaoGrade>() {
+							@Override
+							public int compare(InscricaoGrade o1, InscricaoGrade o2) {
+								return o1.getGradeOficina().getHorario().getDesHorario().trim()
+										.compareTo(o2.getGradeOficina().getHorario().getDesHorario());
+							}
+						});
+
+						List<OficinaDTO> listaOficinasDTO = new ArrayList<OficinaDTO>();
+						q = 1;
+
+						for (InscricaoGrade inscricaoGrade : listaInscricaoGrade) {
+							if (++q > 10)
+								break;
+
+							h = inscricaoGrade.getGradeOficina().getHorario();
+							listaOficinasDTO.add(new OficinaDTO(
+									"Horário \"" + h.getDesHorario() + "\" das " + hf.format(h.getDatHoraInicio().getTime())
+											+ " às " + hf.format(h.getDatHoraFim().getTime()),
+									inscricaoGrade.getGradeOficina().getTurma().getDescricao(),
+									inscricaoGrade.getGradeOficina().getSala().getNomSala()));
+						}
+						crachaDTO.setOficinas(listaOficinasDTO);
+					}
+				}
+
+				String caminho = "/jasper/cracha.jasper";
+				String nomeRelatorio = "Crachas";
+
+				Map<String, Object> map = new HashMap<String, Object>();
+				map.put("SUBREPORT",
+						FacesContext.getCurrentInstance().getExternalContext().getRealPath("/jasper/") + File.separator);
+
+				Collections.sort(listaCrachaDTO, new Comparator<CrachaDTO>() {
+					@Override
+					public int compare(CrachaDTO o1, CrachaDTO o2) {
+						return o1.getNomeCompleto().trim().compareTo(o2.getNomeCompleto());
+					}
+				});
+
+				RelatorioUtil.gerarRelatorio(listaCrachaDTO, map, caminho, nomeRelatorio, formato);
+			} else {
+				FacesMessagesUtil.addErrorMessage("", "Não há candidatos para gerar os Crachás.");
+			}
+		} catch (Exception e) {
+			ExcecaoUtil.tratarExcecao(e);
+		}
+	}
+
 	public void gerarRelatorioEtiqueta() {
 		try {
 			if (!validarCurso()) {
 				return;
 			}
 
-			listaInscricaoCurso = inscricaoCursoService.listarInscricoes(curso, inscricaoCurso, idTurma);
+			listaEtiquetas = inscricaoCursoService.listarInscricoes(curso, inscricaoCurso, idTurma);
 
-			if (listaInscricaoCurso != null && !listaInscricaoCurso.isEmpty()) {
+			if (listaEtiquetas != null && !listaEtiquetas.isEmpty()) {
 				List<EtiquetaDTO> listaEtiquetaDTO = new ArrayList<EtiquetaDTO>();
-				for (InscricaoCurso inscricaoCurso : listaInscricaoCurso) {
+				for (InscricaoCurso inscricaoCurso : listaEtiquetas) {
 					listaEtiquetaDTO.add(new EtiquetaDTO(inscricaoCurso.getCandidato().getNome(), inscricaoCurso.getInscricao()));
 				}
 
 				String caminho = "/jasper/etiqueta.jasper";
 				String nomeRelatorio = "Etiqueta";
-				
+
 				RelatorioUtil.gerarRelatorio(listaEtiquetaDTO, caminho, nomeRelatorio, formato);
 			} else {
 				FacesMessagesUtil.addErrorMessage("", "Não há candidatos para gerar etiquetas.");
@@ -153,7 +241,7 @@ public class RelatorioFrequenciaBean extends PaginableBean<Frequencia> {
 							inscricaoCurso.getInscricao(), inscricaoCurso.getCandidato().getNome(),
 							inscricaoCurso.getCandidato().getOrgao().getNomeSiglaFormat()));
 				}
-				
+
 				String caminho = "/jasper/credenciamento.jasper";
 				String nomeRelatorio = "Credenciamento";
 
@@ -287,12 +375,12 @@ public class RelatorioFrequenciaBean extends PaginableBean<Frequencia> {
 		this.inscricaoCurso = inscricaoCurso;
 	}
 
-	public List<InscricaoCurso> getListaInscricaoCurso() {
-		return listaInscricaoCurso;
+	public List<InscricaoCurso> getListaEtiquetas() {
+		return listaEtiquetas;
 	}
 
-	public void setListaInscricaoCurso(List<InscricaoCurso> listaInscricaoCurso) {
-		this.listaInscricaoCurso = listaInscricaoCurso;
+	public void setListaEtiquetas(List<InscricaoCurso> listaEtiquetas) {
+		this.listaEtiquetas = listaEtiquetas;
 	}
 
 	public InscricaoCursoService getInscricaoCursoService() {
@@ -301,5 +389,13 @@ public class RelatorioFrequenciaBean extends PaginableBean<Frequencia> {
 
 	public void setInscricaoCursoService(InscricaoCursoService inscricaoCursoService) {
 		this.inscricaoCursoService = inscricaoCursoService;
+	}
+
+	public List<InscricaoCurso> getListaCrachas() {
+		return listaCrachas;
+	}
+
+	public void setListaCrachas(List<InscricaoCurso> listaCrachas) {
+		this.listaCrachas = listaCrachas;
 	}
 }

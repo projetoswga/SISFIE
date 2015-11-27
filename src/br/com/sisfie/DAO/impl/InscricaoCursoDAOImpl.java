@@ -7,7 +7,6 @@ import org.hibernate.Criteria;
 import org.hibernate.Hibernate;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.DetachedCriteria;
-import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.ProjectionList;
 import org.hibernate.criterion.Projections;
@@ -655,41 +654,61 @@ public class InscricaoCursoDAOImpl extends HibernateDaoSupport implements Inscri
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<InscricaoCurso> listarInscricoes(Curso curso, InscricaoCurso inscricaoCurso, Integer idTurma) {
-		Criteria criteria = getSession().createCriteria(InscricaoCurso.class);
-		criteria.createAlias("ultimoStatus", "us");
-		criteria.createAlias("us.status", "s");
-		criteria.add(Restrictions.eq("s.id", Status.PRESENCA_CONFIRMADA));
-		criteria.createAlias("curso", "c");
-		criteria.add(Restrictions.eq("c.id", curso.getId()));
-		if (inscricaoCurso != null) {
-			if (inscricaoCurso.getInscricao() != null && !inscricaoCurso.getInscricao().isEmpty()) {
-				criteria.add(Restrictions.like("inscricao", inscricaoCurso.getInscricao()));
+		if (curso.getFlgPossuiOficina()) {
+			Criteria c = getSession().createCriteria(InscricaoGrade.class);
+			c.createAlias("inscricaoCurso", "ic");
+			c.createAlias("ic.ultimoStatus", "us");
+			c.createAlias("us.status", "s");
+			c.add(Restrictions.eq("s.id", Status.PRESENCA_CONFIRMADA));
+			c.createAlias("ic.curso", "c");
+			c.add(Restrictions.eq("c.id", curso.getId()));
+			c.setProjection(Projections.distinct(Projections.property("ic.id")));
+			if (inscricaoCurso != null) {
+				if (inscricaoCurso.getInscricao() != null && !inscricaoCurso.getInscricao().isEmpty()) {
+					c.add(Restrictions.like("ic.inscricao", inscricaoCurso.getInscricao()));
+				}
+				if (inscricaoCurso.getCandidato() != null && inscricaoCurso.getCandidato().getNome() != null
+						&& !inscricaoCurso.getCandidato().getNome().isEmpty()) {
+					c.createAlias("ic.candidato", "cand");
+					c.add(Restrictions.like("cand.nome", inscricaoCurso.getCandidato().getNome()));
+				}
 			}
-			if (inscricaoCurso.getCandidato() != null && inscricaoCurso.getCandidato().getNome() != null
-					&& !inscricaoCurso.getCandidato().getNome().isEmpty()) {
-				criteria.createAlias("candidato", "cand");
-				criteria.add(Restrictions.like("cand.nome", inscricaoCurso.getCandidato().getNome()));
-			}
-		}
-		if (idTurma != null && idTurma > 0) {
-			if (curso.getFlgPossuiOficina()){
-				Criteria c = getSession().createCriteria(InscricaoGrade.class);
+			if (idTurma != null && idTurma > 0) {
 				c.createAlias("gradeOficina", "gro");
 				c.createAlias("gro.turma", "tu");
 				c.add(Restrictions.eq("tu.id", idTurma));
-				c.createAlias("inscricaoCurso", "ic");
-				c.setProjection(Projections.distinct(Projections.property("ic.id")));
-				List<Integer> idsInscricaoCurso = c.list();
-				if (idsInscricaoCurso != null && !idsInscricaoCurso.isEmpty()){
-					criteria.add(Restrictions.in("id", idsInscricaoCurso));
-				} else {
-					return null;
+			}
+			List<Integer> idsInscricaoCurso = c.list();
+			if (idsInscricaoCurso != null && !idsInscricaoCurso.isEmpty()) {
+				List<InscricaoCurso> listaRetorno = new ArrayList<InscricaoCurso>();
+				for (Integer idInscricao : idsInscricaoCurso) {
+					listaRetorno.add((InscricaoCurso) dao.get(InscricaoCurso.class, idInscricao));
 				}
-			} else {
+				return listaRetorno;
+			}
+		} else {
+			Criteria criteria = getSession().createCriteria(InscricaoCurso.class);
+			criteria.createAlias("ultimoStatus", "us");
+			criteria.createAlias("us.status", "s");
+			criteria.add(Restrictions.eq("s.id", Status.PRESENCA_CONFIRMADA));
+			criteria.createAlias("curso", "c");
+			criteria.add(Restrictions.eq("c.id", curso.getId()));
+			if (inscricaoCurso != null) {
+				if (inscricaoCurso.getInscricao() != null && !inscricaoCurso.getInscricao().isEmpty()) {
+					criteria.add(Restrictions.like("inscricao", inscricaoCurso.getInscricao()));
+				}
+				if (inscricaoCurso.getCandidato() != null && inscricaoCurso.getCandidato().getNome() != null
+						&& !inscricaoCurso.getCandidato().getNome().isEmpty()) {
+					criteria.createAlias("candidato", "cand");
+					criteria.add(Restrictions.like("cand.nome", inscricaoCurso.getCandidato().getNome()));
+				}
+			}
+			if (idTurma != null && idTurma > 0) {
 				criteria.createAlias("turma", "t");
 				criteria.add(Restrictions.eq("t.id", idTurma));
 			}
+			return criteria.list();
 		}
-		return criteria.list();
+		return null;
 	}
 }

@@ -6,7 +6,7 @@
 	<ui:define name="body">
 
 		<h:form prependId="false">
-			<p:fieldset legend="Gerar relatório de etiquetas" id="fieldCandidato">
+			<p:fieldset legend="Gerar relatório de crachás" id="fieldCandidato">
 				<h:panelGrid columns="2" columnClasses="coluna15,coluna75" width="100%">
 					<h:outputLabel value="Curso:" styleClass="icoObrigatorio" />
 					<p:autoComplete dropdown="true" queryDelay="500" value="#{relatorioFrequenciaBean.curso}" global="false" minQueryLength="2" id="curso"
@@ -37,9 +37,9 @@
 
 				<br />
 				<div align="center">
-					<p:commandButton value="Limpar" immediate="true" ajax="false" action="relatorioEtiqueta.jsf" />
+					<p:commandButton value="Limpar" immediate="true" ajax="false" action="relatorioCrachas.jsf" />
 					<p:spacer width="5" />
-					<p:commandButton value="Gerar" ajax="false" action="#{relatorioFrequenciaBean.gerarRelatorioEtiqueta}" />
+					<p:commandButton value="Gerar" ajax="false" action="#{relatorioFrequenciaBean.gerarRelatorioCrachas}" />
 				</div>
 				<br />
 			</p:fieldset>
