@@ -191,6 +191,11 @@ public class MenuBean {
 		item.setValue("Credenciamento");
 		item.setUrl("/pages/credenciamento.jsf");
 		frequencia.getChildren().add(item);
+		
+		item = new MenuItem();
+		item.setValue("Espelho Frequência");
+		item.setUrl("/pages/espelhoFrequencia.jsf");
+		frequencia.getChildren().add(item);
 
 		/**
 		 * RELATÓRIOS FREQUÊNCIA
