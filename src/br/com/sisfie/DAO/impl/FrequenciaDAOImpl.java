@@ -1,7 +1,9 @@
 package br.com.sisfie.DAO.impl;
 
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 import org.hibernate.Criteria;
@@ -139,6 +141,24 @@ public class FrequenciaDAOImpl extends HibernateDaoSupport implements Frequencia
 		criteria.createAlias("inscricaoCurso", "ic");
 		criteria.add(Restrictions.eq("ic.id", idInscricaoCurso));
 		criteria.add(Restrictions.isNull("horarioSaida"));
+		criteria.addOrder(Order.asc("horarioEntrada"));
+		return criteria.list();
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<Frequencia> pesquisarFrequenciasData(String inscricao, Calendar datFrequencia) {
+
+		Calendar dataEntradaInicio = new GregorianCalendar(datFrequencia.get(Calendar.YEAR), datFrequencia.get(Calendar.MONTH),
+				datFrequencia.get(Calendar.DAY_OF_MONTH), 0, 0);
+		Calendar dataEntradaFim = new GregorianCalendar(datFrequencia.get(Calendar.YEAR), datFrequencia.get(Calendar.MONTH),
+				datFrequencia.get(Calendar.DAY_OF_MONTH), 23, 59);
+
+		Criteria criteria = getSession().createCriteria(Frequencia.class);
+		criteria.createAlias("inscricaoCurso", "ic");
+		criteria.add(Restrictions.like("ic.inscricao", inscricao));
+		criteria.add(Restrictions.eq("horarioEntrada", dataEntradaInicio.getTime()));
+		criteria.add(Restrictions.eq("horarioSaida", dataEntradaFim.getTime()));
 		criteria.addOrder(Order.asc("horarioEntrada"));
 		return criteria.list();
 	}

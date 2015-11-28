@@ -45,4 +45,9 @@ public class CredenciamentoServiceImpl implements CredenciamentoService {
 	public List<Credenciamento> listarCredenciamento(Integer idCurso, Integer idTurma) {
 		return credenciamentoDAO.listarCredenciamento(idCurso, idTurma);
 	}
+
+	@Override
+	public Credenciamento recuperarCredenciamento(String inscricao) {
+		return credenciamentoDAO.recuperarCredenciamento(inscricao);
+	}
 }

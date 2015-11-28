@@ -6,7 +6,7 @@
 	<ui:define name="body">
 
 		<h:form prependId="false">
-			<p:fieldset legend="Gerar relatório de mapa de frequência" id="fieldCandidato">
+			<p:fieldset legend="Gerar relatório de etiquetas" id="fieldCandidato">
 				<h:panelGrid columns="2" columnClasses="coluna15,coluna75" width="100%">
 					<h:outputLabel value="Curso:" styleClass="icoObrigatorio" />
 					<p:autoComplete dropdown="true" queryDelay="500" value="#{relatorioFrequenciaBean.curso}" global="false" minQueryLength="2" id="curso"
@@ -24,22 +24,19 @@
 
 					<h:outputLabel value="Inscrição" />
 					<p:inputText value="#{relatorioFrequenciaBean.inscricaoCurso.inscricao}" />
-
+					
 					<h:outputLabel value="Nome" />
 					<p:inputText value="#{relatorioFrequenciaBean.inscricaoCurso.candidato.nome}" />
 
-					<h:outputLabel value="Formato:" />
-					<p:selectOneRadio id="options" value="#{relatorioFrequenciaBean.formato}">
-						<f:selectItem itemLabel="PDF" itemValue="pdf" />
-						<f:selectItem itemLabel="EXCEL" itemValue="xls" />
-					</p:selectOneRadio>
+					<h:outputLabel value="Exibir minutos ao invés de P, F, PP?" />
+					<p:selectBooleanCheckbox value="#{relatorioFrequenciaBean.exibirMinutos}" />
 				</h:panelGrid>
 
 				<br />
 				<div align="center">
 					<p:commandButton value="Limpar" immediate="true" ajax="false" action="relatorioEtiqueta.jsf" />
 					<p:spacer width="5" />
-					<p:commandButton value="Gerar" ajax="false" action="#{relatorioFrequenciaBean.gerarRelatorioEtiqueta}" />
+					<p:commandButton value="Gerar" ajax="false" action="#{relatorioFrequenciaBean.gerarRelatorioMapaFrequencia}" />
 				</div>
 				<br />
 			</p:fieldset>

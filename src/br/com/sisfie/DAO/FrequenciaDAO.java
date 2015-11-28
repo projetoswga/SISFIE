@@ -1,5 +1,6 @@
 package br.com.sisfie.DAO;
 
+import java.util.Calendar;
 import java.util.List;
 
 import br.com.sisfie.entidade.Frequencia;
@@ -16,5 +17,7 @@ public interface FrequenciaDAO {
 	List<Frequencia> listarFrequenciasSemOficina(InscricaoCurso inscricaoCurso);
 
 	List<Frequencia> pesquisarFrequenciasAbertasSemOficina(Integer idInscricaoCurso);
+
+	List<Frequencia> pesquisarFrequenciasData(String inscricao, Calendar datFrequencia);
 
 }

@@ -1,5 +1,6 @@
 package br.com.sisfie.service.impl;
 
+import java.util.Calendar;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -79,5 +80,10 @@ public class FrequenciaServiceImpl implements FrequenciaService {
 	@Override
 	public List<Frequencia> pesquisarFrequenciasAbertasSemOficina(Integer idInscricaoCurso) {
 		return frequenciaDAO.pesquisarFrequenciasAbertasSemOficina(idInscricaoCurso);
+	}
+
+	@Override
+	public List<Frequencia> pesquisarFrequenciasData(String inscricao, Calendar datFrequencia) {
+		return frequenciaDAO.pesquisarFrequenciasData(inscricao, datFrequencia);
 	}
 }

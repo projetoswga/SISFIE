@@ -8,4 +8,6 @@ public interface CredenciamentoDAO {
 
 	List<Credenciamento> listarCredenciamento(Integer idCurso, Integer idTurma);
 
+	Credenciamento recuperarCredenciamento(String inscricao);
+
 }

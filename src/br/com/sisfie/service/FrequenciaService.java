@@ -1,5 +1,6 @@
 package br.com.sisfie.service;
 
+import java.util.Calendar;
 import java.util.List;
 
 import br.com.sisfie.entidade.Frequencia;
@@ -20,5 +21,7 @@ public interface FrequenciaService {
 	List<Frequencia> listarFrequenciasSemOficina(InscricaoCurso inscricaoCurso);
 
 	List<Frequencia> pesquisarFrequenciasAbertasSemOficina(Integer idInscricaoCurso);
+
+	List<Frequencia> pesquisarFrequenciasData(String inscricao, Calendar datFrequencia);
 
 }

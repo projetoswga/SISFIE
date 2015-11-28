@@ -8,4 +8,6 @@ public interface CredenciamentoService {
 
 	List<Credenciamento> listarCredenciamento(Integer idCurso, Integer idTurma);
 
+	Credenciamento recuperarCredenciamento(String inscricao);
+
 }

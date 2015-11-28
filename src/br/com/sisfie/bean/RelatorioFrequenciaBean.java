@@ -4,8 +4,10 @@ import java.io.File;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,10 +24,14 @@ import br.com.arquitetura.bean.PaginableBean;
 import br.com.arquitetura.excecao.ExcecaoUtil;
 import br.com.arquitetura.util.FacesMessagesUtil;
 import br.com.arquitetura.util.RelatorioUtil;
+import br.com.sisfie.dto.AlunoDTO;
 import br.com.sisfie.dto.CrachaDTO;
 import br.com.sisfie.dto.CredenciamentoDTO;
 import br.com.sisfie.dto.EtiquetaDTO;
+import br.com.sisfie.dto.MapaFrequencia;
 import br.com.sisfie.dto.OficinaDTO;
+import br.com.sisfie.dto.crossTab.CrossTab;
+import br.com.sisfie.dto.crossTab.Header;
 import br.com.sisfie.entidade.Candidato;
 import br.com.sisfie.entidade.Credenciamento;
 import br.com.sisfie.entidade.Curso;
@@ -36,6 +42,7 @@ import br.com.sisfie.entidade.InscricaoGrade;
 import br.com.sisfie.entidade.Turma;
 import br.com.sisfie.service.CredenciamentoService;
 import br.com.sisfie.service.CursoService;
+import br.com.sisfie.service.FrequenciaService;
 import br.com.sisfie.service.InscricaoCursoService;
 import br.com.sisfie.service.TurmaService;
 
@@ -48,6 +55,8 @@ import br.com.sisfie.service.TurmaService;
 public class RelatorioFrequenciaBean extends PaginableBean<Frequencia> {
 
 	private static final long serialVersionUID = -1076197214282604639L;
+	private static final Integer MINIMO_HORAS_FREQUENCIA_TURNO = 3;
+	private static final String FORMATO_EXCEL = "xls";
 
 	@ManagedProperty(value = "#{CursoService}")
 	protected CursoService cursoService;
@@ -61,6 +70,9 @@ public class RelatorioFrequenciaBean extends PaginableBean<Frequencia> {
 	@ManagedProperty(value = "#{inscricaoCursoService}")
 	protected InscricaoCursoService inscricaoCursoService;
 
+	@ManagedProperty(value = "#{frequenciaService}")
+	protected FrequenciaService frequenciaService;
+
 	private Curso curso;
 	private InscricaoCurso inscricaoCurso;
 	private Integer idTurma;
@@ -69,7 +81,9 @@ public class RelatorioFrequenciaBean extends PaginableBean<Frequencia> {
 	private List<Credenciamento> listaCredenciamento;
 	private List<InscricaoCurso> listaEtiquetas;
 	private List<InscricaoCurso> listaCrachas;
+	private List<InscricaoCurso> listaMapaFrequencia;
 	private boolean exibirBotaoGerarCredenciamento;
+	private boolean exibirMinutos;
 
 	public RelatorioFrequenciaBean() {
 		curso = new Curso();
@@ -79,6 +93,7 @@ public class RelatorioFrequenciaBean extends PaginableBean<Frequencia> {
 		listaCredenciamento = new ArrayList<Credenciamento>();
 		listaEtiquetas = new ArrayList<InscricaoCurso>();
 		listaCrachas = new ArrayList<InscricaoCurso>();
+		listaMapaFrequencia = new ArrayList<InscricaoCurso>();
 	}
 
 	@PostConstruct
@@ -115,6 +130,184 @@ public class RelatorioFrequenciaBean extends PaginableBean<Frequencia> {
 			}
 		} catch (Exception e) {
 			ExcecaoUtil.tratarExcecao(e);
+		}
+	}
+
+	public void gerarRelatorioMapaFrequencia() {
+		try {
+			if (!validarCurso()) {
+				return;
+			}
+
+			listaMapaFrequencia = inscricaoCursoService.listarInscricoes(curso, inscricaoCurso, idTurma);
+
+			List<AlunoDTO> listaFrequencia = new ArrayList<AlunoDTO>();
+
+			if (listaMapaFrequencia != null && !listaMapaFrequencia.isEmpty()) {
+
+				for (InscricaoCurso inscricaoCurso : listaMapaFrequencia) {
+
+					AlunoDTO alunoDTO = new AlunoDTO(inscricaoCurso.getInscricao(),
+							inscricaoCurso.getCandidato().getNome().toUpperCase(),
+							inscricaoCurso.getCandidato().getOrgao().getNomeSiglaFormat());
+
+					// Esta será incrementada em um dia até atingir a data final do evento
+					Calendar datFrequencia = new GregorianCalendar();
+					datFrequencia.setTimeInMillis(curso.getDtRealizacaoInicio().getTime());
+
+					// Data inicio do evento
+					Calendar datInicioEvento = new GregorianCalendar();
+					datInicioEvento.setTimeInMillis(curso.getDtRealizacaoInicio().getTime());
+
+					// Data fim do evento
+					Calendar datFimEvento = new GregorianCalendar();
+					datFimEvento.setTimeInMillis(curso.getDtRealizacaoFim().getTime());
+
+					// Data corrente do evento
+					Calendar datCorrente = Calendar.getInstance();
+
+					DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
+					do {
+						FREQUENCIA manha = FREQUENCIA.A_COMPARECE;
+						FREQUENCIA tarde = FREQUENCIA.A_COMPARECE;
+
+						Calendar datHorFreqMANHA_INI = new GregorianCalendar(datFrequencia.get(Calendar.YEAR),
+								datFrequencia.get(Calendar.MONTH), datFrequencia.get(Calendar.DAY_OF_MONTH), 8, 30);
+						Calendar datHorFreqMANHA_FIM = new GregorianCalendar(datFrequencia.get(Calendar.YEAR),
+								datFrequencia.get(Calendar.MONTH), datFrequencia.get(Calendar.DAY_OF_MONTH), 12, 30);
+						Calendar datHorFreqTARDE_INI = new GregorianCalendar(datFrequencia.get(Calendar.YEAR),
+								datFrequencia.get(Calendar.MONTH), datFrequencia.get(Calendar.DAY_OF_MONTH), 14, 00);
+						Calendar datHorFreqTARDE_FIM = new GregorianCalendar(datFrequencia.get(Calendar.YEAR),
+								datFrequencia.get(Calendar.MONTH), datFrequencia.get(Calendar.DAY_OF_MONTH), 18, 00);
+
+						Integer minutosFrequenciaManha = 0;
+						Integer minutosFrequenciaTarde = 0;
+
+						if (datHorFreqMANHA_INI.before(datCorrente)) {
+
+							List<Frequencia> frequencias = frequenciaService
+									.pesquisarFrequenciasData(inscricaoCurso.getInscricao(), datFrequencia);
+
+							if (null == frequencias || frequencias.isEmpty()) {
+								manha = FREQUENCIA.AUSENTE;
+								tarde = FREQUENCIA.AUSENTE;
+							} else {
+
+								for (Frequencia fre : frequencias) {
+									if (fre.getHorarioEntrada().before(datHorFreqMANHA_FIM.getTime())) { // até 12 e 30
+										/* Manhã */
+										int diffInMin = (int) ((fre.getHorarioSaida().getTime()
+												- fre.getHorarioEntrada().getTime()) / (1000 * 60));
+										minutosFrequenciaManha += diffInMin;
+									} else {
+										/* Tarde */
+										int diffInMin = (int) ((fre.getHorarioSaida().getTime()
+												- fre.getHorarioEntrada().getTime()) / (1000 * 60));
+										minutosFrequenciaTarde += diffInMin;
+									}
+								}
+
+								if (minutosFrequenciaManha >= MINIMO_HORAS_FREQUENCIA_TURNO * 60)
+									manha = FREQUENCIA.PRESENTE;
+								else if (datHorFreqMANHA_INI.before(datCorrente) && datHorFreqMANHA_FIM.after(datCorrente)
+										&& minutosFrequenciaManha > 0)
+									// Está na sala mais a frequencia do turno ainda não fechou
+									manha = FREQUENCIA.PRESENCA_PARCIAL;
+								else
+									manha = FREQUENCIA.AUSENTE;
+
+								// Total de frequencia deu mais de 180 minutos
+								if (minutosFrequenciaTarde >= MINIMO_HORAS_FREQUENCIA_TURNO * 60)
+									tarde = FREQUENCIA.PRESENTE;
+								else if (datHorFreqTARDE_INI.before(datCorrente) && datHorFreqTARDE_FIM.after(datCorrente)
+										&& minutosFrequenciaTarde > 0)
+									// Está na sala mais a frequencia do turno ainda não fechou
+									tarde = FREQUENCIA.PRESENCA_PARCIAL;
+								else
+									tarde = FREQUENCIA.AUSENTE;
+							}
+
+							// No primeiro dia a frequência da manhã é por meio do credenciamento, se for credenciado tem frequencia
+							if (datFrequencia.get(Calendar.DAY_OF_MONTH) == datInicioEvento.get(Calendar.DAY_OF_MONTH))
+								if (credenciamentoService.recuperarCredenciamento(inscricaoCurso.getInscricao()) != null) {
+									// Crendenciado, então tem frequencia na manhã do dia do evento
+									minutosFrequenciaManha = 240;
+									manha = FREQUENCIA.PRESENTE;
+								}
+						}
+
+						if (exibirMinutos) {
+							// EXIBIR os minutos ao invés de F, P ou PP
+							alunoDTO.getMapaFrequencia().add(new MapaFrequencia(df.format(datFrequencia.getTime()) + " MANHÃ",
+									minutosFrequenciaManha.toString()));
+							alunoDTO.getMapaFrequencia().add(new MapaFrequencia(df.format(datFrequencia.getTime()) + " TARDE",
+									minutosFrequenciaTarde.toString()));
+						} else {
+							alunoDTO.getMapaFrequencia()
+									.add(new MapaFrequencia(df.format(datFrequencia.getTime()) + " MANHÃ", manha.getStatus()));
+							alunoDTO.getMapaFrequencia()
+									.add(new MapaFrequencia(df.format(datFrequencia.getTime()) + " TARDE", tarde.getStatus()));
+						}
+
+						// Próxima dia do Evento
+						datFrequencia.add(Calendar.DAY_OF_MONTH, 1);
+					} while (datFrequencia.before(datFimEvento) || datFrequencia.compareTo(datFimEvento) == 0);
+
+					listaFrequencia.add(alunoDTO);
+				}
+
+				String caminho = "/jasper/mapaGeral.jasper";
+				String nomeRelatorio = "MapaFrequencia";
+
+				calcularTotalFaltas(listaFrequencia);
+
+				Map<String, Object> map = new HashMap<String, Object>();
+				map.put("image", FacesContext.getCurrentInstance().getExternalContext()
+						.getRealPath("/resources/design/imagem-default/logo_esaf_relatorio.png"));
+				map.put("tituloDescricaoSemana", curso.getCursoData());
+				map.put("tituloDataLocal", curso.getLocalizacao().getDescricao());
+
+				RelatorioUtil.gerarRelatorio(montarCrossTab(listaFrequencia), map, caminho, nomeRelatorio, FORMATO_EXCEL);
+
+			} else {
+				FacesMessagesUtil.addErrorMessage("", "Não há candidatos para gerar o mapa de frequência.");
+			}
+		} catch (Exception e) {
+			ExcecaoUtil.tratarExcecao(e);
+		}
+	}
+
+	private List<CrossTab> montarCrossTab(List<AlunoDTO> lista) {
+		List<CrossTab> listaRetorno = new ArrayList<CrossTab>();
+		Integer cont = 1;
+		for (AlunoDTO list : lista) {
+			Integer posicao = 1;
+			// Atributos do aluno
+			listaRetorno.add(new CrossTab(new Header("Nome", posicao++), cont, list.getNomeCompleto()));
+			listaRetorno.add(new CrossTab(new Header("Inscrição", posicao++), cont, list.getInscricao()));
+			listaRetorno.add(new CrossTab(new Header("Órgão", posicao++), cont, list.getOrgao()));
+			for (MapaFrequencia frequencia : list.getMapaFrequencia()) {
+				// atributos da frequencia
+				listaRetorno.add(new CrossTab(new Header(frequencia.getData(), posicao++), cont, frequencia.getPresenca()));
+			}
+			listaRetorno.add(new CrossTab(new Header("Total Faltas", posicao++), cont, list.getTotalFaltas()));
+			cont++;
+		}
+		return listaRetorno;
+	}
+
+	private void calcularTotalFaltas(List<AlunoDTO> listaFrequencia) {
+		for (AlunoDTO alunoDTO : listaFrequencia) {
+			Integer totalFaltas = 0;
+			for (MapaFrequencia frequencia : alunoDTO.getMapaFrequencia()) {
+				if (frequencia.getPresenca() == null || frequencia.getPresenca().isEmpty()) {
+					continue;
+				}
+				if (frequencia.getPresenca().equalsIgnoreCase("F")) {
+					totalFaltas++;
+				}
+				alunoDTO.setTotalFaltas(totalFaltas.toString());
+			}
 		}
 	}
 
@@ -397,5 +590,43 @@ public class RelatorioFrequenciaBean extends PaginableBean<Frequencia> {
 
 	public void setListaCrachas(List<InscricaoCurso> listaCrachas) {
 		this.listaCrachas = listaCrachas;
+	}
+
+	public List<InscricaoCurso> getListaMapaFrequencia() {
+		return listaMapaFrequencia;
+	}
+
+	public void setListaMapaFrequencia(List<InscricaoCurso> listaMapaFrequencia) {
+		this.listaMapaFrequencia = listaMapaFrequencia;
+	}
+
+	public boolean isExibirMinutos() {
+		return exibirMinutos;
+	}
+
+	public void setExibirMinutos(boolean exibirMinutos) {
+		this.exibirMinutos = exibirMinutos;
+	}
+
+	public FrequenciaService getFrequenciaService() {
+		return frequenciaService;
+	}
+
+	public void setFrequenciaService(FrequenciaService frequenciaService) {
+		this.frequenciaService = frequenciaService;
+	}
+}
+
+enum FREQUENCIA {
+	PRESENTE("P"), AUSENTE("F"), A_COMPARECE(""), PRESENCA_PARCIAL("PP");
+
+	private String status;
+
+	private FREQUENCIA(String status) {
+		this.status = status;
+	}
+
+	public String getStatus() {
+		return this.status;
 	}
 }

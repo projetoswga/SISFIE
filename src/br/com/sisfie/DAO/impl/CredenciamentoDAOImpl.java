@@ -40,4 +40,11 @@ public class CredenciamentoDAOImpl extends HibernateDaoSupport implements Creden
 		}
 		return criteria.list();
 	}
+
+	@Override
+	public Credenciamento recuperarCredenciamento(String inscricao) {
+		Criteria criteria = getSession().createCriteria(Credenciamento.class);
+		criteria.add(Restrictions.eq("numInscricao", inscricao));
+		return null;
+	}
 }
