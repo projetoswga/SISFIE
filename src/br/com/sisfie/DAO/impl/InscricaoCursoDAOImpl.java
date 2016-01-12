@@ -711,4 +711,11 @@ public class InscricaoCursoDAOImpl extends HibernateDaoSupport implements Inscri
 		}
 		return null;
 	}
+
+	@Override
+	public InscricaoCurso recuperarInscricao(String numInscricao) {
+		Criteria criteria = getSession().createCriteria(InscricaoCurso.class);
+		criteria.add(Restrictions.like("inscricao", numInscricao));
+		return (InscricaoCurso) criteria.uniqueResult();
+	}
 }

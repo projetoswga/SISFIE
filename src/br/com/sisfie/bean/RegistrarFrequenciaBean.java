@@ -178,6 +178,7 @@ public class RegistrarFrequenciaBean extends PaginableBean<Frequencia> {
 			verificandoComoSeraRegistradoFrequencia();
 			carregarListaFrequencia(inscricaoGrade.getGradeOficina(), inscricaoCurso);
 			limparCampos();
+			FacesMessagesUtil.addInfoMessage("", "Registro realizado com sucesso.");
 		} catch (Exception e) {
 			ExcecaoUtil.tratarExcecao(e);
 		}
@@ -258,10 +259,10 @@ public class RegistrarFrequenciaBean extends PaginableBean<Frequencia> {
 
 	public void pesquisar() {
 		try {
-			if (!validarCredenciamento()) {
+			if (!validarCampos()) {
 				return;
 			}
-			if (!validarCampos()) {
+			if (inscricaoCurso.getCurso().getFlgPossuiOficina() && !validarCredenciamento()) {
 				return;
 			}
 			carregarListaFrequencia(inscricaoGrade.getGradeOficina(), inscricaoCurso);

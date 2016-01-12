@@ -24,14 +24,14 @@
 						<p:inputText id="numInscricao" value="#{espelhoFrequenciaBean.inscricaoCurso.inscricao}" maxlength="14"
 							onkeyup="verificarQuantidadeDigitosExecutarEnter();" />
 						<p:spacer width="10" />
-						<p:commandButton id="btnPesquisar" value="Pesquisar" onclick="informacao.show();" action="#{espelhoFrequenciaBean.pesquisar}" />
+						<p:commandButton id="btnPesquisar" value="Pesquisar" action="#{espelhoFrequenciaBean.pesquisar}" update="@form"/>
 					</h:panelGrid>
 				</h:panelGrid>
 
 				<p:spacer height="30" />
 
 				<p:panel id="espelho" header="Extrato">
-					<p:inputTextarea rows="40" style="width: 99%" />
+					<p:inputTextarea value="#{espelhoFrequenciaBean.display}" rows="42" style="width: 99%" cols="1" autoResize="false"/>
 				</p:panel>
 
 				<p:spacer height="20" />
@@ -42,13 +42,6 @@
 
 				<p:spacer height="20" />
 			</p:fieldset>
-
-			<p:confirmDialog appendToBody="true" message="Funcionalidade em implementação!" header="Informação" severity="info"
-				widgetVar="informacao" id="idInformacao">
-				<div style="text-align: right">
-					<p:commandButton value="OK" onclick="informacao.hide()" />
-				</div>
-			</p:confirmDialog>
 		</h:form>
 	</ui:define>
 </ui:composition>

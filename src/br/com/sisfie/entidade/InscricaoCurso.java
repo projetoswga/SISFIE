@@ -83,6 +83,9 @@ public class InscricaoCurso extends Entidade<Integer> {
 	
 	@OneToMany(mappedBy = "inscricaoCurso", fetch = FetchType.LAZY)
 	private Set<SelecaoOficina> selecaoOficina = new HashSet<SelecaoOficina>(0);
+	
+	@OneToMany(mappedBy = "inscricaoCurso", fetch = FetchType.LAZY)
+	private Set<Frequencia> frequencias = new HashSet<Frequencia>(0);
 
 	@Transient
 	private String dtCadastroFormat;
@@ -231,6 +234,14 @@ public class InscricaoCurso extends Entidade<Integer> {
 
 	public void setFlgParceiro(Boolean flgParceiro) {
 		this.flgParceiro = flgParceiro;
+	}
+
+	public Set<Frequencia> getFrequencias() {
+		return frequencias;
+	}
+
+	public void setFrequencias(Set<Frequencia> frequencias) {
+		this.frequencias = frequencias;
 	}
 
 }

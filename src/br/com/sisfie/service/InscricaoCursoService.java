@@ -63,4 +63,6 @@ public interface InscricaoCursoService {
 
 	List<InscricaoCurso> listarInscricoes(Curso curso, InscricaoCurso inscricaoCurso, Integer idTurma);
 
+	InscricaoCurso recuperarInscricao(String numInscricao);
+
 }
