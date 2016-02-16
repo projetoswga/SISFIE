@@ -52,7 +52,7 @@
 			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="lib/commons-io-2.1.jar">
+	<classpathentry kind="lib" path="lib/commons-io-2.1.jar" sourcepath="C:/Users/Wesley Marra/.m2/repository/commons-io/commons-io/2.1/commons-io-2.1-sources.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
 		</attributes>

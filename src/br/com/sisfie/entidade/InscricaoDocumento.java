@@ -4,6 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.net.URL;
 import java.sql.SQLException;
 import java.util.Date;
 
@@ -27,6 +28,7 @@ import org.primefaces.model.StreamedContent;
 
 import br.com.arquitetura.entidade.Entidade;
 import br.com.arquitetura.excecao.ExcecaoUtil;
+import br.com.sisfie.util.Constantes;
 
 @Entity
 @Table(name = "inscricao_documento", catalog = "SISFIE")
@@ -112,16 +114,25 @@ public class InscricaoDocumento extends Entidade<Integer> {
 
 	public StreamedContent getContent() throws SQLException {
 		try {
-			
-			if(imgDocumento != null){
-				InputStream is = new ByteArrayInputStream(imgDocumento);
-				content = new DefaultStreamedContent(is, this.getNomTipo(), this.getNomArquivo());
-			}else if (urlImagem != null) {
+
+			if(Constantes.ATIVA_IMG_LINK){
+				/*
+				 * Conforme solicitação do SERPRO as imagens serão acessadas via link
+				 */
+				if (nomArquivo != null && !nomArquivo.isEmpty()) {
+					/*
+					 * Ex: http://localhost:8080/SISFIE/resources/design/imagem/+cabecalho.jpg
+					 */
+					InputStream is = new URL(Constantes.PATH_LINK_IMG + nomArquivo).openStream();
+					content = new DefaultStreamedContent(is, this.getNomTipo(), this.getNomArquivo());
+				}
+			}else{
 				File file = new File(urlImagem);
 				InputStream is = new FileInputStream(file);
 				content = new DefaultStreamedContent(is, this.getNomTipo(), this.getNomArquivo());
 			}
 			
+
 		} catch (Exception e) {
 			ExcecaoUtil.tratarExcecao(e);
 		}
