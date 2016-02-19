@@ -479,7 +479,7 @@
 										value="#{gerenciarCursoBean.inscricaoCurso.comprovantes}"
 										rowStyleClass="#{empty rowIx or rowIx mod 2 ne 0 ? 'linhaImpar' : 'linhaPar'}" paginator="true" rows="10" rowIndexVar="rowIx">
 										<p:column headerText="Nome" style="width:75%">
-											<p:commandLink target="_blank" value="#{listaAnexo.nome}" process="@this"
+											<h:commandLink target="_blank" value="#{listaAnexo.nome}" process="@this"
 												action="#{gerenciarCursoBean.baixarComprovante(listaAnexo.id , 'comprovante')}" rendered="#{listaAnexo.id ne null}" />
 											<h:outputLabel value="#{listaAnexo.nome}" rendered="#{listaAnexo.id eq null}" />
 										</p:column>
