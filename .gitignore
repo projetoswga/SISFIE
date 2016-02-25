@@ -1,6 +1,6 @@
 /build/*
+/build/
+/bin/
+/bin/*
 .settings/*
 .tern-project
-.classpath
-
-/build/
