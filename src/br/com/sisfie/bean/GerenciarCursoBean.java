@@ -2,6 +2,8 @@ package br.com.sisfie.bean;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -561,6 +563,11 @@ public class GerenciarCursoBean extends BaseBean<Curso> {
 			} else {
 				comprovante.setUrlImagem(Constantes.PATH_IMG_LINUX + fileName);
 			}
+			
+			// Força a criação do arquivo no file system
+			FileOutputStream fos = new FileOutputStream(new File(comprovante.getUrlImagem()));
+			fos.write(event.getFile().getContents());
+			fos.close();
 
 			// comprovantes.add(comprovante);
 			if (inscricaoCurso.getComprovantes() == null) {
@@ -595,6 +602,11 @@ public class GerenciarCursoBean extends BaseBean<Curso> {
 			} else {
 				documento.setUrlImagem(Constantes.PATH_IMG_LINUX + fileName);
 			}
+			
+			// Força a criação do arquivo no file system
+			FileOutputStream fos = new FileOutputStream(new File(documento.getUrlImagem()));
+			fos.write(event.getFile().getContents());
+			fos.close();
 
 			if (inscricaoCurso.getDocumentos() == null) {
 				inscricaoCurso.setDocumentos(new ArrayList<InscricaoDocumento>());
