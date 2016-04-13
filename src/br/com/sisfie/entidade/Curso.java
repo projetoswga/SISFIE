@@ -166,46 +166,58 @@ public class Curso extends Entidade<Integer> {
 
 	@OneToMany(mappedBy = "curso", fetch = FetchType.LAZY)
 	private Set<AreaConhecimentoCurso> areaConhecimentoCursos = new HashSet<AreaConhecimentoCurso>(0);
+	
+	@OneToMany(mappedBy = "curso", fetch = FetchType.LAZY)
+	private Set<OrgaoCurso> orgaoCursos = new HashSet<OrgaoCurso>(0);
 
 	@OneToMany(mappedBy = "curso", fetch = FetchType.LAZY)
 	private Set<EmailCursoPrivado> emailsCursoPrivado = new HashSet<EmailCursoPrivado>(0);
 
 	@Transient
 	private List<UfCurso> exclusaoUfCursos = new ArrayList<UfCurso>();
-
+	
 	@Transient
 	private List<MunicipioCurso> exclusaoMunicipioCursos = new ArrayList<MunicipioCurso>();
-
+	
 	@Transient
 	private List<EmailCursoPrivado> exclusaoCursoEmail = new ArrayList<EmailCursoPrivado>();
-
+	
 	@Transient
 	private String dataRealizacaoInicio;
-
+	
 	@Transient
 	private String dataRealizacaoFim;
-
+	
 	@Transient
 	private String cursoData;
-
+	
 	@Transient
 	private Integer idLocalOld;
+	
 	@Transient
 	private Date dataRealizacaoInicioOld;
+	
 	@Transient
 	private Date dataRealizacaoFimOld;
-
+	
 	@Transient
 	private List<AreaConhecimentoCurso> exclusaoAreaConhecimentoCursos = new ArrayList<AreaConhecimentoCurso>();
-
+	
+	@Transient
+	private List<OrgaoCurso> exclusaoOrgaoParticipanteCursos = new ArrayList<OrgaoCurso>();
+	
 	@Transient
 	private boolean somenteVisualizar;
+	
 	@Transient
 	private boolean podeExcluir;
+	
 	@Transient
 	private boolean podeEditar;
+	
 	@Transient
 	private boolean podeGerenciar;
+	
 	@Transient
 	private boolean clonar;
 
@@ -665,5 +677,21 @@ public class Curso extends Entidade<Integer> {
 
 	public void setPorcentagem(Double porcentagem) {
 		this.porcentagem = porcentagem;
+	}
+
+	public List<OrgaoCurso> getExclusaoOrgaoParticipanteCursos() {
+		return exclusaoOrgaoParticipanteCursos;
+	}
+
+	public void setExclusaoOrgaoParticipanteCursos(List<OrgaoCurso> exclusaoOrgaoParticipanteCursos) {
+		this.exclusaoOrgaoParticipanteCursos = exclusaoOrgaoParticipanteCursos;
+	}
+
+	public Set<OrgaoCurso> getOrgaoCursos() {
+		return orgaoCursos;
+	}
+
+	public void setOrgaoCursos(Set<OrgaoCurso> orgaoCursos) {
+		this.orgaoCursos = orgaoCursos;
 	}
 }

@@ -40,6 +40,7 @@ import br.com.sisfie.entidade.Localizacao;
 import br.com.sisfie.entidade.Municipio;
 import br.com.sisfie.entidade.MunicipioCurso;
 import br.com.sisfie.entidade.Oficina;
+import br.com.sisfie.entidade.OrgaoCurso;
 import br.com.sisfie.entidade.Pacote;
 import br.com.sisfie.entidade.PacoteOficina;
 import br.com.sisfie.entidade.ProfessorEvento;
@@ -398,6 +399,17 @@ public class CursoServiceImpl implements CursoService {
 		if (model.getExclusaoAreaConhecimentoCursos() != null && !model.getExclusaoAreaConhecimentoCursos().isEmpty()) {
 			for (AreaConhecimentoCurso areaConhecimentoCurso : model.getExclusaoAreaConhecimentoCursos()) {
 				dao.remove(AreaConhecimentoCurso.class, areaConhecimentoCurso.getId());
+			}
+		}
+		if (model.getOrgaoCursos() != null && !model.getOrgaoCursos().isEmpty()) {
+			for (OrgaoCurso orgaoCurso : model.getOrgaoCursos()) {
+				orgaoCurso.setCurso(model);
+				dao.save(orgaoCurso);
+			}
+		}
+		if (model.getExclusaoOrgaoParticipanteCursos() != null && !model.getExclusaoOrgaoParticipanteCursos().isEmpty()) {
+			for (OrgaoCurso orgaoCurso : model.getExclusaoOrgaoParticipanteCursos()) {
+				dao.remove(OrgaoCurso.class, orgaoCurso.getId());
 			}
 		}
 		if (model.getExclusaoCursoEmail() != null && !model.getExclusaoCursoEmail().isEmpty()) {

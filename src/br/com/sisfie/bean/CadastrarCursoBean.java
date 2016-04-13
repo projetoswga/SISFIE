@@ -40,6 +40,7 @@ import br.com.sisfie.entidade.MunicipioCurso;
 import br.com.sisfie.entidade.Oficina;
 import br.com.sisfie.entidade.OpcaoListaCandidato;
 import br.com.sisfie.entidade.Orgao;
+import br.com.sisfie.entidade.OrgaoCurso;
 import br.com.sisfie.entidade.Pacote;
 import br.com.sisfie.entidade.ProfessorEvento;
 import br.com.sisfie.entidade.Sala;
@@ -90,6 +91,7 @@ public class CadastrarCursoBean extends BaseBean<Curso> {
 	private List<EmailCursoPrivado> emailsCursoPrivado;
 	private List<EmailCursoPrivado> emailsParceiros;
 	private List<EmailCursoPrivado> emailsInstrutores;
+	private List<OrgaoCurso> orgaoCursos;
 
 	// dto para Model
 	private Integer idArea;
@@ -122,6 +124,8 @@ public class CadastrarCursoBean extends BaseBean<Curso> {
 	private String numeroVagas;
 	private AreaConhecimento areaConhecimentoSelecionada;
 	private AreaConhecimentoCurso areaConhecimentoCursoExclusao;
+	private Orgao orgaoParticipanteSelecionado;
+	private OrgaoCurso orgaoCursoExclusao;
 
 	public CadastrarCursoBean() {
 		areas = new ArrayList<Area>();
@@ -135,6 +139,9 @@ public class CadastrarCursoBean extends BaseBean<Curso> {
 		emailsCursoPrivado = new ArrayList<EmailCursoPrivado>();
 		emailsParceiros = new ArrayList<EmailCursoPrivado>();
 		emailsInstrutores = new ArrayList<EmailCursoPrivado>();
+		orgaoParticipanteSelecionado = new Orgao();
+		orgaoCursoExclusao = new OrgaoCurso();
+		orgaoCursos = new ArrayList<>();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -156,6 +163,7 @@ public class CadastrarCursoBean extends BaseBean<Curso> {
 				getModel().setUfCursos(new HashSet<UfCurso>());
 				getModel().setMunicipioCursos(new HashSet<MunicipioCurso>());
 				getModel().setAreaConhecimentoCursos(new HashSet<AreaConhecimentoCurso>());
+				getModel().setOrgaoCursos(new HashSet<OrgaoCurso>());
 				getModel().setClonar(clone);
 
 				// Caso o curso clonado ja tenha sido finalizado
@@ -172,6 +180,10 @@ public class CadastrarCursoBean extends BaseBean<Curso> {
 				for (AreaConhecimentoCurso areaConhecimentoCurso : areaConhecimentoCursos) {
 					areaConhecimentoCurso.setId(null);
 					areaConhecimentoCurso.setCurso(getModel());
+				}
+				for (OrgaoCurso orgaoCurso : orgaoCursos) {
+					orgaoCurso.setId(null);
+					orgaoCurso.setCurso(getModel());
 				}
 
 				// Carregando novamente as turmas pois estava dando a exceção collection is not associated with any session
@@ -335,6 +347,27 @@ public class CadastrarCursoBean extends BaseBean<Curso> {
 			ExcecaoUtil.tratarExcecao(e);
 		}
 	}
+	
+	public void adicionarOrgaoParticipante() {
+		try {
+			if (orgaoParticipanteSelecionado == null || orgaoParticipanteSelecionado.getId() == null) {
+				FacesMessagesUtil.addErrorMessage("Órgão Participante ", "Inexistente!");
+				return;
+			}
+			OrgaoCurso orgaoCurso = new OrgaoCurso();
+			orgaoCurso.setOrgao(orgaoParticipanteSelecionado);
+			for (OrgaoCurso orgaoPart : orgaoCursos) {
+				if (orgaoPart.getOrgao().getId().equals(orgaoParticipanteSelecionado.getId())) {
+					FacesMessagesUtil.addErrorMessage("Órgão Participante ", "Já adicionado");
+					return;
+				}
+			}
+			orgaoCursos.add(orgaoCurso);
+			orgaoParticipanteSelecionado = new Orgao();
+		} catch (Exception e) {
+			ExcecaoUtil.tratarExcecao(e);
+		}
+	}
 
 	public void excluirAreaConhecimentoCurso() {
 		if (areaConhecimentoCursoExclusao != null) {
@@ -344,6 +377,20 @@ public class CadastrarCursoBean extends BaseBean<Curso> {
 					getModel().getExclusaoAreaConhecimentoCursos().add(areaConhecimentoCursoExclusao);
 				}
 				FacesMessagesUtil.addInfoMessage("Área de Conhecimento", "Removida com sucesso!");
+			} catch (Exception e) {
+				ExcecaoUtil.tratarExcecao(e);
+			}
+		}
+	}
+	
+	public void excluirOrgaoParticipante() {
+		if (orgaoCursoExclusao != null) {
+			try {
+				orgaoCursos.remove(orgaoCursoExclusao);
+				if (orgaoCursoExclusao.getId() != null) {
+					getModel().getExclusaoOrgaoParticipanteCursos().add(orgaoCursoExclusao);
+				}
+				FacesMessagesUtil.addInfoMessage("Órgão Participante", "Removido com sucesso!");
 			} catch (Exception e) {
 				ExcecaoUtil.tratarExcecao(e);
 			}
@@ -453,6 +500,9 @@ public class CadastrarCursoBean extends BaseBean<Curso> {
 
 		if (getModel().getAreaConhecimentoCursos() != null && !getModel().getAreaConhecimentoCursos().isEmpty()) {
 			areaConhecimentoCursos = new ArrayList<AreaConhecimentoCurso>(getModel().getAreaConhecimentoCursos());
+		}
+		if (getModel().getOrgaoCursos() != null && !getModel().getOrgaoCursos().isEmpty()) {
+			orgaoCursos = new ArrayList<OrgaoCurso>(getModel().getOrgaoCursos());
 		}
 		if (getModel().getFlgPossuiOficina() && getModel().getNumPercentualVagasParceiro() != null
 				&& getModel().getNumPercentualVagasParceiro() > 0) {
@@ -845,6 +895,10 @@ public class CadastrarCursoBean extends BaseBean<Curso> {
 			if (areaConhecimentoCursos != null && !areaConhecimentoCursos.isEmpty()) {
 				getModel().getAreaConhecimentoCursos().addAll(areaConhecimentoCursos);
 			}
+			
+			if (orgaoCursos != null && !orgaoCursos.isEmpty()) {
+				getModel().getOrgaoCursos().addAll(orgaoCursos);
+			}
 
 			if (getModel().getId() == null) {
 				getModel().setUsuario(loginBean.getModel());
@@ -928,6 +982,7 @@ public class CadastrarCursoBean extends BaseBean<Curso> {
 		municipioCurso = new MunicipioCurso();
 		areaConhecimentoCursos = new ArrayList<AreaConhecimentoCurso>();
 		emailsInstrutores = new ArrayList<>(); 
+		orgaoCursos = new ArrayList<>();
 	}
 
 	public void limparVagas() {
@@ -1394,5 +1449,29 @@ public class CadastrarCursoBean extends BaseBean<Curso> {
 
 	public void setEmailDeleteInstrutor(EmailCursoPrivado emailDeleteInstrutor) {
 		this.emailDeleteInstrutor = emailDeleteInstrutor;
+	}
+
+	public Orgao getOrgaoParticipanteSelecionado() {
+		return orgaoParticipanteSelecionado;
+	}
+
+	public void setOrgaoParticipanteSelecionado(Orgao orgaoParticipanteSelecionado) {
+		this.orgaoParticipanteSelecionado = orgaoParticipanteSelecionado;
+	}
+
+	public List<OrgaoCurso> getOrgaoCursos() {
+		return orgaoCursos;
+	}
+
+	public void setOrgaoCursos(List<OrgaoCurso> orgaoCursos) {
+		this.orgaoCursos = orgaoCursos;
+	}
+
+	public OrgaoCurso getOrgaoCursoExclusao() {
+		return orgaoCursoExclusao;
+	}
+
+	public void setOrgaoCursoExclusao(OrgaoCurso orgaoCursoExclusao) {
+		this.orgaoCursoExclusao = orgaoCursoExclusao;
 	}
 }

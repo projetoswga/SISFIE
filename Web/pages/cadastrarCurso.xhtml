@@ -270,6 +270,47 @@
 					</p:fieldset>
 				</h:panelGrid>
 				<br />
+				<h:panelGrid id="orgaosParticipantes" width="100%">
+					<p:fieldset legend="Órgãos Participantes" id="fieldOrgaoParticipantes">
+						<h:panelGrid columns="2" id="orgaoParticipante" width="100%" columnClasses="coluna20,coluna80">
+							<h:outputLabel value="Órgão:" />
+							<h:panelGrid columns="2" id="panelAdicaoOrgaoParticipante" border="0" style="text-align: left;">
+								<p:autoComplete queryDelay="500" value="#{CadastrarCursoBean.orgaoParticipanteSelecionado}" minQueryLength="2" id="orgaoPartic" size="57"
+									completeMethod="#{CadastrarCursoBean.completeOrgao}" forceSelection="true" var="lista" itemLabel="#{lista.nomeSiglaFormat}"
+									itemValue="#{lista.id}" converter="OrgaoConverter" maxResults="15" scrollHeight="300">
+									<p:ajax event="itemSelect" update="panelAdicaoOrgaoParticipante,panelGridTableOrgaoParticipante"
+										process="panelAdicaoOrgaoParticipante" listener="#{CadastrarCursoBean.adicionarOrgaoParticipante}" />
+								</p:autoComplete>
+							</h:panelGrid>
+
+							<h:outputLabel value="" />
+							<h:panelGrid id="panelGridTableOrgaoParticipante" width="100%">
+								<p:dataTable var="orgaoParticipanteCurso" id="tableOrgaoParticipante" emptyMessage="#{CadastrarCursoBean.emptyMessage}"
+									update="tableOrgaoParticipante" rowIndexVar="rowIx" styleClass="coluna100" value="#{CadastrarCursoBean.orgaoCursos}"
+									rowStyleClass="#{empty rowIx or rowIx mod 2 ne 0 ? 'linhaImpar' : 'linhaPar'}"
+									rendered="#{not empty CadastrarCursoBean.orgaoCursos}">
+
+									<f:facet name="header">
+										<h:outputLabel value="Órgão Participantes Adicionadas" />
+									</f:facet>
+									<p:column headerText="Órgão" style="width:90%">
+										<h:outputLabel value="#{orgaoParticipanteCurso.orgao.nomeSiglaFormat}" />
+									</p:column>
+									<p:column style="width:10%;text-align:center;">
+										<f:facet name="header">
+											<h:outputLabel value="Ações" />
+										</f:facet>
+										<p:commandLink title="Excluir" process="@this" oncomplete="confirmationOrgaoParticipante.show()">
+											<h:graphicImage library="design/imagem" name="icone-excluir.png" />
+											<f:setPropertyActionListener target="#{CadastrarCursoBean.orgaoCursoExclusao}" value="#{orgaoParticipanteCurso}" />
+										</p:commandLink>
+									</p:column>
+								</p:dataTable>
+							</h:panelGrid>
+						</h:panelGrid>
+					</p:fieldset>
+				</h:panelGrid>
+				<br />
 				<h:panelGrid columns="3" border="0" columnClasses="coluna48,coluna4,coluna48" width="100%">
 					<p:dataTable id="homologacao" var="lista" value="#{CadastrarCursoBean.homologacaoDataModel}"
 						selection="#{CadastrarCursoBean.homologacao}" style="width:100%;">
@@ -455,6 +496,16 @@
 						actionListener="#{CadastrarCursoBean.excluirAreaConhecimentoCurso}" styleClass="ui-confirmdialog-yes" icon="ui-icon-check"
 						immediate="true" />
 					<p:commandButton value="Não" onclick="confirmationAreaConhecimento.hide()" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+				</div>
+			</p:confirmDialog>
+			
+			<p:confirmDialog appendToBody="true" message="Confirma a Exclusão" header="Exclusão" severity="alert"
+				widgetVar="confirmationOrgaoParticipante">
+				<div style="text-align: right">
+					<p:commandButton value="Sim" update="orgaosParticipantes" oncomplete="confirmationOrgaoParticipante.hide()"
+						actionListener="#{CadastrarCursoBean.excluirOrgaoParticipante}" styleClass="ui-confirmdialog-yes" icon="ui-icon-check"
+						immediate="true" />
+					<p:commandButton value="Não" onclick="confirmationOrgaoParticipante.hide()" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
 				</div>
 			</p:confirmDialog>
 
