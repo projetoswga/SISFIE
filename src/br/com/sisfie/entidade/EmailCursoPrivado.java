@@ -30,6 +30,9 @@ public class EmailCursoPrivado extends Entidade<Integer> {
 
 	@Column(name = "DSC_EMAIL", nullable = false)
 	private String email;
+	
+	@Column(name = "DSC_TIPO")
+	private String tipo;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "ID_CURSO")
@@ -61,6 +64,14 @@ public class EmailCursoPrivado extends Entidade<Integer> {
 
 	public static long getSerialversionuid() {
 		return serialVersionUID;
+	}
+
+	public String getTipo() {
+		return tipo;
+	}
+
+	public void setTipo(String tipo) {
+		this.tipo = tipo;
 	}
 
 }

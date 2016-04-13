@@ -54,6 +54,7 @@ import br.com.sisfie.service.CursoService;
 import br.com.sisfie.service.OrgaoService;
 import br.com.sisfie.util.Constantes;
 import br.com.sisfie.util.EmailUtil;
+import br.com.sisfie.util.TipoEmail;
 
 @ManagedBean(name = "CadastrarCursoBean")
 @ViewScoped
@@ -88,6 +89,7 @@ public class CadastrarCursoBean extends BaseBean<Curso> {
 	private List<AreaConhecimentoCurso> areaConhecimentoCursos;
 	private List<EmailCursoPrivado> emailsCursoPrivado;
 	private List<EmailCursoPrivado> emailsParceiros;
+	private List<EmailCursoPrivado> emailsInstrutores;
 
 	// dto para Model
 	private Integer idArea;
@@ -96,8 +98,8 @@ public class CadastrarCursoBean extends BaseBean<Curso> {
 	private Orgao orgaoSelecionado;
 	private Integer idTurno;
 	private String email;
-
 	private String emailParceiro;
+	private String emailInstrutor;
 
 	// 1-Por Data de Fim de Inscrição 2-Determinada pelo Gesto
 	private Integer idTipoInscricao;
@@ -114,6 +116,7 @@ public class CadastrarCursoBean extends BaseBean<Curso> {
 	private UfCurso ufCursoDelete;
 	private EmailCursoPrivado emailDelete;
 	private EmailCursoPrivado emailDeleteParceiro;
+	private EmailCursoPrivado emailDeleteInstrutor;
 	private MunicipioCurso municipioCurso;
 	private Date hoje = new Date();
 	private String numeroVagas;
@@ -131,6 +134,7 @@ public class CadastrarCursoBean extends BaseBean<Curso> {
 		areaConhecimentoCursos = new ArrayList<AreaConhecimentoCurso>();
 		emailsCursoPrivado = new ArrayList<EmailCursoPrivado>();
 		emailsParceiros = new ArrayList<EmailCursoPrivado>();
+		emailsInstrutores = new ArrayList<EmailCursoPrivado>();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -223,6 +227,7 @@ public class CadastrarCursoBean extends BaseBean<Curso> {
 				turma.setFlgAtivo(true);
 				turmas = ComboUtil.getItens(universalManager.listBy(turma));
 				Collections.sort(turmas, new Comparator<SelectItem>() {
+
 					@Override
 					public int compare(SelectItem o1, SelectItem o2) {
 						return o1.getLabel().trim().compareTo(o2.getLabel().trim());
@@ -242,7 +247,9 @@ public class CadastrarCursoBean extends BaseBean<Curso> {
 				});
 				homologacaoDataModel = new HomologacaoDataModel(listaHomologacao);
 			}
-			if (esferaGovernoDataModel == null) {
+			if (esferaGovernoDataModel == null)
+
+			{
 				EsferaGoverno esfera = new EsferaGoverno();
 				esfera.setFlgAtivo(true);
 				List<EsferaGoverno> listaEsfera = universalManager.listBy(esfera);
@@ -254,7 +261,9 @@ public class CadastrarCursoBean extends BaseBean<Curso> {
 				});
 				esferaGovernoDataModel = new EsferaGovernoDataModel(listaEsfera);
 			}
-			if (preenchimentoDataModel == null) {
+			if (preenchimentoDataModel == null)
+
+			{
 				CampoPreenchimento campo = new CampoPreenchimento();
 				campo.setFlgAtivo(true);
 				List<CampoPreenchimento> listaCampo = universalManager.listBy(campo);
@@ -266,7 +275,9 @@ public class CadastrarCursoBean extends BaseBean<Curso> {
 				});
 				preenchimentoDataModel = new CampoPreenchimentoDataModel(listaCampo);
 			}
-			if (opcaoDataModel == null) {
+			if (opcaoDataModel == null)
+
+			{
 				OpcaoListaCandidato opcao = new OpcaoListaCandidato();
 				opcao.setFlgAtivo(true);
 				List<OpcaoListaCandidato> opcaoListaCandidatos = universalManager.listBy(opcao);
@@ -278,7 +289,9 @@ public class CadastrarCursoBean extends BaseBean<Curso> {
 				});
 				opcaoDataModel = new OpcaoDataModel(opcaoListaCandidatos);
 			}
-			if (locais.isEmpty()) {
+			if (locais.isEmpty())
+
+			{
 				locais = universalManager.getAll(Localizacao.class);
 				Collections.sort(locais, new Comparator<Localizacao>() {
 					@Override
@@ -287,12 +300,19 @@ public class CadastrarCursoBean extends BaseBean<Curso> {
 					}
 				});
 			}
-			if (turnos.isEmpty()) {
+			if (turnos.isEmpty())
+
+			{
 				turnos = universalManager.getAll(Turno.class);
 			}
-		} catch (Exception e) {
+		} catch (
+
+		Exception e)
+
+		{
 			ExcecaoUtil.tratarExcecao(e);
 		}
+
 	}
 
 	public void adicionarAreaConhecimento() {
@@ -441,7 +461,15 @@ public class CadastrarCursoBean extends BaseBean<Curso> {
 			}
 		} else {
 			if (getModel().getEmailsCursoPrivado() != null && !getModel().getEmailsCursoPrivado().isEmpty()) {
-				emailsCursoPrivado = new ArrayList<EmailCursoPrivado>(getModel().getEmailsCursoPrivado());
+				emailsCursoPrivado = new ArrayList<>();
+				emailsInstrutores = new ArrayList<>();
+				for (EmailCursoPrivado email : getModel().getEmailsCursoPrivado()) {
+					if (email.getTipo().equals(TipoEmail.PRIVADO.getTipo())){
+						emailsCursoPrivado.add(email);
+					} else if (email.getTipo().equals(TipoEmail.INSTRUTOR.getTipo())){
+						emailsInstrutores.add(email);
+					}
+				}
 			}
 		}
 
@@ -577,6 +605,7 @@ public class CadastrarCursoBean extends BaseBean<Curso> {
 			// Relacionamento com curso será criado no service
 			EmailCursoPrivado cursoEmail = new EmailCursoPrivado();
 			cursoEmail.setEmail(email.trim());
+			cursoEmail.setTipo(TipoEmail.PRIVADO.getTipo());
 			emailsCursoPrivado.add(cursoEmail);
 
 			email = "";
@@ -612,9 +641,46 @@ public class CadastrarCursoBean extends BaseBean<Curso> {
 			// Relacionamento com curso será criado no service
 			EmailCursoPrivado cursoEmail = new EmailCursoPrivado();
 			cursoEmail.setEmail(emailParceiro.trim());
+			cursoEmail.setTipo(TipoEmail.PARCEIRO.getTipo());
 			emailsParceiros.add(cursoEmail);
 
 			emailParceiro = "";
+			FacesMessagesUtil.addInfoMessage("E-mail", "Adicionado com sucesso!");
+
+		} catch (Exception e) {
+			ExcecaoUtil.tratarExcecao(e);
+		}
+	}
+
+	public void adicionarEmailInstrutor() {
+		try {
+
+			// Valida email invalido
+			if (!EmailUtil.emailValido(emailInstrutor)) {
+				FacesMessagesUtil.addErrorMessage("E-mail inválido ", " ");
+				return;
+			}
+
+			// Valida se já foi adicionado
+			boolean contem = false;
+			for (EmailCursoPrivado cursoEmail : emailsInstrutores) {
+				if (cursoEmail.getEmail().trim().toUpperCase().equals(emailInstrutor.trim().toUpperCase())) {
+					contem = true;
+					break;
+				}
+			}
+			if (contem) {
+				FacesMessagesUtil.addErrorMessage("E-mail ", "Já adicionado.");
+				return;
+			}
+
+			// Relacionamento com curso será criado no service
+			EmailCursoPrivado cursoEmail = new EmailCursoPrivado();
+			cursoEmail.setEmail(emailInstrutor.trim());
+			cursoEmail.setTipo(TipoEmail.INSTRUTOR.getTipo());
+			emailsInstrutores.add(cursoEmail);
+
+			emailInstrutor = "";
 			FacesMessagesUtil.addInfoMessage("E-mail", "Adicionado com sucesso!");
 
 		} catch (Exception e) {
@@ -641,6 +707,18 @@ public class CadastrarCursoBean extends BaseBean<Curso> {
 		}
 
 		emailsParceiros.remove(emailDeleteParceiro);
+		FacesMessagesUtil.addInfoMessage("E-mail", "removido com sucesso!");
+
+	}
+
+	public void deleteEmailInstrutor() {
+		// se tiver Id tem que remover do BD
+		if (emailDeleteInstrutor.getId() != null) {
+			getModel().getExclusaoCursoEmail().add(emailDeleteInstrutor);
+			getModel().getEmailsCursoPrivado().remove(emailDeleteInstrutor);
+		}
+
+		emailsInstrutores.remove(emailDeleteInstrutor);
 		FacesMessagesUtil.addInfoMessage("E-mail", "removido com sucesso!");
 
 	}
@@ -778,27 +856,44 @@ public class CadastrarCursoBean extends BaseBean<Curso> {
 				getModel().setOrgao(orgaoSelecionado);
 			}
 
-			// apaga os emails do curso publico caso não seja composto por oficina e zera o percentual de vagas para parceiros
+			/**
+			 * apaga os emails do curso publico caso não seja composto por oficina, atribui os emails dos intrutores caso exista e zera o
+			 * percentual de vagas para parceiros
+			 **/
 			if (getModel().getPublico()) {
 				if (!getModel().getFlgPossuiOficina()) {
 					getModel().setExclusaoCursoEmail(new ArrayList<EmailCursoPrivado>());
 					getModel().setEmailsCursoPrivado(new HashSet<EmailCursoPrivado>());
 					getModel().setNumPercentualVagasParceiro(0);
+					getModel().getEmailsCursoPrivado().addAll(emailsInstrutores);
 				} else {
-					// Se existir emails de parceiros deverá ser preenchido obrigatoriamente o percentual de vagas de parceiros
+					/**
+					 * Se existir emails de parceiros deverá ser preenchido obrigatoriamente o percentual de vagas de parceiros
+					 */
 					if (emailsParceiros != null && !emailsParceiros.isEmpty()) {
-						if (getModel().getNumPercentualVagasParceiro() != null && getModel().getNumPercentualVagasParceiro() > 0) {
+						if (getModel().getNumPercentualVagasParceiro() != null
+								&& getModel().getNumPercentualVagasParceiro() > 0) {
 							getModel().getEmailsCursoPrivado().addAll(emailsParceiros);
 						} else {
-							FacesMessagesUtil
-									.addErrorMessage("Email de Parceiros!",
-											"Para adicionar os emails, deve ser informado um percentual de vagas para parceiros maior do que zero.");
+							FacesMessagesUtil.addErrorMessage("Email de Parceiros!",
+									"Para adicionar os emails, deve ser informado um percentual de vagas para parceiros maior do que zero.");
 							return "";
+						}
+					}
+					/**
+					 * Quando é curso composto por oficina remove-se os emails de instrutores caso tenha sido inseridos
+					 */
+					if (emailsInstrutores != null && !emailsInstrutores.isEmpty()) {
+						for (EmailCursoPrivado emailInstrutor : emailsInstrutores) {
+							if (emailInstrutor.getId() != null) {
+								getModel().getEmailsCursoPrivado().remove(emailInstrutor);
+							}
 						}
 					}
 				}
 			} else {
 				getModel().getEmailsCursoPrivado().addAll(emailsCursoPrivado);
+				getModel().getEmailsCursoPrivado().addAll(emailsInstrutores);
 			}
 
 			cursoService.save(getModel(), enviarEmailParceiros);
@@ -832,6 +927,7 @@ public class CadastrarCursoBean extends BaseBean<Curso> {
 		ufCursoDelete = new UfCurso();
 		municipioCurso = new MunicipioCurso();
 		areaConhecimentoCursos = new ArrayList<AreaConhecimentoCurso>();
+		emailsInstrutores = new ArrayList<>(); 
 	}
 
 	public void limparVagas() {
@@ -890,7 +986,8 @@ public class CadastrarCursoBean extends BaseBean<Curso> {
 		// regiao
 		if (opcaoListaCandidato.getId().equals(OpcaoListaCandidato.LISTA_ESPERA_REGIAO)) {
 			if (cursoPorRegiao == false) {
-				FacesMessagesUtil.addErrorMessage("", "Se a lista de espera for por região, será necessário Habilitar Curso Por Região.");
+				FacesMessagesUtil.addErrorMessage("",
+						"Se a lista de espera for por região, será necessário Habilitar Curso Por Região.");
 				return false;
 			}
 		}
@@ -901,8 +998,8 @@ public class CadastrarCursoBean extends BaseBean<Curso> {
 		for (Homologacao h : homologacao) {
 			if (h.getId().equals(Homologacao.CONFIRMACAO_CHEFE)) {
 				confirmacaoChefe = true;
-			} else if (h.getId().equals(Homologacao.CONFIRMACAO_NOTA_EMPENHO) || h.getId().equals(Homologacao.CONFIRMACAO_PAGAMENTO)
-					|| h.getId().equals(Homologacao.CONFIRMACAO_VIA_GRU)) {
+			} else if (h.getId().equals(Homologacao.CONFIRMACAO_NOTA_EMPENHO)
+					|| h.getId().equals(Homologacao.CONFIRMACAO_PAGAMENTO) || h.getId().equals(Homologacao.CONFIRMACAO_VIA_GRU)) {
 				confirmacaoComprovante = true;
 			}
 		}
@@ -914,7 +1011,8 @@ public class CadastrarCursoBean extends BaseBean<Curso> {
 		/* Valida os emails do curso somente se for privado */
 		if (!getModel().getPublico()) {
 			if (emailsCursoPrivado == null || emailsCursoPrivado.isEmpty()) {
-				FacesMessagesUtil.addErrorMessage("  E-mail Participante Curso Privado:", " É necessário ter no minímo 1 participante. ");
+				FacesMessagesUtil.addErrorMessage("  E-mail Participante Curso Privado:",
+						" É necessário ter no minímo 1 participante. ");
 				return false;
 			}
 		}
@@ -1272,5 +1370,29 @@ public class CadastrarCursoBean extends BaseBean<Curso> {
 
 	public void setEnviarEmailParceiros(boolean enviarEmailParceiros) {
 		this.enviarEmailParceiros = enviarEmailParceiros;
+	}
+
+	public List<EmailCursoPrivado> getEmailsInstrutores() {
+		return emailsInstrutores;
+	}
+
+	public void setEmailsInstrutores(List<EmailCursoPrivado> emailsInstrutores) {
+		this.emailsInstrutores = emailsInstrutores;
+	}
+
+	public String getEmailInstrutor() {
+		return emailInstrutor;
+	}
+
+	public void setEmailInstrutor(String emailInstrutor) {
+		this.emailInstrutor = emailInstrutor;
+	}
+
+	public EmailCursoPrivado getEmailDeleteInstrutor() {
+		return emailDeleteInstrutor;
+	}
+
+	public void setEmailDeleteInstrutor(EmailCursoPrivado emailDeleteInstrutor) {
+		this.emailDeleteInstrutor = emailDeleteInstrutor;
 	}
 }

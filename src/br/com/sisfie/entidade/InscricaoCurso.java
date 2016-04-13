@@ -68,6 +68,9 @@ public class InscricaoCurso extends Entidade<Integer> {
 	
 	@Column(name = "flg_parceiro")
 	private Boolean flgParceiro;
+	
+	@Column(name = "flg_instrutor")
+	private Boolean flgInstrutor;
 
 	@OneToMany(mappedBy = "inscricaoCurso", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	private Set<StatusInscricao> statusInscricoes = new HashSet<StatusInscricao>(0);
@@ -242,6 +245,14 @@ public class InscricaoCurso extends Entidade<Integer> {
 
 	public void setFrequencias(Set<Frequencia> frequencias) {
 		this.frequencias = frequencias;
+	}
+
+	public Boolean getFlgInstrutor() {
+		return flgInstrutor;
+	}
+
+	public void setFlgInstrutor(Boolean flgInstrutor) {
+		this.flgInstrutor = flgInstrutor;
 	}
 
 }

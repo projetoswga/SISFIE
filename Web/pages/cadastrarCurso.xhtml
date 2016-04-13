@@ -11,7 +11,7 @@
 					<h:outputLabel value="Curso composto por Oficina?" />
 					<p:selectBooleanCheckbox id="flgOficina" value="#{CadastrarCursoBean.model.flgPossuiOficina}">
 						<p:ajax event="change" process="flgOficina,panelVagas" listener="#{CadastrarCursoBean.limparVagas}"
-							update="panelVagas,panelPrazo,percenturalVagas,fieldEmailParceiros" />
+							update="panelVagas,panelPrazo,percenturalVagas,fieldEmailParceiros,fieldEmailInstrutores" />
 					</p:selectBooleanCheckbox>
 					<h:outputLabel value="Curso Exige Documentação?" />
 					<p:selectBooleanCheckbox id="flgDocumentacao" value="#{CadastrarCursoBean.model.flgExigeDocumentacao}" />
@@ -320,79 +320,126 @@
 				<br />
 				<h:panelGrid width="100%" id="fieldEmail">
 					<h:panelGrid width="100%" rendered="#{CadastrarCursoBean.model.privado}">
-						<h:panelGrid columns="4" id="cadastroEmail" border="1" columnClasses="coluna25,coluna25,coluna50" width="100%">
-							<h:outputLabel value="E-mail Participante Curso Privado:" styleClass="icoObrigatorio" />
-							<p:inputText value="#{CadastrarCursoBean.email}" id="email" size="50" maxlength="255" />
-							<p:commandLink title="Adicionar" process="cadastroEmail" action="#{CadastrarCursoBean.adicionarEmail}"
-								update="listaEmail,cadastroEmail">
-								<h:graphicImage library="design/imagem" name="icone-adicionar.png" />
-							</p:commandLink>
-						</h:panelGrid>
-
-						<p:dataTable paginatorAlwaysVisible="false" paginatorPosition="bottom" var="lista" id="listaEmail"
-							emptyMessage="#{CadastrarCursoBean.emptyMessage}" update="listaEmail" rowsPerPageTemplate="#{CadastrarCursoBean.paginacao}"
-							styleClass="coluna100" value="#{CadastrarCursoBean.emailsCursoPrivado}" paginator="true" rows="5"
-							rowStyleClass="#{empty rowIx or rowIx mod 2 ne 0 ? 'linhaImpar' : 'linhaPar'}" rowIndexVar="rowIx">
-
-							<f:facet name="header">
-								<h:outputLabel value="E-mails Participantes" />
-							</f:facet>
-							<p:column headerText="Email" sortBy="#{lista.email}" filterBy="#{lista.email}" style="width:90%">
-								<h:outputLabel value="#{lista.email}" />
-							</p:column>
-							<p:column style="width:10%;text-align:center;">
-								<f:facet name="header">
-									<h:outputLabel value="Ação" />
-								</f:facet>
-								<p:commandLink title="Excluir" process="@this" oncomplete="confirmationEmail.show()">
-									<h:graphicImage library="design/imagem" name="icone-excluir.png" />
-									<f:setPropertyActionListener target="#{CadastrarCursoBean.emailDelete}" value="#{lista}" />
+						<p:fieldset>
+							<h:panelGrid columns="4" id="cadastroEmail" columnClasses="coluna25,coluna25,coluna50" width="100%">
+								<h:outputLabel value="E-mail Participante Curso Privado:" styleClass="icoObrigatorio" />
+								<p:inputText value="#{CadastrarCursoBean.email}" id="email" size="50" maxlength="255" />
+								<p:commandLink title="Adicionar" process="cadastroEmail" action="#{CadastrarCursoBean.adicionarEmail}"
+									update="listaEmail,cadastroEmail">
+									<h:graphicImage library="design/imagem" name="icone-adicionar.png" />
 								</p:commandLink>
-							</p:column>
-						</p:dataTable>
+							</h:panelGrid>
+							
+							<br />
+	
+							<p:dataTable paginatorAlwaysVisible="false" paginatorPosition="bottom" var="lista" id="listaEmail"
+								emptyMessage="#{CadastrarCursoBean.emptyMessage}" update="listaEmail" rowsPerPageTemplate="#{CadastrarCursoBean.paginacao}"
+								styleClass="coluna100" value="#{CadastrarCursoBean.emailsCursoPrivado}" paginator="true" rows="5"
+								rowStyleClass="#{empty rowIx or rowIx mod 2 ne 0 ? 'linhaImpar' : 'linhaPar'}" rowIndexVar="rowIx">
+	
+								<f:facet name="header">
+									<h:outputLabel value="E-mails Participantes" />
+								</f:facet>
+								<p:column headerText="Email" sortBy="#{lista.email}" filterBy="#{lista.email}" style="width:90%">
+									<h:outputLabel value="#{lista.email}" />
+								</p:column>
+								<p:column style="width:10%;text-align:center;">
+									<f:facet name="header">
+										<h:outputLabel value="Ação" />
+									</f:facet>
+									<p:commandLink title="Excluir" process="@this" oncomplete="confirmationEmail.show()">
+										<h:graphicImage library="design/imagem" name="icone-excluir.png" />
+										<f:setPropertyActionListener target="#{CadastrarCursoBean.emailDelete}" value="#{lista}" />
+									</p:commandLink>
+								</p:column>
+							</p:dataTable>
+						</p:fieldset>
 					</h:panelGrid>
 				</h:panelGrid>
 				<br />
 				<h:panelGrid width="100%" id="fieldEmailParceiros">
 					<h:panelGrid width="100%" rendered="#{CadastrarCursoBean.model.flgPossuiOficina and CadastrarCursoBean.model.publico}">
-						<h:panelGrid columns="3" id="cadastroEmailParceiro" border="1" columnClasses="coluna25,coluna25,coluna50" width="100%">
-							<h:outputLabel value="E-mail do Parceiro Participante:" />
-							<p:inputText value="#{CadastrarCursoBean.emailParceiro}" id="emailParceiro" size="50" maxlength="255" />
-							<p:commandLink title="Adicionar" process="cadastroEmailParceiro" action="#{CadastrarCursoBean.adicionarEmailParceiro}"
-								update="listaEmailParceiro,cadastroEmailParceiro">
-								<h:graphicImage library="design/imagem" name="icone-adicionar.png" />
-							</p:commandLink>
-							<h:outputLabel value="Enviar E-mail aos Parceiros Participantes?" />
-							<p:selectOneRadio value="#{CadastrarCursoBean.enviarEmailParceiros}">
-					            <f:selectItem itemLabel="Sim" itemValue="true" />
-					            <f:selectItem itemLabel="Não" itemValue="false" />
-					        </p:selectOneRadio>
-						</h:panelGrid>
-
-						<p:dataTable paginatorAlwaysVisible="false" paginatorPosition="bottom" var="lista" id="listaEmailParceiro"
-							emptyMessage="#{CadastrarCursoBean.emptyMessage}" rowsPerPageTemplate="#{CadastrarCursoBean.paginacao}"
-							style="width:100%" value="#{CadastrarCursoBean.emailsParceiros}" paginator="true" rows="5"
-							rowStyleClass="#{empty rowIx or rowIx mod 2 ne 0 ? 'linhaImpar' : 'linhaPar'}" rowIndexVar="rowIx">
-
-							<f:facet name="header">
-								<h:outputLabel value="E-mails dos Parceiros Participantes: #{CadastrarCursoBean.emailsParceiros.size()}" />
-							</f:facet>
-							<p:column headerText="Email" sortBy="#{lista.email}" filterBy="#{lista.email}" style="width:90%">
-								<h:outputLabel value="#{lista.email}" />
-							</p:column>
-							<p:column style="width:10%;text-align:center;">
-								<f:facet name="header">
-									<h:outputLabel value="Ação" />
-								</f:facet>
-								<p:commandLink title="Excluir" process=":form:fieldEmailParceiros" update=":form:fieldEmailParceiros" oncomplete="confirmationEmailParceiro.show();">
-									<h:graphicImage library="design/imagem" name="icone-excluir.png" />
-									<f:setPropertyActionListener target="#{CadastrarCursoBean.emailDeleteParceiro}" value="#{lista}" />
+						<p:fieldset>
+							<h:panelGrid columns="3" id="cadastroEmailParceiro" columnClasses="coluna25,coluna25,coluna50" width="100%">
+								<h:outputLabel value="E-mail do Parceiro Participante:" />
+								<p:inputText value="#{CadastrarCursoBean.emailParceiro}" id="emailParceiro" size="50" maxlength="255" />
+								<p:commandLink title="Adicionar" process="cadastroEmailParceiro" action="#{CadastrarCursoBean.adicionarEmailParceiro}"
+									update="listaEmailParceiro,cadastroEmailParceiro">
+									<h:graphicImage library="design/imagem" name="icone-adicionar.png" />
 								</p:commandLink>
-							</p:column>
-						</p:dataTable>
+								<h:outputLabel value="Enviar E-mail aos Parceiros Participantes?" />
+								<p:selectOneRadio value="#{CadastrarCursoBean.enviarEmailParceiros}">
+						            <f:selectItem itemLabel="Sim" itemValue="true" />
+						            <f:selectItem itemLabel="Não" itemValue="false" />
+						        </p:selectOneRadio>
+							</h:panelGrid>
+							
+							<br />
+	
+							<p:dataTable paginatorAlwaysVisible="false" paginatorPosition="bottom" var="lista" id="listaEmailParceiro"
+								emptyMessage="#{CadastrarCursoBean.emptyMessage}" rowsPerPageTemplate="#{CadastrarCursoBean.paginacao}"
+								style="width:100%" value="#{CadastrarCursoBean.emailsParceiros}" paginator="true" rows="5"
+								rowStyleClass="#{empty rowIx or rowIx mod 2 ne 0 ? 'linhaImpar' : 'linhaPar'}" rowIndexVar="rowIx">
+	
+								<f:facet name="header">
+									<h:outputLabel value="E-mails dos Parceiros Participantes: #{CadastrarCursoBean.emailsParceiros.size()}" />
+								</f:facet>
+								<p:column headerText="Email" sortBy="#{lista.email}" filterBy="#{lista.email}" style="width:90%">
+									<h:outputLabel value="#{lista.email}" />
+								</p:column>
+								<p:column style="width:10%;text-align:center;">
+									<f:facet name="header">
+										<h:outputLabel value="Ação" />
+									</f:facet>
+									<p:commandLink title="Excluir" process=":form:fieldEmailParceiros" update=":form:fieldEmailParceiros" oncomplete="confirmationEmailParceiro.show();">
+										<h:graphicImage library="design/imagem" name="icone-excluir.png" />
+										<f:setPropertyActionListener target="#{CadastrarCursoBean.emailDeleteParceiro}" value="#{lista}" />
+									</p:commandLink>
+								</p:column>
+							</p:dataTable>
+						</p:fieldset>
 					</h:panelGrid>
 				</h:panelGrid>
-
+				
+				<br />
+				<h:panelGrid width="100%" id="fieldEmailInstrutores">
+					<h:panelGrid width="100%" rendered="#{!CadastrarCursoBean.model.flgPossuiOficina}">
+						<p:fieldset>
+							<h:panelGrid columns="3" id="cadastroEmailInstrutor" columnClasses="coluna25,coluna25,coluna50" width="100%">
+								<h:outputLabel value="E-mail do Instrutor:" />
+								<p:inputText value="#{CadastrarCursoBean.emailInstrutor}" id="emailInstrutor" size="50" maxlength="255" />
+								<p:commandLink title="Adicionar" process="cadastroEmailInstrutor" action="#{CadastrarCursoBean.adicionarEmailInstrutor}"
+									update="listaEmailInstrutor,cadastroEmailInstrutor">
+									<h:graphicImage library="design/imagem" name="icone-adicionar.png" />
+								</p:commandLink>
+							</h:panelGrid>
+							
+							<br />
+	
+							<p:dataTable paginatorAlwaysVisible="false" paginatorPosition="bottom" var="lista" id="listaEmailInstrutor"
+								emptyMessage="#{CadastrarCursoBean.emptyMessage}" rowsPerPageTemplate="#{CadastrarCursoBean.paginacao}"
+								style="width:100%" value="#{CadastrarCursoBean.emailsInstrutores}" paginator="true" rows="5"
+								rowStyleClass="#{empty rowIx or rowIx mod 2 ne 0 ? 'linhaImpar' : 'linhaPar'}" rowIndexVar="rowIx">
+	
+								<f:facet name="header">
+									<h:outputLabel value="E-mails dos Instrutores: #{CadastrarCursoBean.emailsInstrutores.size()}" />
+								</f:facet>
+								<p:column headerText="Email" sortBy="#{lista.email}" filterBy="#{lista.email}" style="width:90%">
+									<h:outputLabel value="#{lista.email}" />
+								</p:column>
+								<p:column style="width:10%;text-align:center;">
+									<f:facet name="header">
+										<h:outputLabel value="Ação" />
+									</f:facet>
+									<p:commandLink title="Excluir" process=":form:fieldEmailInstrutores" update=":form:fieldEmailInstrutores" oncomplete="confirmationEmailInstrutor.show();">
+										<h:graphicImage library="design/imagem" name="icone-excluir.png" />
+										<f:setPropertyActionListener target="#{CadastrarCursoBean.emailDeleteInstrutor}" value="#{lista}" />
+									</p:commandLink>
+								</p:column>
+							</p:dataTable>
+						</p:fieldset>
+					</h:panelGrid>
+				</h:panelGrid>
 
 				<div align="center">
 					<p:commandButton value="Salvar" ajax="true" process="@form" update="@form" action="#{CadastrarCursoBean.save}" />
@@ -425,6 +472,15 @@
 					<p:commandButton value="Sim" process="@this" update="fieldEmailParceiros" oncomplete="confirmationEmailParceiro.hide();"
 						actionListener="#{CadastrarCursoBean.deleteEmailParceiro}" styleClass="ui-confirmdialog-yes" icon="ui-icon-check"/>
 					<p:commandButton value="Não" onclick="confirmationEmailParceiro.hide()" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+				</div>
+			</p:confirmDialog>
+			
+			<p:confirmDialog appendToBody="true" message="Confirma a Exclusão" header="Exclusão" severity="alert"
+				widgetVar="confirmationEmailInstrutor">
+				<div style="text-align: right">
+					<p:commandButton value="Sim" process="@this" update="fieldEmailInstrutores" oncomplete="confirmationEmailInstrutor.hide();"
+						actionListener="#{CadastrarCursoBean.deleteEmailInstrutor}" styleClass="ui-confirmdialog-yes" icon="ui-icon-check"/>
+					<p:commandButton value="Não" onclick="confirmationEmailInstrutor.hide()" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
 				</div>
 			</p:confirmDialog>
 		</h:form>

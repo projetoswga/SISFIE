@@ -181,20 +181,19 @@ public class CursoServiceImpl implements CursoService {
 		// se for curso publico não composto por oficina e sem percentual de vagas para parceiros apaga todos os relacionamentos
 		if (model.getPublico() && model.getId() != null) {
 
-			if (!model.getFlgPossuiOficina()
+			if (!model.getFlgPossuiOficina() 
 					&& (model.getNumPercentualVagasParceiro() == null || model.getNumPercentualVagasParceiro() == 0)) {
 				
 				EmailCursoPrivado email = new EmailCursoPrivado();
 				email.setCurso(new Curso(model.getId()));
+				
 				List<EmailCursoPrivado> emailsExcluir = dao.listBy(email);
 				for (EmailCursoPrivado list : emailsExcluir) {
 					if (list.getId() != null) {
 						dao.remove(EmailCursoPrivado.class, list.getId());
 					}
 				}
-				
 			}
-
 		}
 
 		// Excluir todos os check do BD para depois salvar de nv
@@ -319,8 +318,12 @@ public class CursoServiceImpl implements CursoService {
 
 		for (EmailCursoPrivado obj : cursoEmailSalvar) {
 			boolean isEdicao = obj.getId() != null && obj.getId() > 0 ? true : false;
-			obj.setCurso(model);
-			dao.save(obj);
+			if (isEdicao){
+				dao.merge(obj);
+			} else {
+				obj.setCurso(new Curso(model.getId()));
+				dao.save(obj);
+			}
 
 			// Verifica se é para mandar email para os parceiros. Caso seja, envia email somente para os registros novos
 			if (enviarEmailParceiros) {
