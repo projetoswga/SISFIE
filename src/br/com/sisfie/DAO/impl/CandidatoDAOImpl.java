@@ -208,6 +208,9 @@ public class CandidatoDAOImpl extends HibernateDaoSupport implements CandidatoDA
 
 					if (lista != null && !lista.isEmpty()) {
 						for (InscricaoCurso obj : lista) {
+							if (obj.getFlgInstrutor()){
+								continue;
+							}
 							obj.setUltimoStatus(ultimoStatusInscricao(obj));
 							for (Integer id : idsStatus) {
 								if (obj.getUltimoStatus().getStatus().getId().equals(id)) {
@@ -249,6 +252,9 @@ public class CandidatoDAOImpl extends HibernateDaoSupport implements CandidatoDA
 
 					if (lista != null && !lista.isEmpty()) {
 						for (InscricaoCurso obj : lista) {
+							if (obj.getFlgInstrutor()){
+								continue;
+							}
 							obj.setUltimoStatus(ultimoStatusInscricao(obj));
 							for (Integer id : idsStatus) {
 								if (obj.getUltimoStatus().getStatus().getId().equals(id)) {
@@ -288,6 +294,9 @@ public class CandidatoDAOImpl extends HibernateDaoSupport implements CandidatoDA
 						c2.setFetchMode("candidato", FetchMode.JOIN);
 
 						InscricaoCurso inscricaoCurso = (InscricaoCurso) c2.uniqueResult();
+						if (inscricaoCurso.getFlgInstrutor()){
+							continue;
+						}
 						inscricaoCurso.setUltimoStatus(ultimoStatusInscricao(inscricaoCurso));
 						for (Integer idStatus : idsStatus) {
 							if (inscricaoCurso.getUltimoStatus().getStatus().getId().equals(idStatus)) {

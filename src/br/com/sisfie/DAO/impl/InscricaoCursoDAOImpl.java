@@ -47,6 +47,7 @@ public class InscricaoCursoDAOImpl extends HibernateDaoSupport implements Inscri
 	public List<InscricaoCurso> recuperarInscricoes(Integer idCurso) {
 		Criteria criteria = getSession().createCriteria(InscricaoCurso.class);
 		criteria.add(Restrictions.eq("curso.id", idCurso));
+		criteria.add(Restrictions.eq("flgInstrutor", false));
 		return criteria.list();
 	}
 
@@ -396,26 +397,7 @@ public class InscricaoCursoDAOImpl extends HibernateDaoSupport implements Inscri
 			for (Object object : listaCounts) {
 				if (object != null) {
 					Object[] obj = (Object[]) object;
-					/*
-					 * Criteria c = getSession().createCriteria(InscricaoCurso.class); c.createAlias("candidato", "cand");
-					 * c.createAlias("cand.orgao", "o"); c.createAlias("cand.municipioOrgao", "mo"); c.createAlias("curso", "c");
-					 * c.add(Restrictions.eq("o.id", obj[1])); c.add(Restrictions.eq("mo.id", obj[2])); c.add(Restrictions.eq("c.id",
-					 * idCurso));
-					 * 
-					 * c.createAlias("statusInscricoes", "ic"); c.createAlias("ic.inscricaoCurso", "ici"); c.createAlias("ic.status", "s");
-					 * DetachedCriteria subCriteriaStatusInscricao = DetachedCriteria.forClass(StatusInscricao.class);
-					 * subCriteriaStatusInscricao.createAlias("inscricaoCurso", "sic");
-					 * subCriteriaStatusInscricao.add(Restrictions.eqProperty("sic.id", Property.forName("ici.id").getPropertyName()));
-					 * subCriteriaStatusInscricao.add(Restrictions.eq("sic.curso.id", idCurso));
-					 * subCriteriaStatusInscricao.setProjection(Projections.max("id"));
-					 * c.add((Property.forName("ic.id").in(subCriteriaStatusInscricao)));
-					 * 
-					 * c.add(Restrictions.not(Restrictions.in("s.id", listarStatus())));
-					 * 
-					 * c.addOrder(Order.asc("id"));
-					 * 
-					 * c.setMaxResults(quantidadeVagas);
-					 */
+					
 					criteria = getSession().createCriteria(InscricaoCurso.class);
 
 					criteria.createAlias("candidato", "cand");
@@ -433,6 +415,7 @@ public class InscricaoCursoDAOImpl extends HibernateDaoSupport implements Inscri
 					subCriteriaStatusInscricao
 							.add(Restrictions.eqProperty("sic.id", Property.forName("ici.id").getPropertyName()));
 					subCriteriaStatusInscricao.add(Restrictions.eq("sic.curso.id", idCurso));
+					subCriteriaStatusInscricao.add(Restrictions.eq("sic.flgInstrutor", false));
 					subCriteriaStatusInscricao.setProjection(Projections.max("id"));
 					criteria.add((Property.forName("ic.id").in(subCriteriaStatusInscricao)));
 
@@ -494,6 +477,7 @@ public class InscricaoCursoDAOImpl extends HibernateDaoSupport implements Inscri
 	@Override
 	public List<InscricaoCurso> recuperarInscricoesAguardandoComprovante(Integer idCurso) {
 		Criteria c = getSession().createCriteria(InscricaoCurso.class);
+		c.add(Restrictions.eq("flgInstrutor", false));
 		c.createAlias("curso", "c");
 		c.add(Restrictions.eq("c.id", idCurso));
 		montarCriteriaOpcoes(c, Status.AGUARDANDO_COMPROVANTE);
@@ -660,6 +644,7 @@ public class InscricaoCursoDAOImpl extends HibernateDaoSupport implements Inscri
 			c.createAlias("ic.ultimoStatus", "us");
 			c.createAlias("us.status", "s");
 			c.add(Restrictions.eq("s.id", Status.PRESENCA_CONFIRMADA));
+			c.add(Restrictions.eq("ic.flgInstrutor", false));
 			c.createAlias("ic.curso", "c");
 			c.add(Restrictions.eq("c.id", curso.getId()));
 			c.setProjection(Projections.distinct(Projections.property("ic.id")));

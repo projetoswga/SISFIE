@@ -194,6 +194,7 @@ public class CursoDAOImpl extends HibernateDaoSupport implements CursoDAO {
 	@SuppressWarnings("unchecked")
 	public List<InscricaoCurso> carregarListaCandidato(Curso curso, Integer idStatus) {
 		Criteria c = getSession().createCriteria(InscricaoCurso.class);
+		c.add(Restrictions.eq("flgInstrutor", false));
 		c.createAlias("curso", "c");
 		c.add(Restrictions.eq("c.id", curso.getId()));
 		c.createAlias("statusInscricoes", "st");
@@ -260,6 +261,9 @@ public class CursoDAOImpl extends HibernateDaoSupport implements CursoDAO {
 
 			if (lista != null && !lista.isEmpty()) {
 				for (InscricaoCurso obj : lista) {
+					if (obj.getFlgInstrutor()){
+						continue;
+					}
 					for (Integer id : idsStatus) {
 						if (obj.getUltimoStatus().getStatus().getId().equals(id)) {
 							listaRetorno.add(obj);
@@ -304,6 +308,9 @@ public class CursoDAOImpl extends HibernateDaoSupport implements CursoDAO {
 
 			if (lista != null && !lista.isEmpty()) {
 				for (InscricaoCurso obj : lista) {
+					if (obj.getFlgInstrutor()){
+						continue;
+					}
 					for (Integer id : idsStatus) {
 						if (obj.getUltimoStatus().getStatus().getId().equals(id)) {
 							listaRetorno.add(obj);
@@ -353,6 +360,10 @@ public class CursoDAOImpl extends HibernateDaoSupport implements CursoDAO {
 
 				InscricaoCurso inscricaoCurso = (InscricaoCurso) c2.uniqueResult();
 				
+				if (inscricaoCurso.getFlgInstrutor()){
+					continue;
+				}
+				
 				for (Integer idStatus : idsStatus) {
 					if (inscricaoCurso.getUltimoStatus().getStatus().getId().equals(idStatus)) {
 						if (!listaRetorno.contains(inscricaoCurso)) {
@@ -393,6 +404,7 @@ public class CursoDAOImpl extends HibernateDaoSupport implements CursoDAO {
 	public boolean existeInscricoes(Curso curso) throws Exception {
 		Criteria c = getSession().createCriteria(InscricaoCurso.class);
 
+		c.add(Restrictions.eq("flgInstrutor", false));
 		c.createAlias("curso", "c");
 		c.add(Restrictions.eq("c.id", curso.getId()));
 
@@ -452,6 +464,7 @@ public class CursoDAOImpl extends HibernateDaoSupport implements CursoDAO {
 		idsStatus.add(Status.AGUARDANDO_VAGA);
 
 		Criteria c = getSession().createCriteria(InscricaoCurso.class);
+		c.add(Restrictions.eq("flgInstrutor", false));
 		c.createAlias("curso", "c");
 		c.add(Restrictions.eq("c.id", curso.getId()));
 		c.createAlias("statusInscricoes", "st");
@@ -617,6 +630,7 @@ public class CursoDAOImpl extends HibernateDaoSupport implements CursoDAO {
 	@Override
 	public List<InscricaoCurso> carregarListaCandidatoCancelados(Curso cursoPesqCandidatoCancelado) throws Exception {
 		Criteria c = getSession().createCriteria(InscricaoCurso.class);
+		c.add(Restrictions.eq("flgInstrutor", false));
 		c.createAlias("curso", "c");
 		c.add(Restrictions.eq("c.id", cursoPesqCandidatoCancelado.getId()));
 		c.createAlias("statusInscricoes", "st");
