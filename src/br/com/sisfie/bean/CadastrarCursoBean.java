@@ -504,20 +504,18 @@ public class CadastrarCursoBean extends BaseBean<Curso> {
 		if (getModel().getOrgaoCursos() != null && !getModel().getOrgaoCursos().isEmpty()) {
 			orgaoCursos = new ArrayList<OrgaoCurso>(getModel().getOrgaoCursos());
 		}
-		if (getModel().getFlgPossuiOficina() && getModel().getNumPercentualVagasParceiro() != null
-				&& getModel().getNumPercentualVagasParceiro() > 0) {
-			if (getModel().getEmailsCursoPrivado() != null && !getModel().getEmailsCursoPrivado().isEmpty()) {
-				emailsParceiros = new ArrayList<EmailCursoPrivado>(getModel().getEmailsCursoPrivado());
-			}
-		} else {
-			if (getModel().getEmailsCursoPrivado() != null && !getModel().getEmailsCursoPrivado().isEmpty()) {
-				emailsCursoPrivado = new ArrayList<>();
-				emailsInstrutores = new ArrayList<>();
-				for (EmailCursoPrivado email : getModel().getEmailsCursoPrivado()) {
+		if (getModel().getEmailsCursoPrivado() != null && !getModel().getEmailsCursoPrivado().isEmpty()) {
+			emailsParceiros = new ArrayList<>();
+			emailsCursoPrivado = new ArrayList<>();
+			emailsInstrutores = new ArrayList<>();
+			for (EmailCursoPrivado email : getModel().getEmailsCursoPrivado()) {
+				if (email.getTipo() != null){
 					if (email.getTipo().equals(TipoEmail.PRIVADO.getTipo())){
 						emailsCursoPrivado.add(email);
 					} else if (email.getTipo().equals(TipoEmail.INSTRUTOR.getTipo())){
 						emailsInstrutores.add(email);
+					} else if (email.getTipo().equals(TipoEmail.PARCEIRO.getTipo())) {
+						emailsParceiros.add(email);
 					}
 				}
 			}

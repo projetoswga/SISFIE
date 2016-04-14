@@ -112,8 +112,10 @@ public class Curso extends Entidade<Integer> {
 	@Column(name = "flg_exige_documentacao")
 	private Boolean flgExigeDocumentacao;
 	
+	@Min(0)
+	@Max(100)
 	@Column(name = "porcentagem")
-	private Double porcentagem;
+	private Integer porcentagem;
 	
 	@Min(0)
 	@Max(100)
@@ -671,14 +673,6 @@ public class Curso extends Entidade<Integer> {
 		this.numPercentualVagasParceiro = numPercentualVagasParceiro;
 	}
 
-	public Double getPorcentagem() {
-		return porcentagem;
-	}
-
-	public void setPorcentagem(Double porcentagem) {
-		this.porcentagem = porcentagem;
-	}
-
 	public List<OrgaoCurso> getExclusaoOrgaoParticipanteCursos() {
 		return exclusaoOrgaoParticipanteCursos;
 	}
@@ -693,5 +687,13 @@ public class Curso extends Entidade<Integer> {
 
 	public void setOrgaoCursos(Set<OrgaoCurso> orgaoCursos) {
 		this.orgaoCursos = orgaoCursos;
+	}
+
+	public Integer getPorcentagem() {
+		return porcentagem;
+	}
+
+	public void setPorcentagem(Integer porcentagem) {
+		this.porcentagem = porcentagem;
 	}
 }
