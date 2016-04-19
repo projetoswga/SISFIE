@@ -86,4 +86,9 @@ public class FrequenciaServiceImpl implements FrequenciaService {
 	public List<Frequencia> pesquisarFrequenciasData(String inscricao, Calendar datFrequencia) {
 		return frequenciaDAO.pesquisarFrequenciasData(inscricao, datFrequencia);
 	}
+
+	@Override
+	public List<Frequencia> carregarFrequencias(Integer idCurso) {
+		return frequenciaDAO.carregarFrequencias(idCurso);
+	}
 }

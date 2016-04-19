@@ -1,9 +1,13 @@
 package br.com.arquitetura.util;
 
+import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
+
+import org.primefaces.component.galleria.Galleria;
 
 public class DateUtil {
 
@@ -53,6 +57,13 @@ public class DateUtil {
 		long tempoFim = getDateSemHora(dataFim).getTime();
 		long diferenca = tempoFim - tempoInicio;
 		return (int) ((diferenca + 60L * 60 * 1000) / (24L * 60 * 60 * 1000));
+	}
+
+	public static int getHora(Timestamp timestamp) {
+		Date date = new Date(timestamp.getTime());
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(date);
+		return calendar.get(Calendar.HOUR_OF_DAY);
 	}
 	
 //	public static void main(String[] args) {

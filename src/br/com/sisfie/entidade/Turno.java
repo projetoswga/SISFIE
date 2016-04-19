@@ -18,6 +18,10 @@ import br.com.arquitetura.entidade.Entidade;
 @Audited
 public class Turno extends Entidade<Integer> {
 	private static final long serialVersionUID = 1L;
+	
+	public static final Integer MATUTINO = 1;
+	public static final Integer VESPERTINO = 2;
+	public static final Integer AMBOS = 3;
 
 	@Id
 	@Column(name = "id_turno", unique = true, nullable = false)

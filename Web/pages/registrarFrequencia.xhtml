@@ -17,52 +17,52 @@
 		<f:loadBundle basename="constantes" var="const" />
 
 		<h:form id="formId" prependId="false">
-			<p:fieldset legend="#{registrarFrequenciaBean.qualifiedName}" id="fieldPrincipal">
+			<p:fieldset legend="#{frequenciaBean.qualifiedName}" id="fieldPrincipal">
 				<h:panelGrid id="panelSelecao" columns="2" border="0" columnClasses="coluna20,coluna80" width="100%">
 					<h:outputLabel value="Curso" styleClass="icoObrigatorio" />
-					<p:autoComplete dropdown="true" queryDelay="500" value="#{registrarFrequenciaBean.curso}" minQueryLength="2" id="curso" size="68"
-						scrollHeight="300" completeMethod="#{registrarFrequenciaBean.completeCurso}" forceSelection="true" var="lista"
+					<p:autoComplete dropdown="true" queryDelay="500" value="#{frequenciaBean.curso}" minQueryLength="2" id="curso" size="68"
+						scrollHeight="300" completeMethod="#{frequenciaBean.completeCurso}" forceSelection="true" var="lista"
 						itemLabel="#{lista.cursoData}" itemValue="#{lista.id}" converter="cursoConverter" global="false">
-						<p:ajax event="itemSelect" update="@form" process="@form" listener="#{registrarFrequenciaBean.verificarExistenciaTurmasHorarios}" />
+						<p:ajax event="itemSelect" update="@form" process="@form" listener="#{frequenciaBean.verificarExistenciaTurmasHorarios}" />
 					</p:autoComplete>
 
-					<h:outputLabel value="Turma:" styleClass="icoObrigatorio" rendered="#{registrarFrequenciaBean.exibirTurma}" />
-					<p:selectOneMenu id="turma" style="width:450px;" value="#{registrarFrequenciaBean.turma.id}"
-						rendered="#{registrarFrequenciaBean.exibirTurma}">
+					<h:outputLabel value="Turma:" styleClass="icoObrigatorio" rendered="#{frequenciaBean.exibirTurma}" />
+					<p:selectOneMenu id="turma" style="width:450px;" value="#{frequenciaBean.turma.id}"
+						rendered="#{frequenciaBean.exibirTurma}">
 						<f:selectItem itemLabel="Selecione" itemValue="" />
-						<f:selectItems value="#{registrarFrequenciaBean.listaTurma}" var="nameTurma" itemLabel="#{nameTurma.descricao}"
+						<f:selectItems value="#{frequenciaBean.listaTurma}" var="nameTurma" itemLabel="#{nameTurma.descricao}"
 							itemValue="#{nameTurma.id}" />
 						<p:ajax event="change" update="@form" process="@form" global="false"
-							listener="#{registrarFrequenciaBean.verificarExistenciaTurmasHorarios}" />
+							listener="#{frequenciaBean.verificarExistenciaTurmasHorarios}" />
 					</p:selectOneMenu>
 
-					<h:outputLabel value="Horário:" styleClass="icoObrigatorio" rendered="#{registrarFrequenciaBean.exibirHorario}" />
-					<p:selectOneMenu id="horario" style="width:450px;" value="#{registrarFrequenciaBean.horario.id}"
-						rendered="#{registrarFrequenciaBean.exibirHorario}">
+					<h:outputLabel value="Horário:" styleClass="icoObrigatorio" rendered="#{frequenciaBean.exibirHorario}" />
+					<p:selectOneMenu id="horario" style="width:450px;" value="#{frequenciaBean.horario.id}"
+						rendered="#{frequenciaBean.exibirHorario}">
 						<f:selectItem itemLabel="Selecione" itemValue="" />
-						<f:selectItems value="#{registrarFrequenciaBean.listaHorario}" var="nameHorarioTurma" itemLabel="#{nameHorarioTurma.desHorario}"
+						<f:selectItems value="#{frequenciaBean.listaHorario}" var="nameHorarioTurma" itemLabel="#{nameHorarioTurma.desHorario}"
 							itemValue="#{nameHorarioTurma.id}" />
 						<p:ajax event="change" update="@form" process="@form" global="false"
-							listener="#{registrarFrequenciaBean.renderizarCampoInscricaoVisualizarBotaoFinalizar}" />
+							listener="#{frequenciaBean.renderizarCampoInscricaoVisualizarBotaoFinalizar}" />
 					</p:selectOneMenu>
 
 					<h:outputLabel value="Turno" styleClass="icoObrigatorio"
-						rendered="#{registrarFrequenciaBean.exibirTurno and registrarFrequenciaBean.curso.turno != null and registrarFrequenciaBean.curso.turno.id != null}" />
-					<p:selectOneMenu id="turno" style="width:450px;" value="#{registrarFrequenciaBean.turno.id}"
-						rendered="#{registrarFrequenciaBean.exibirTurno}">
+						rendered="#{frequenciaBean.exibirTurno and frequenciaBean.curso.turno != null and frequenciaBean.curso.turno.id != null}" />
+					<p:selectOneMenu id="turno" style="width:450px;" value="#{frequenciaBean.turno.id}"
+						rendered="#{frequenciaBean.exibirTurno}">
 						<f:selectItem itemLabel="Selecione" itemValue="" />
-						<f:selectItems value="#{registrarFrequenciaBean.listaTurno}" var="objTurno" itemLabel="#{objTurno.desTurno}"
+						<f:selectItems value="#{frequenciaBean.listaTurno}" var="objTurno" itemLabel="#{objTurno.desTurno}"
 							itemValue="#{objTurno.id}" />
 						<p:ajax event="change" update="@form" process="@form" global="false"
-							listener="#{registrarFrequenciaBean.renderizarCampoInscricaoVisualizarBotaoFinalizar}" />
+							listener="#{frequenciaBean.renderizarCampoInscricaoVisualizarBotaoFinalizar}" />
 					</p:selectOneMenu>
 				</h:panelGrid>
 
 				<h:panelGroup id="grupoInscricao">
 					<h:panelGrid id="panelInscricao" columns="2" border="0" columnClasses="coluna20,coluna80" width="100%"
-						rendered="#{registrarFrequenciaBean.exibirInscricao}">
+						rendered="#{frequenciaBean.exibirInscricao}">
 						<h:outputLabel value="Inscrição" styleClass="icoObrigatorio" />
-						<p:inputText id="numInscricao" value="#{registrarFrequenciaBean.model.inscricaoCurso.inscricao}" maxlength="14"
+						<p:inputText id="numInscricao" value="#{frequenciaBean.model.inscricaoCurso.inscricao}" maxlength="14"
 							onkeyup="verificarQuantidadeDigitosExecutarEnter();" />
 					</h:panelGrid>
 				</h:panelGroup>
@@ -71,56 +71,56 @@
 
 				<h:panelGroup id="grupoInformacoesInscricao">
 					<p:panel header="Dados da inscrição selecionada"
-						rendered="#{registrarFrequenciaBean.inscricaoCurso != null and registrarFrequenciaBean.inscricaoCurso.id != null}">
+						rendered="#{frequenciaBean.inscricaoCurso != null and frequenciaBean.inscricaoCurso.id != null}">
 						<h:panelGrid columns="2" border="0" columnClasses="coluna20,coluna80" width="100%">
 							<h:outputLabel value="Curso:" />
-							<h:outputText value="#{registrarFrequenciaBean.inscricaoCurso.curso.cursoData}" />
+							<h:outputText value="#{frequenciaBean.inscricaoCurso.curso.cursoData}" />
 							<h:outputLabel value="Inscrição" />
-							<h:outputText value="#{registrarFrequenciaBean.inscricaoCurso.inscricao}" />
+							<h:outputText value="#{frequenciaBean.inscricaoCurso.inscricao}" />
 							<h:outputLabel value="Candidato:" />
-							<h:outputText value="#{registrarFrequenciaBean.inscricaoCurso.candidato.nome}" />
+							<h:outputText value="#{frequenciaBean.inscricaoCurso.candidato.nome}" />
 							<h:outputLabel value="Órgão:" />
-							<h:outputText value="#{registrarFrequenciaBean.inscricaoCurso.candidato.orgao.nomeSiglaFormat}" />
+							<h:outputText value="#{frequenciaBean.inscricaoCurso.candidato.orgao.nomeSiglaFormat}" />
 						</h:panelGrid>
 					</p:panel>
 				</h:panelGroup>
 
 				<h:panelGroup id="grupoInformacoesTurma">
 					<p:panel header="Dados da turma selecionada"
-						rendered="#{registrarFrequenciaBean.inscricaoCurso != null and registrarFrequenciaBean.inscricaoCurso.id != null and registrarFrequenciaBean.exibirTurma and registrarFrequenciaBean.curso.flgPossuiOficina}">
+						rendered="#{frequenciaBean.inscricaoCurso != null and frequenciaBean.inscricaoCurso.id != null and frequenciaBean.exibirTurma and frequenciaBean.curso.flgPossuiOficina}">
 						<h:panelGrid columns="2" border="0" columnClasses="coluna20,coluna80" width="100%">
 							<h:outputLabel value="Turma:" />
-							<h:outputText value="#{registrarFrequenciaBean.inscricaoGrade.gradeOficina.turma.descricao}" />
+							<h:outputText value="#{frequenciaBean.inscricaoGrade.gradeOficina.turma.descricao}" />
 							<h:outputLabel value="Conteúdo" />
-							<h:outputText value="#{registrarFrequenciaBean.inscricaoGrade.gradeOficina.oficina.nomOficina}" />
+							<h:outputText value="#{frequenciaBean.inscricaoGrade.gradeOficina.oficina.nomOficina}" />
 							<h:outputLabel value="Horário:" />
-							<h:outputText value="#{registrarFrequenciaBean.inscricaoGrade.gradeOficina.horario.desHorario}" />
+							<h:outputText value="#{frequenciaBean.inscricaoGrade.gradeOficina.horario.desHorario}" />
 							<h:outputLabel value="Instrutor:" />
-							<h:outputText value="#{registrarFrequenciaBean.inscricaoGrade.gradeOficina.professorEvento.candidato.nome}" />
+							<h:outputText value="#{frequenciaBean.inscricaoGrade.gradeOficina.professorEvento.candidato.nome}" />
 							<h:outputLabel value="Sala" />
-							<h:outputText value="#{registrarFrequenciaBean.inscricaoGrade.gradeOficina.sala.nomSala}" />
+							<h:outputText value="#{frequenciaBean.inscricaoGrade.gradeOficina.sala.nomSala}" />
 							<h:outputLabel value="Capacidade" />
-							<h:outputText value="#{registrarFrequenciaBean.inscricaoGrade.gradeOficina.sala.numCapacidade}" />
+							<h:outputText value="#{frequenciaBean.inscricaoGrade.gradeOficina.sala.numCapacidade}" />
 							<h:outputLabel value="Inscritos" />
-							<h:outputText value="#{registrarFrequenciaBean.quantidadeInscritos}" />
+							<h:outputText value="#{frequenciaBean.quantidadeInscritos}" />
 						</h:panelGrid>
 					</p:panel>
-					<p:separator rendered="#{registrarFrequenciaBean.inscricaoCurso != null and registrarFrequenciaBean.inscricaoCurso.id != null}" />
+					<p:separator rendered="#{frequenciaBean.inscricaoCurso != null and frequenciaBean.inscricaoCurso.id != null}" />
 				</h:panelGroup>
 
 				<h:panelGroup id="grupoInformacoesTurmaSemOficina">
 					<p:panel header="Dados da turma selecionada"
-						rendered="#{registrarFrequenciaBean.inscricaoCurso != null and registrarFrequenciaBean.inscricaoCurso.id != null and registrarFrequenciaBean.exibirTurma and !registrarFrequenciaBean.curso.flgPossuiOficina}">
+						rendered="#{frequenciaBean.inscricaoCurso != null and frequenciaBean.inscricaoCurso.id != null and frequenciaBean.exibirTurma and !frequenciaBean.curso.flgPossuiOficina}">
 						<h:panelGrid columns="2" border="0" columnClasses="coluna20,coluna80" width="100%">
 							<h:outputLabel value="Curso" />
-							<h:outputText value="#{registrarFrequenciaBean.inscricaoCurso.curso.cursoData}" />
+							<h:outputText value="#{frequenciaBean.inscricaoCurso.curso.cursoData}" />
 							<h:outputLabel value="Turma:" />
-							<h:outputText value="#{registrarFrequenciaBean.inscricaoCurso.turma.descricao}" />
+							<h:outputText value="#{frequenciaBean.inscricaoCurso.turma.descricao}" />
 							<h:outputLabel value="Inscritos" />
-							<h:outputText value="#{registrarFrequenciaBean.inscricaoCurso.turma.inscricaoCursos.size()}" />
+							<h:outputText value="#{frequenciaBean.inscricaoCurso.turma.inscricaoCursos.size()}" />
 						</h:panelGrid>
 					</p:panel>
-					<p:separator rendered="#{registrarFrequenciaBean.inscricaoCurso != null and registrarFrequenciaBean.inscricaoCurso.id != null}" />
+					<p:separator rendered="#{frequenciaBean.inscricaoCurso != null and frequenciaBean.inscricaoCurso.id != null}" />
 				</h:panelGroup>
 
 				<p:spacer height="30" />
@@ -129,31 +129,31 @@
 					<p:spacer width="10" />
 					<p:commandButton id="btnPesquisar" value="Pesquisar" process="@form"
 						update="grupoInscricao, grupoInformacoesInscricao, grupoInformacoesTurma, grupoInformacoesTurmaSemOficina, botoesRegistros, botaoFinalizar, listagem"
-						action="#{registrarFrequenciaBean.pesquisar}" />
+						action="#{frequenciaBean.pesquisar}" />
 					<h:panelGroup id="botoesRegistros">
-						<h:panelGroup rendered="#{registrarFrequenciaBean.inscricaoCurso != null and registrarFrequenciaBean.inscricaoCurso.id != null}">
+						<h:panelGroup rendered="#{frequenciaBean.inscricaoCurso != null and frequenciaBean.inscricaoCurso.id != null}">
 							<p:spacer width="10" />
-							<p:commandButton id="btnRegistrar" value="Registrar" process="@form" update="@form" action="#{registrarFrequenciaBean.registrar}" />
+							<p:commandButton id="btnRegistrar" value="Registrar" process="@form" update="@form" action="#{frequenciaBean.registrar}" />
 						</h:panelGroup>
 					</h:panelGroup>
 					<h:panelGroup id="botaoFinalizar">
-						<h:panelGroup rendered="#{registrarFrequenciaBean.exibirBotaoFinalizar}">
+						<h:panelGroup rendered="#{frequenciaBean.exibirBotaoFinalizar}">
 							<p:spacer width="10" />
 							<p:commandButton id="btnFinalizar" value="Finalizar Frequência Turma" process="@form" update="@form"
-								action="#{registrarFrequenciaBean.finalizarFrequencia}" />
+								action="#{frequenciaBean.finalizarFrequencia}" />
 						</h:panelGroup>
 					</h:panelGroup>
 				</div>
 				<p:spacer height="30" />
 				<h:panelGroup id="listagem">
-					<h:panelGroup rendered="#{!empty registrarFrequenciaBean.listaFrequencia}">
+					<h:panelGroup rendered="#{!empty frequenciaBean.listaFrequencia}">
 						<p:dataTable paginatorAlwaysVisible="false" paginatorPosition="bottom" var="listaFrequencia" id="listaFrequencia"
-							emptyMessage="#{registrarFrequenciaBean.emptyMessage}" update="listaFrequencia"
-							rowsPerPageTemplate="#{registrarFrequenciaBean.paginacao}" styleClass="coluna100" value="#{registrarFrequenciaBean.listaFrequencia}"
+							emptyMessage="#{frequenciaBean.emptyMessage}" update="listaFrequencia"
+							rowsPerPageTemplate="#{frequenciaBean.paginacao}" styleClass="coluna100" value="#{frequenciaBean.listaFrequencia}"
 							paginator="true" rows="5" rowStyleClass="#{empty rowIx or rowIx mod 2 ne 0 ? 'linhaImpar' : 'linhaPar'}" rowIndexVar="rowIx">
 
 							<f:facet name="header">
-								<h:outputLabel value="Participantes com registro de frequência: #{registrarFrequenciaBean.listaFrequencia.size()}" />
+								<h:outputLabel value="Participantes com registro de frequência: #{frequenciaBean.listaFrequencia.size()}" />
 							</f:facet>
 							<p:column headerText="Inscrição">
 								<h:outputLabel value="#{listaFrequencia.inscricaoCurso.inscricao}" />
@@ -161,11 +161,11 @@
 							<p:column headerText="Participante">
 								<h:outputLabel value="#{listaFrequencia.inscricaoCurso.candidato.nome}" />
 							</p:column>
-							<p:column headerText="Turma" rendered="#{registrarFrequenciaBean.curso.flgPossuiOficina}">
+							<p:column headerText="Turma" rendered="#{frequenciaBean.curso.flgPossuiOficina}">
 								<h:outputLabel value="#{listaFrequencia.gradeOficina.turma.descricao}" />
 							</p:column>
 							<p:column headerText="Turma"
-								rendered="#{!registrarFrequenciaBean.curso.flgPossuiOficina and registrarFrequenciaBean.curso.turmas.size() > 0}">
+								rendered="#{!frequenciaBean.curso.flgPossuiOficina and frequenciaBean.curso.turmas.size() > 0}">
 								<h:outputLabel value="#{listaFrequencia.inscricaoCurso.turma.descricao}" />
 							</p:column>
 							<p:column headerText="Horário Entrada">

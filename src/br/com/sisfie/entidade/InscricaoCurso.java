@@ -70,7 +70,7 @@ public class InscricaoCurso extends Entidade<Integer> {
 	private Boolean flgParceiro;
 	
 	@Column(name = "flg_instrutor")
-	private Boolean flgInstrutor;
+	private boolean flgInstrutor;
 
 	@OneToMany(mappedBy = "inscricaoCurso", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	private Set<StatusInscricao> statusInscricoes = new HashSet<StatusInscricao>(0);
@@ -92,6 +92,9 @@ public class InscricaoCurso extends Entidade<Integer> {
 
 	@Transient
 	private String dtCadastroFormat;
+	
+	@Transient
+	private String totalFrequencia;
 
 	@ManyToOne
 	@JoinColumn(name = "id_ultimo_status_inscricao", nullable = true)
@@ -247,12 +250,20 @@ public class InscricaoCurso extends Entidade<Integer> {
 		this.frequencias = frequencias;
 	}
 
-	public Boolean getFlgInstrutor() {
+	public boolean getFlgInstrutor() {
 		return flgInstrutor;
 	}
 
-	public void setFlgInstrutor(Boolean flgInstrutor) {
+	public void setFlgInstrutor(boolean flgInstrutor) {
 		this.flgInstrutor = flgInstrutor;
+	}
+
+	public String getTotalFrequencia() {
+		return totalFrequencia;
+	}
+
+	public void setTotalFrequencia(String totalFrequencia) {
+		this.totalFrequencia = totalFrequencia;
 	}
 
 }

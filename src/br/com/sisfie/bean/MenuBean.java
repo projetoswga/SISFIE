@@ -225,6 +225,11 @@ public class MenuBean {
 
 		frequencia.getChildren().add(relatoriosFrequencia);
 		
+		item = new MenuItem();
+		item.setValue("Aprovação");
+		item.setUrl("/pages/aprovacao.jsf");
+		frequencia.getChildren().add(item);
+		
 		menu.addSubmenu(frequencia);
 
 		/**

@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui" template="/templates/template.xhtml">
+
+	<ui:define name="body">
+
+		<f:loadBundle basename="constantes" var="const" />
+
+		<h:form id="formId" prependId="false">
+			<p:fieldset legend="Gerenciar Aprovados" id="fieldPrincipal">
+				<h:panelGrid id="panelPrincipal" columns="2" border="0" columnClasses="coluna20,coluna80" width="100%">
+					<h:outputLabel value="Curso" styleClass="icoObrigatorio" />
+					<p:autoComplete dropdown="true" queryDelay="500" value="#{frequenciaBean.curso}" minQueryLength="2" id="curso" size="68"
+						scrollHeight="300" completeMethod="#{frequenciaBean.completeCurso}" forceSelection="true" var="lista" itemLabel="#{lista.cursoData}"
+						itemValue="#{lista.id}" converter="cursoConverter" global="false">
+						<p:ajax event="itemSelect" update="@form" process="@form" listener="#{frequenciaBean.carregarListas}" />
+					</p:autoComplete>
+				</h:panelGrid>
+
+				<p:spacer height="20" />
+
+				<h:panelGrid width="100%" id="panelConteudo">
+					<h:panelGroup rendered="#{frequenciaBean.exibirConteudo}">
+						<p:fieldset legend="Importar lista de frequência">
+							<p:fileUpload mode="advanced" fileUploadListener="#{frequenciaBean.importarListaFrequencia}" width="100%" label="Importar..."
+								cancelLabel="Cancelar" uploadLabel="Enviar" sizeLimit="#{const.tamArquivoByte}" invalidSizeMessage="Tamanho limite excedido"
+								allowTypes="/(\.|\/)(csv|txt|jpeg|jpg|png|doc|docx|pdf|CSV|TXT|JPEG|JPG|PNG|DOC|DOCX|PDF)$/"
+								invalidFileMessage="Tipo de arquivo inválido." id="fileImportFrequencia" />
+						</p:fieldset>
+
+						<p:spacer height="20" />
+
+						<p:dataTable paginatorAlwaysVisible="false" paginatorPosition="bottom" var="inscricaoAprovada" id="idListaInscricoesAprovadas"
+							emptyMessage="#{frequenciaBean.emptyMessage}" update="idListaInscricoesAprovadas" rowsPerPageTemplate="#{frequenciaBean.paginacao}"
+							styleClass="coluna100" value="#{frequenciaBean.listaInscricoesAprovadas}" paginator="true" rows="5"
+							rowStyleClass="#{empty rowIx or rowIx mod 2 ne 0 ? 'linhaImpar' : 'linhaPar'}" rowIndexVar="rowIx">
+
+							<f:facet name="header">
+								<h:outputLabel value="Participantes com inscrições aprovadas: #{frequenciaBean.listaInscricoesAprovadas.size()}" />
+							</f:facet>
+							<p:column headerText="Inscrição">
+								<h:outputLabel value="#{inscricaoAprovada.inscricao}" />
+							</p:column>
+							<p:column headerText="Nome">
+								<h:outputLabel value="#{inscricaoAprovada.candidato.nome}" />
+							</p:column>
+							<p:column headerText="Total de Frequência">
+								<h:outputLabel value="#{inscricaoReprovada.totalFrequencia}" />
+							</p:column>
+							<p:column headerText="Ações" style="width:10%;text-align:center;">
+								<p:commandLink title="Visualizar Frequência" onclick="visualizarFrequenciaPopup.show();" process="@this,:formId:panelDialog"
+									action="#{frequenciaBean.visualizarFrequencia(inscricaoAprovada)}" update=":formId:panelDialog">
+									<h:graphicImage library="design/imagem" name="icone-visualizar.png" />
+								</p:commandLink>
+								<p:commandLink title="Reprovar Inscrição" process="@this" update="@form"
+									action="#{frequenciaBean.reprovarInscricao(inscricaoAprovada)}">
+									<h:graphicImage library="design/imagem" name="icone-negativo.png" />
+								</p:commandLink>
+							</p:column>
+						</p:dataTable>
+
+						<p:spacer height="20" />
+						<p:separator />
+						<p:spacer height="20" />
+
+						<p:dataTable paginatorAlwaysVisible="false" paginatorPosition="bottom" var="inscricaoReprovada" id="idListaInscricoesReprovadas"
+							emptyMessage="#{frequenciaBean.emptyMessage}" update="idListaInscricoesReprovadas" rowsPerPageTemplate="#{frequenciaBean.paginacao}"
+							styleClass="coluna100" value="#{frequenciaBean.listaInscricoesReprovadas}" paginator="true" rows="5"
+							rowStyleClass="#{empty rowIx or rowIx mod 2 ne 0 ? 'linhaImpar' : 'linhaPar'}" rowIndexVar="rowIx">
+
+							<f:facet name="header">
+								<h:outputLabel value="Participantes com inscrições reprovadas: #{frequenciaBean.listaInscricoesReprovadas.size()}" />
+							</f:facet>
+							<p:column headerText="Inscrição">
+								<h:outputLabel value="#{inscricaoReprovada.inscricao}" />
+							</p:column>
+							<p:column headerText="Nome">
+								<h:outputLabel value="#{inscricaoReprovada.candidato.nome}" />
+							</p:column>
+							<p:column headerText="Total de Frequência">
+								<h:outputLabel value="#{inscricaoReprovada.totalFrequencia}" />
+							</p:column>
+							<p:column headerText="Ações" style="width:10%;text-align:center;">
+								<p:commandLink title="Visualizar Frequência" onclick="visualizarFrequenciaPopup.show();" process="@this,:formId:panelDialog"
+									action="#{frequenciaBean.visualizarFrequencia(inscricaoReprovada)}" update=":formId:panelDialog">
+									<h:graphicImage library="design/imagem" name="icone-visualizar.png" />
+								</p:commandLink>
+								<p:commandLink title="Aprovar Inscrição" process="@this" update="@form"
+									action="#{frequenciaBean.aprovarInscricao(inscricaoAprovada)}">
+									<h:graphicImage library="design/imagem" name="icone-positivo.png" />
+								</p:commandLink>
+							</p:column>
+						</p:dataTable>
+					</h:panelGroup>
+				</h:panelGrid>
+			</p:fieldset>
+
+			<p:dialog appendToBody="false" header="Visualizar Frequência" widgetVar="visualizarFrequenciaPopup" width="500" showEffect="slide"
+				hideEffect="slide" id="popupFrequencias" onHide="dataTableWidget.getPaginator().setPage(0);"
+				onShow="dataTableWidget.getPaginator().setPage(0);">
+				<h:panelGroup id="panelDialog">
+					<p:dataTable paginatorAlwaysVisible="false" paginatorPosition="bottom" var="listaFrequencia" id="listaFrequencia"
+						emptyMessage="#{frequenciaBean.emptyMessage}" update="listaFrequencia" rowsPerPageTemplate="#{frequenciaBean.paginacao}"
+						styleClass="coluna100" value="#{frequenciaBean.frequencias}" paginator="true" rows="5" widgetVar="dataTableWidget"
+						rowStyleClass="#{empty rowIx or rowIx mod 2 ne 0 ? 'linhaImpar' : 'linhaPar'}" rowIndexVar="rowIx">
+
+						<p:column headerText="Horário Entrada">
+							<h:outputLabel value="#{listaFrequencia.horarioEntrada}">
+								<f:convertDateTime pattern="dd/MM/yyyy HH:mm:ss" timeZone="America/Sao_Paulo" />
+							</h:outputLabel>
+						</p:column>
+						<p:column headerText="Horário Saída">
+							<h:outputLabel value="#{listaFrequencia.horarioSaida}">
+								<f:convertDateTime pattern="dd/MM/yyyy HH:mm:ss" timeZone="America/Sao_Paulo" />
+							</h:outputLabel>
+						</p:column>
+					</p:dataTable>
+				</h:panelGroup>
+			</p:dialog>
+		</h:form>
+	</ui:define>
+</ui:composition>

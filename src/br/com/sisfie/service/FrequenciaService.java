@@ -24,4 +24,6 @@ public interface FrequenciaService {
 
 	List<Frequencia> pesquisarFrequenciasData(String inscricao, Calendar datFrequencia);
 
+	List<Frequencia> carregarFrequencias(Integer idCurso);
+
 }

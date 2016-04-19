@@ -162,4 +162,14 @@ public class FrequenciaDAOImpl extends HibernateDaoSupport implements Frequencia
 		criteria.addOrder(Order.asc("horarioEntrada"));
 		return criteria.list();
 	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<Frequencia> carregarFrequencias(Integer idCurso) {
+		Criteria criteria = getSession().createCriteria(Frequencia.class);
+		criteria.createAlias("inscricaoCurso", "ic");
+		criteria.createAlias("ic.curso", "c");
+		criteria.add(Restrictions.like("c.id", idCurso));
+		return criteria.list();
+	}
 }
