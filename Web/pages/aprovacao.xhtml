@@ -25,8 +25,28 @@
 						<p:fieldset legend="Importar lista de frequência">
 							<p:fileUpload mode="advanced" fileUploadListener="#{frequenciaBean.importarListaFrequencia}" width="100%" label="Importar..."
 								cancelLabel="Cancelar" uploadLabel="Enviar" sizeLimit="#{const.tamArquivoByte}" invalidSizeMessage="Tamanho limite excedido"
-								allowTypes="/(\.|\/)(csv|txt|jpeg|jpg|png|doc|docx|pdf|CSV|TXT|JPEG|JPG|PNG|DOC|DOCX|PDF)$/"
-								invalidFileMessage="Tipo de arquivo inválido." id="fileImportFrequencia" />
+								allowTypes="/(\.|\/)(csv|txt|jpeg|jpg|png|doc|docx|pdf|CSV|TXT|JPEG|JPG|PNG|DOC|DOCX|PDF)$/" 
+								invalidFileMessage="Tipo de arquivo inválido." id="fileImportFrequencia" update=":formId:panelListaArquivoFrequencia"/>
+
+							<p:spacer height="20" />
+
+							<h:panelGrid width="100%" id="panelListaArquivoFrequencia">
+								<p:dataTable paginatorAlwaysVisible="false" paginatorPosition="bottom" var="listaArquivo" id="listaArquivo"
+									emptyMessage="#{frequenciaBean.emptyMessage}" update="listaArquivo" styleClass="coluna100"
+									value="#{frequenciaBean.listaArquivosFrequencia}" rowStyleClass="#{empty rowIx or rowIx mod 2 ne 0 ? 'linhaImpar' : 'linhaPar'}"
+									paginator="true" rows="10" rowIndexVar="rowIx" rendered="#{not empty frequenciaBean.listaArquivosFrequencia}">
+									<p:column headerText="Nome do arquivo" style="width:75%">
+										<h:commandLink target="_blank" value="#{listaArquivo.nomeArquivoFrequencia}" process="@this"
+											action="#{frequenciaBean.baixarArquivoFrequencia(listaArquivo.id , 'frequencia')}" />
+									</p:column>
+									<p:column headerText="Ação" style="width:10%;text-align:center;">
+										<p:commandLink title="Excluir" update=":formId:panelListaArquivoFrequencia" process=":formId:panelListaArquivoFrequencia"
+											action="#{frequenciaBean.deleteArquivoFrequencia(listaArquivo)}">
+											<h:graphicImage library="design/imagem" name="icone-excluir.png" />
+										</p:commandLink>
+									</p:column>
+								</p:dataTable>
+							</h:panelGrid>
 						</p:fieldset>
 
 						<p:spacer height="20" />

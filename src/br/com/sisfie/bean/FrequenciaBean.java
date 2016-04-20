@@ -1,5 +1,8 @@
 package br.com.sisfie.bean;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -12,6 +15,7 @@ import java.util.Map;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
+import javax.faces.context.FacesContext;
 
 import org.primefaces.event.FileUploadEvent;
 
@@ -25,7 +29,6 @@ import br.com.sisfie.entidade.GradeOficina;
 import br.com.sisfie.entidade.Horario;
 import br.com.sisfie.entidade.InscricaoCurso;
 import br.com.sisfie.entidade.InscricaoGrade;
-import br.com.sisfie.entidade.StatusInscricao;
 import br.com.sisfie.entidade.Turma;
 import br.com.sisfie.entidade.Turno;
 import br.com.sisfie.service.CursoService;
@@ -34,6 +37,8 @@ import br.com.sisfie.service.GradeOficinaService;
 import br.com.sisfie.service.HorarioService;
 import br.com.sisfie.service.InscricaoCursoService;
 import br.com.sisfie.service.TurmaService;
+import br.com.sisfie.util.Constantes;
+import br.com.sisfie.util.ImagemUtil;
 
 /**
  * @author Wesley Marra
@@ -44,6 +49,9 @@ import br.com.sisfie.service.TurmaService;
 public class FrequenciaBean extends PaginableBean<Frequencia> {
 
 	private static final long serialVersionUID = 1L;
+	
+	@ManagedProperty(value = "#{login}")
+	protected LoginBean loginBean;
 
 	@ManagedProperty(value = "#{CursoService}")
 	protected CursoService cursoService;
@@ -77,6 +85,7 @@ public class FrequenciaBean extends PaginableBean<Frequencia> {
 	private List<Frequencia> frequencias;
 	private List<InscricaoCurso> listaInscricoesAprovadas;
 	private List<InscricaoCurso> listaInscricoesReprovadas;
+	private List<Curso> listaArquivosFrequencia;
 	private Integer quantidadeInscritos;
 	private boolean exibirTurma;
 	private boolean exibirHorario;
@@ -98,13 +107,59 @@ public class FrequenciaBean extends PaginableBean<Frequencia> {
 		listaFrequencia = new ArrayList<Frequencia>();
 		listaInscricoesAprovadas = new ArrayList<>();
 		listaInscricoesReprovadas = new ArrayList<>();
+		listaArquivosFrequencia= new ArrayList<>();
 		frequencia = new Frequencia();
 		frequencias = new ArrayList<>();
 		getModel().setInscricaoCurso(new InscricaoCurso());
 	}
 	
 	public void importarListaFrequencia(FileUploadEvent event) {
-		// TODO: Implementar............
+		try {
+			String fileName = ImagemUtil.criarNomeArquivo(event.getFile().getFileName(), loginBean.getModel());
+			fileName = ImagemUtil.verificarTamanhoNomeArquivo(fileName);
+			curso.setNomeArquivoFrequencia(fileName);
+			
+			String os = System.getProperty("os.name");
+			/* Descobre se linux ou windows */
+			if (os.contains("win") || os.trim().toLowerCase().contains("windows") || os.trim().toLowerCase().contains("win")) {
+				curso.setUrlArquivoFrequencia(Constantes.PATH_IMG_WINDOWS + fileName);
+			} else {
+				curso.setUrlArquivoFrequencia(Constantes.PATH_IMG_LINUX + fileName);
+			}
+			
+			// Força a criação do arquivo no file system
+			FileOutputStream fos = new FileOutputStream(new File(curso.getUrlArquivoFrequencia()));
+			fos.write(event.getFile().getContents());
+			fos.close();
+			
+			universalManager.save(curso);
+			listaArquivosFrequencia = new ArrayList<>();
+			listaArquivosFrequencia.add(curso);
+			FacesMessagesUtil.addInfoMessage("", "Arquivo salvo com sucesso!");
+		} catch (Exception e) {
+			ExcecaoUtil.tratarExcecao(e);
+		}
+	}
+	
+	public void baixarArquivoFrequencia(Integer id, String tipo) {
+		try {
+			String url = Constantes.URL_COMPROVANTE + "loadImagemBD?idImagemDownload=" + id + "&tipo=" + tipo;
+			FacesContext.getCurrentInstance().getExternalContext().redirect(url);
+		} catch (IOException e) {
+			ExcecaoUtil.tratarExcecao(e);
+		}
+	}
+	
+	public void deleteArquivoFrequencia(Curso cursoSelecionado) {
+		try {
+			listaArquivosFrequencia.remove(cursoSelecionado);
+			this.curso.setNomeArquivoFrequencia("");
+			this.curso.setUrlArquivoFrequencia("");
+			universalManager.save(this.curso);
+			FacesMessagesUtil.addInfoMessage("Arquivo de Frequência ", " excluído com sucesso!");
+		} catch (Exception e) {
+			ExcecaoUtil.tratarExcecao(e);
+		}
 	}
 	
 	public void reprovarInscricao(InscricaoCurso inscricaoCurso){
@@ -129,6 +184,12 @@ public class FrequenciaBean extends PaginableBean<Frequencia> {
 		exibirConteudo = true;
 		listaInscricoesAprovadas = new ArrayList<>();
 		listaInscricoesReprovadas = new ArrayList<>();
+		listaArquivosFrequencia = new ArrayList<>();
+		
+		if (curso.getNomeArquivoFrequencia() != null && !curso.getNomeArquivoFrequencia().isEmpty()){
+			listaArquivosFrequencia.add(curso);
+		}
+		
 		int cargaHorariaCurso = 0;
 
 		if (curso.getFlgPossuiOficina()) {
@@ -664,5 +725,21 @@ public class FrequenciaBean extends PaginableBean<Frequencia> {
 
 	public void setExibirConteudo(boolean exibirConteudo) {
 		this.exibirConteudo = exibirConteudo;
+	}
+
+	public LoginBean getLoginBean() {
+		return loginBean;
+	}
+
+	public void setLoginBean(LoginBean loginBean) {
+		this.loginBean = loginBean;
+	}
+
+	public List<Curso> getListaArquivosFrequencia() {
+		return listaArquivosFrequencia;
+	}
+
+	public void setListaArquivosFrequencia(List<Curso> listaArquivosFrequencia) {
+		this.listaArquivosFrequencia = listaArquivosFrequencia;
 	}
 }
