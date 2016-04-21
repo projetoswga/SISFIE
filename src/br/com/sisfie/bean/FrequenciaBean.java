@@ -50,6 +50,9 @@ public class FrequenciaBean extends PaginableBean<Frequencia> {
 
 	private static final long serialVersionUID = 1L;
 	
+	private static final String APROVADO = "A";
+	private static final String REPROVADO = "R";
+	
 	@ManagedProperty(value = "#{login}")
 	protected LoginBean loginBean;
 
@@ -163,11 +166,27 @@ public class FrequenciaBean extends PaginableBean<Frequencia> {
 	}
 	
 	public void reprovarInscricao(InscricaoCurso inscricaoCurso){
-		// TODO: Implementar............
+		try {
+			listaInscricoesAprovadas.remove(inscricaoCurso);
+			listaInscricoesReprovadas.add(inscricaoCurso);
+			inscricaoCurso.setStatus(REPROVADO);
+			universalManager.save(inscricaoCurso);
+			FacesMessagesUtil.addInfoMessage("", "Inscrição reprovada.");
+		} catch (Exception e) {
+			ExcecaoUtil.tratarExcecao(e);
+		}
 	}
 	
 	public void aprovarInscricao(InscricaoCurso inscricaoCurso){
-		// TODO: Implementar............
+		try {
+			listaInscricoesReprovadas.remove(inscricaoCurso);
+			listaInscricoesAprovadas.add(inscricaoCurso);
+			inscricaoCurso.setStatus(APROVADO);
+			universalManager.save(inscricaoCurso);
+			FacesMessagesUtil.addInfoMessage("", "Inscrição aprovada.");
+		} catch (Exception e) {
+			ExcecaoUtil.tratarExcecao(e);
+		}
 	}
 	
 	public void visualizarFrequencia(InscricaoCurso inscricaoCurso) {
@@ -218,6 +237,15 @@ public class FrequenciaBean extends PaginableBean<Frequencia> {
 
 		List<InscricaoCurso> listaCandidatoConfirmados = cursoService.carregarListaCandidatoConfirmados(curso);
 		for (InscricaoCurso inscricaoCurso : listaCandidatoConfirmados) {
+			
+			if (inscricaoCurso.getStatus() != null){
+				if (inscricaoCurso.getStatus().equals(APROVADO)){
+					listaInscricoesAprovadas.add(inscricaoCurso);
+				} else if (inscricaoCurso.getStatus().equals(REPROVADO)){
+					listaInscricoesReprovadas.add(inscricaoCurso);
+				}
+				continue;
+			}
 
 			long diferencaEmMinutos = 0;
 			for (Frequencia frequencia : inscricaoCurso.getFrequencias()) {	

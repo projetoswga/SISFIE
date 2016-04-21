@@ -71,6 +71,9 @@ public class InscricaoCurso extends Entidade<Integer> {
 	
 	@Column(name = "flg_instrutor")
 	private boolean flgInstrutor;
+	
+	@Column(name = "tp_status")
+	private String status;
 
 	@OneToMany(mappedBy = "inscricaoCurso", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	private Set<StatusInscricao> statusInscricoes = new HashSet<StatusInscricao>(0);
@@ -264,6 +267,14 @@ public class InscricaoCurso extends Entidade<Integer> {
 
 	public void setTotalFrequencia(String totalFrequencia) {
 		this.totalFrequencia = totalFrequencia;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
 	}
 
 }
