@@ -125,6 +125,7 @@ public class GerenciarCursoBean extends BaseBean<Curso> {
 
 	private List<InscricaoCurso> listaCandidatoPendentes = new ArrayList<InscricaoCurso>();
 	private List<InscricaoCurso> listaEspera = new ArrayList<InscricaoCurso>();
+	private List<InscricaoCurso> listaInstrutores = new ArrayList<>();
 	private InscricaoCursoDataModel listaCandidatosConfirmados;
 	private InscricaoCurso[] inscricoesCursoConfirmados;
 	private List<Turma> turmas;
@@ -741,6 +742,9 @@ public class GerenciarCursoBean extends BaseBean<Curso> {
 
 			listaCandidatoPendentes = cursoService.carregarListaCandidatoParticipante(curso);
 			listaEspera = cursoService.carregarListaEspera(curso);
+			if (!curso.getFlgPossuiOficina()){
+				listaInstrutores = cursoService.carregarListaInstrutores(curso);
+			}
 			listaCandidatosConfirmados = new InscricaoCursoDataModel(cursoService.carregarListaCandidatoConfirmados(curso));
 
 			vagasPreencidas = 0;
@@ -1895,5 +1899,13 @@ public class GerenciarCursoBean extends BaseBean<Curso> {
 
 	public void setVagasParceiro(Integer vagasParceiro) {
 		this.vagasParceiro = vagasParceiro;
+	}
+
+	public List<InscricaoCurso> getListaInstrutores() {
+		return listaInstrutores;
+	}
+
+	public void setListaInstrutores(List<InscricaoCurso> listaInstrutores) {
+		this.listaInstrutores = listaInstrutores;
 	}
 }

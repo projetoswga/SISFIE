@@ -746,4 +746,17 @@ public class CursoDAOImpl extends HibernateDaoSupport implements CursoDAO {
 		}
 		return listaRetorno;
 	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<InscricaoCurso> carregarListaInstrutores(Curso curso) {
+		Criteria criteria = getSession().createCriteria(InscricaoCurso.class);
+		criteria.createAlias("curso", "c");
+		criteria.add(Restrictions.eq("c.id", curso.getId()));
+		criteria.add(Restrictions.eq("flgInstrutor", true));
+		criteria.createAlias("ultimoStatus", "us");
+		criteria.createAlias("us.status", "s");
+		criteria.add(Restrictions.not(Restrictions.eq("s.id", Status.CANCELADO)));
+		return criteria.list();
+	}
 }

@@ -35,7 +35,7 @@
 									emptyMessage="#{frequenciaBean.emptyMessage}" update="listaArquivo" styleClass="coluna100"
 									value="#{frequenciaBean.listaArquivosFrequencia}" rowStyleClass="#{empty rowIx or rowIx mod 2 ne 0 ? 'linhaImpar' : 'linhaPar'}"
 									paginator="true" rows="10" rowIndexVar="rowIx" rendered="#{not empty frequenciaBean.listaArquivosFrequencia}">
-									<p:column headerText="Nome do arquivo" style="width:75%">
+									<p:column headerText="Nome do arquivo" style="width:90%">
 										<h:commandLink target="_blank" value="#{listaArquivo.nomeArquivoFrequencia}" process="@this"
 											action="#{frequenciaBean.baixarArquivoFrequencia(listaArquivo.id , 'frequencia')}" />
 									</p:column>
@@ -59,13 +59,13 @@
 							<f:facet name="header">
 								<h:outputLabel value="Participantes com inscrições aprovadas: #{frequenciaBean.listaInscricoesAprovadas.size()}" />
 							</f:facet>
-							<p:column headerText="Inscrição">
+							<p:column headerText="Inscrição" style="width:30%;">
 								<h:outputLabel value="#{inscricaoAprovada.inscricao}" />
 							</p:column>
-							<p:column headerText="Nome">
+							<p:column headerText="Nome" style="width:30%;">
 								<h:outputLabel value="#{inscricaoAprovada.candidato.nome}" />
 							</p:column>
-							<p:column headerText="Total de Frequência">
+							<p:column headerText="Total de Frequência" style="width:30%;">
 								<h:outputLabel value="#{inscricaoAprovada.totalFrequencia}" />
 							</p:column>
 							<p:column headerText="Ações" style="width:10%;text-align:center;">
@@ -92,13 +92,13 @@
 							<f:facet name="header">
 								<h:outputLabel value="Participantes com inscrições reprovadas: #{frequenciaBean.listaInscricoesReprovadas.size()}" />
 							</f:facet>
-							<p:column headerText="Inscrição">
+							<p:column headerText="Inscrição" style="width:30%;">
 								<h:outputLabel value="#{inscricaoReprovada.inscricao}" />
 							</p:column>
-							<p:column headerText="Nome">
+							<p:column headerText="Nome" style="width:30%;">
 								<h:outputLabel value="#{inscricaoReprovada.candidato.nome}" />
 							</p:column>
-							<p:column headerText="Total de Frequência">
+							<p:column headerText="Total de Frequência" style="width:30%;">
 								<h:outputLabel value="#{inscricaoReprovada.totalFrequencia}" />
 							</p:column>
 							<p:column headerText="Ações" style="width:10%;text-align:center;">

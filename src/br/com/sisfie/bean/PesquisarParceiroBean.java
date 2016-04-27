@@ -10,6 +10,7 @@ import javax.faces.model.SelectItem;
 
 import br.com.arquitetura.bean.BaseBean;
 import br.com.arquitetura.excecao.ExcecaoUtil;
+import br.com.arquitetura.util.FacesMessagesUtil;
 import br.com.sisfie.dto.ParceirosDTO;
 import br.com.sisfie.entidade.Candidato;
 import br.com.sisfie.entidade.Curso;
@@ -18,6 +19,7 @@ import br.com.sisfie.entidade.InscricaoCurso;
 import br.com.sisfie.service.CursoService;
 import br.com.sisfie.service.InscricaoCursoService;
 import br.com.sisfie.util.Constantes;
+import br.com.sisfie.util.FacesUtil;
 
 @ManagedBean(name = "pesquisarParceiroBean")
 @ViewScoped
@@ -55,6 +57,9 @@ public class PesquisarParceiroBean extends BaseBean<EmailCursoPrivado> {
 				getParceirosNaoInscritos();
 			}
 			getTipoParceiros();
+			if (listaParceiros.isEmpty()){
+				FacesMessagesUtil.addInfoMessage("", "Nenhum parceiro encontrado.");
+			}
 		} catch (Exception e) {
 			ExcecaoUtil.tratarExcecao(e);
 		}

@@ -1155,4 +1155,9 @@ public class CursoServiceImpl implements CursoService {
 	public List<Curso> recuperarCursosComInscricoes(Curso curso) throws Exception{
 		return cursoDAO.recuperarCursosComInscricoes(curso);
 	}
+
+	@Override
+	public List<InscricaoCurso> carregarListaInstrutores(Curso curso) {
+		return cursoDAO.carregarListaInstrutores(curso);
+	}
 }

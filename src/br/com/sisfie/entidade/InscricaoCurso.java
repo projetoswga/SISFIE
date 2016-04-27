@@ -70,7 +70,7 @@ public class InscricaoCurso extends Entidade<Integer> {
 	private Boolean flgParceiro;
 	
 	@Column(name = "flg_instrutor")
-	private boolean flgInstrutor;
+	private Boolean flgInstrutor;
 	
 	@Column(name = "tp_status")
 	private String status;
@@ -253,11 +253,11 @@ public class InscricaoCurso extends Entidade<Integer> {
 		this.frequencias = frequencias;
 	}
 
-	public boolean getFlgInstrutor() {
+	public Boolean getFlgInstrutor() {
 		return flgInstrutor;
 	}
 
-	public void setFlgInstrutor(boolean flgInstrutor) {
+	public void setFlgInstrutor(Boolean flgInstrutor) {
 		this.flgInstrutor = flgInstrutor;
 	}
 

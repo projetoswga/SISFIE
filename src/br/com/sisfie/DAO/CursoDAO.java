@@ -85,4 +85,6 @@ public interface CursoDAO {
 	List<EmailCursoPrivado> recuperarParceirosNaoInscritos(Integer idCurso, List<String> listaEmailParceirosInscritos);
 
 	List<Curso> recuperarCursosComInscricoes(Curso curso) throws Exception;
+
+	List<InscricaoCurso> carregarListaInstrutores(Curso curso);
 }

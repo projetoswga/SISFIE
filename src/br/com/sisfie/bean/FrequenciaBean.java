@@ -49,10 +49,10 @@ import br.com.sisfie.util.ImagemUtil;
 public class FrequenciaBean extends PaginableBean<Frequencia> {
 
 	private static final long serialVersionUID = 1L;
-	
+
 	private static final String APROVADO = "A";
 	private static final String REPROVADO = "R";
-	
+
 	@ManagedProperty(value = "#{login}")
 	protected LoginBean loginBean;
 
@@ -110,18 +110,18 @@ public class FrequenciaBean extends PaginableBean<Frequencia> {
 		listaFrequencia = new ArrayList<Frequencia>();
 		listaInscricoesAprovadas = new ArrayList<>();
 		listaInscricoesReprovadas = new ArrayList<>();
-		listaArquivosFrequencia= new ArrayList<>();
+		listaArquivosFrequencia = new ArrayList<>();
 		frequencia = new Frequencia();
 		frequencias = new ArrayList<>();
 		getModel().setInscricaoCurso(new InscricaoCurso());
 	}
-	
+
 	public void importarListaFrequencia(FileUploadEvent event) {
 		try {
 			String fileName = ImagemUtil.criarNomeArquivo(event.getFile().getFileName(), loginBean.getModel());
 			fileName = ImagemUtil.verificarTamanhoNomeArquivo(fileName);
 			curso.setNomeArquivoFrequencia(fileName);
-			
+
 			String os = System.getProperty("os.name");
 			/* Descobre se linux ou windows */
 			if (os.contains("win") || os.trim().toLowerCase().contains("windows") || os.trim().toLowerCase().contains("win")) {
@@ -129,12 +129,12 @@ public class FrequenciaBean extends PaginableBean<Frequencia> {
 			} else {
 				curso.setUrlArquivoFrequencia(Constantes.PATH_IMG_LINUX + fileName);
 			}
-			
+
 			// Força a criação do arquivo no file system
 			FileOutputStream fos = new FileOutputStream(new File(curso.getUrlArquivoFrequencia()));
 			fos.write(event.getFile().getContents());
 			fos.close();
-			
+
 			universalManager.save(curso);
 			listaArquivosFrequencia = new ArrayList<>();
 			listaArquivosFrequencia.add(curso);
@@ -143,7 +143,7 @@ public class FrequenciaBean extends PaginableBean<Frequencia> {
 			ExcecaoUtil.tratarExcecao(e);
 		}
 	}
-	
+
 	public void baixarArquivoFrequencia(Integer id, String tipo) {
 		try {
 			String url = Constantes.URL_COMPROVANTE + "loadImagemBD?idImagemDownload=" + id + "&tipo=" + tipo;
@@ -152,7 +152,7 @@ public class FrequenciaBean extends PaginableBean<Frequencia> {
 			ExcecaoUtil.tratarExcecao(e);
 		}
 	}
-	
+
 	public void deleteArquivoFrequencia(Curso cursoSelecionado) {
 		try {
 			listaArquivosFrequencia.remove(cursoSelecionado);
@@ -164,8 +164,8 @@ public class FrequenciaBean extends PaginableBean<Frequencia> {
 			ExcecaoUtil.tratarExcecao(e);
 		}
 	}
-	
-	public void reprovarInscricao(InscricaoCurso inscricaoCurso){
+
+	public void reprovarInscricao(InscricaoCurso inscricaoCurso) {
 		try {
 			listaInscricoesAprovadas.remove(inscricaoCurso);
 			listaInscricoesReprovadas.add(inscricaoCurso);
@@ -176,8 +176,8 @@ public class FrequenciaBean extends PaginableBean<Frequencia> {
 			ExcecaoUtil.tratarExcecao(e);
 		}
 	}
-	
-	public void aprovarInscricao(InscricaoCurso inscricaoCurso){
+
+	public void aprovarInscricao(InscricaoCurso inscricaoCurso) {
 		try {
 			listaInscricoesReprovadas.remove(inscricaoCurso);
 			listaInscricoesAprovadas.add(inscricaoCurso);
@@ -188,7 +188,7 @@ public class FrequenciaBean extends PaginableBean<Frequencia> {
 			ExcecaoUtil.tratarExcecao(e);
 		}
 	}
-	
+
 	public void visualizarFrequencia(InscricaoCurso inscricaoCurso) {
 		frequencias = new ArrayList<>(inscricaoCurso.getFrequencias());
 		Collections.sort(frequencias, new Comparator<Frequencia>() {
@@ -204,11 +204,11 @@ public class FrequenciaBean extends PaginableBean<Frequencia> {
 		listaInscricoesAprovadas = new ArrayList<>();
 		listaInscricoesReprovadas = new ArrayList<>();
 		listaArquivosFrequencia = new ArrayList<>();
-		
-		if (curso.getNomeArquivoFrequencia() != null && !curso.getNomeArquivoFrequencia().isEmpty()){
+
+		if (curso.getNomeArquivoFrequencia() != null && !curso.getNomeArquivoFrequencia().isEmpty()) {
 			listaArquivosFrequencia.add(curso);
 		}
-		
+
 		int cargaHorariaCurso = 0;
 
 		if (curso.getFlgPossuiOficina()) {
@@ -223,13 +223,14 @@ public class FrequenciaBean extends PaginableBean<Frequencia> {
 			int qtdDiasCurso = fimCurso.get(Calendar.DAY_OF_YEAR) - inicioCurso.get(Calendar.DAY_OF_YEAR);
 			cargaHorariaCurso = qtdDiasCurso * 8;
 
-			if (!curso.getTurno().getId().equals(Turno.AMBOS)) {
+			if (curso.getTurno() != null && curso.getTurno().getId() != null && !curso.getTurno().getId().equals(Turno.AMBOS)) {
 				cargaHorariaCurso /= 2;
 			}
 		}
-		
+
 		if (curso.getPorcentagem() == null) {
-			FacesMessagesUtil.addErrorMessage("", "É necessário informar um percentual de frequência para aprovação na edição do curso.");
+			FacesMessagesUtil.addErrorMessage("",
+					"É necessário informar um percentual de frequência para aprovação na edição do curso.");
 			return;
 		}
 
@@ -237,25 +238,28 @@ public class FrequenciaBean extends PaginableBean<Frequencia> {
 
 		List<InscricaoCurso> listaCandidatoConfirmados = cursoService.carregarListaCandidatoConfirmados(curso);
 		for (InscricaoCurso inscricaoCurso : listaCandidatoConfirmados) {
+
+			long diferencaEmMinutos = 0;
+			for (Frequencia frequencia : inscricaoCurso.getFrequencias()) {
+				diferencaEmMinutos += ((frequencia.getHorarioSaida().getTime() - frequencia.getHorarioEntrada().getTime())
+						/ (60 * 1000)) + 1;
+			}
+
+			long horas = diferencaEmMinutos / 60;
+			long minutosRestantes = diferencaEmMinutos % 60;
+			inscricaoCurso.setTotalFrequencia(String.format("%d:%02d", horas, minutosRestantes));
 			
-			if (inscricaoCurso.getStatus() != null){
-				if (inscricaoCurso.getStatus().equals(APROVADO)){
+			// Caso tenha alguma aprovação ou reprovação 
+			if (inscricaoCurso.getStatus() != null) {
+				inscricaoCurso.setTotalFrequencia(String.format("%s (%s)", inscricaoCurso.getTotalFrequencia(), "Alterado pelo gestor"));
+				if (inscricaoCurso.getStatus().equals(APROVADO)) {
 					listaInscricoesAprovadas.add(inscricaoCurso);
-				} else if (inscricaoCurso.getStatus().equals(REPROVADO)){
+				} else if (inscricaoCurso.getStatus().equals(REPROVADO)) {
 					listaInscricoesReprovadas.add(inscricaoCurso);
 				}
 				continue;
 			}
 
-			long diferencaEmMinutos = 0;
-			for (Frequencia frequencia : inscricaoCurso.getFrequencias()) {	
-				diferencaEmMinutos += ((frequencia.getHorarioSaida().getTime() - frequencia.getHorarioEntrada().getTime()) / (60*1000)) + 1;
-			}
-
-			long horas = diferencaEmMinutos / 60; 
-			long minutosRestantes = diferencaEmMinutos % 60;
-			inscricaoCurso.setTotalFrequencia(String.format("%d:%02d", horas, minutosRestantes));
-			
 			if (horas >= porcentagemAprovacao) {
 				listaInscricoesAprovadas.add(inscricaoCurso);
 			} else {

@@ -11,29 +11,8 @@
 
 	<ui:define name="body">
 		<script type="text/javascript">
-			$ = jQuery;
-
-			function minimizar(){
-				widgetConfirmado.toggle();
-				widgePendente.toggle();
-				widgetEspera.toggle();
-			}
-			function minimizarAbas(aba){
-				if(aba=='confirmados'){
-					widgePendente.toggle();
-					widgetEspera.toggle();
-				}else if(aba=='pendentes'){
-					widgetConfirmado.toggle();
-					widgetEspera.toggle();
-				}else if(aba=='espera'){
-					widgetConfirmado.toggle();
-					widgePendente.toggle();
-				}
-				
-			}
 
 			</script>
-
 
 		<h:form prependId="false" id="form" enctype="multipart/form-data">
 			<p:fieldset legend="Gerenciar Curso" id="fieldGerenciarCurso">
@@ -43,7 +22,7 @@
 					<p:autoComplete disabled="#{gerenciarCursoBean.desabilitarCurso}" dropdown="true" queryDelay="500" value="#{gerenciarCursoBean.curso}"
 						minQueryLength="2" id="curso" size="60" scrollHeight="300" completeMethod="#{gerenciarCursoBean.completeCurso}" forceSelection="true"
 						var="lista" itemLabel="#{lista.cursoData}" itemValue="#{lista.id}" converter="cursoConverter" global="false">
-						<p:ajax event="itemSelect" update="@form" process="@form" oncomplete="minimizar();" listener="#{gerenciarCursoBean.carregarLista}" />
+						<p:ajax event="itemSelect" update="@form" process="@form" listener="#{gerenciarCursoBean.carregarLista}" />
 					</p:autoComplete>
 				</h:panelGrid>
 				<h:panelGrid width="100%" rendered="#{gerenciarCursoBean.curso != null and gerenciarCursoBean.curso.id  != null}">
@@ -105,7 +84,7 @@
 					</p:panel>
 					<br />
 					<p:panel header="Confirmados: #{gerenciarCursoBean.totalConfirmados}" id="panelConfirmados" toggleable="true" toggleSpeed="500"
-						style="text-align:center;" widgetVar="widgetConfirmado">
+						style="text-align:center;" widgetVar="widgetConfirmado" collapsed="true">
 						<p:dataTable paginatorAlwaysVisible="false" paginatorPosition="bottom" emptyMessage="Nenhum Candidato Confirmado"
 							var="listaConfirmados" value="#{gerenciarCursoBean.listaCandidatosConfirmados}" style="width:100%"
 							rowStyleClass="#{empty rowIx or rowIx mod 2 ne 0 ? 'linhaImpar' : 'linhaPar'}" rowIndexVar="rowIx" paginator="true" rows="5"
@@ -151,7 +130,7 @@
 							</p:column>
 							<p:column headerText="Ação" style="width:5%">
 								<p:commandLink title="Selecionar" style="padding:5px !important;" update="@form" process=":form:panelConfirmados"
-									action="#{gerenciarCursoBean.selecionar}" oncomplete="minimizarAbas('confirmados')">
+									action="#{gerenciarCursoBean.selecionar}" >
 									<h:graphicImage library="design/imagem" name="icone-selecionar.png" />
 									<f:setPropertyActionListener target="#{gerenciarCursoBean.inscricaoCurso}" value="#{listaConfirmados}" />
 								</p:commandLink>
@@ -181,7 +160,7 @@
 					</p:panel>
 					<br />
 					<p:panel header="Pendentes: #{gerenciarCursoBean.totalPendentes}" toggleable="true" toggleSpeed="500" style="text-align:center;"
-						widgetVar="widgePendente" id="painelPendentes">
+						widgetVar="widgePendente" id="painelPendentes" collapsed="true">
 						<p:dataTable paginatorAlwaysVisible="false" paginatorPosition="bottom" emptyMessage="Nenhum Candidato Pendente" var="listaPendentes"
 							value="#{gerenciarCursoBean.listaCandidatoPendentes}" style="width:100%"
 							rowStyleClass="#{empty rowIx or rowIx mod 2 ne 0 ? 'linhaImpar' : 'linhaPar'}" rowIndexVar="rowIx" paginator="true" rows="5"
@@ -223,7 +202,7 @@
 							</p:column>
 							<p:column headerText="Ação" style="width:5%">
 								<p:commandLink title="Selecionar" style="padding:5px !important;" update="@form" process=":form:painelPendentes"
-									action="#{gerenciarCursoBean.selecionar}" oncomplete="minimizarAbas('pendentes')">
+									action="#{gerenciarCursoBean.selecionar}" >
 									<h:graphicImage library="design/imagem" name="icone-selecionar.png" />
 									<f:setPropertyActionListener target="#{gerenciarCursoBean.inscricaoCurso}" value="#{listaPendentes}" />
 								</p:commandLink>
@@ -232,7 +211,7 @@
 					</p:panel>
 					<br />
 					<p:panel header="Lista de Espera: #{gerenciarCursoBean.totalEspera}" toggleable="true" toggleSpeed="500" style="text-align:center;"
-						widgetVar="widgetEspera" id="panelListaEspera">
+						widgetVar="widgetEspera" id="panelListaEspera" collapsed="true">
 						<p:dataTable paginatorAlwaysVisible="false" paginatorPosition="bottom" emptyMessage="Nenhum Candidato Encontrado" var="listaEspera"
 							value="#{gerenciarCursoBean.listaEspera}" style="width:100%"
 							rowStyleClass="#{empty rowIx or rowIx mod 2 ne 0 ? 'linhaImpar' : 'linhaPar'}" rowIndexVar="rowIx" paginator="true" rows="5"
@@ -275,10 +254,55 @@
 							</p:column>
 							<p:column headerText="Ação" style="width:5%">
 								<p:commandLink title="Selecionar" style="padding:5px !important;" update="@form" process=":form:panelListaEspera"
-									action="#{gerenciarCursoBean.selecionar}" oncomplete="minimizarAbas('espera')">
+									action="#{gerenciarCursoBean.selecionar}" >
 									<h:graphicImage library="design/imagem" name="icone-selecionar.png" />
 									<f:setPropertyActionListener target="#{gerenciarCursoBean.inscricaoCurso}" value="#{listaEspera}" />
 								</p:commandLink>
+							</p:column>
+						</p:dataTable>
+					</p:panel>
+					<br />
+					<p:panel header="Instrutores: #{gerenciarCursoBean.listaInstrutores.size()}" toggleable="true" toggleSpeed="500" style="text-align:center;"
+						widgetVar="widgetInstrutores" id="panelListaInstrutores" rendered="#{!gerenciarCursoBean.curso.flgPossuiOficina}" collapsed="true">
+						<p:dataTable paginatorAlwaysVisible="false" paginatorPosition="bottom" emptyMessage="Nenhum Instrutor Encontrado" var="listaInstrutor"
+							value="#{gerenciarCursoBean.listaInstrutores}" style="width:100%"
+							rowStyleClass="#{empty rowIx or rowIx mod 2 ne 0 ? 'linhaImpar' : 'linhaPar'}" rowIndexVar="rowIx" paginator="true" rows="5"
+							rowsPerPageTemplate="#{gerenciarCursoBean.paginacao}">
+
+							<p:ajax event="rowSelect" update=":form:panelListaInstrutores" />
+							<p:ajax event="rowUnselect" update=":form:panelListaInstrutores" />
+
+							<p:column headerText="Inscrição" sortBy="#{listaInstrutor.inscricao}" filterBy="#{listaInstrutor.inscricao}" filterMatchMode="contains"
+								style="width:5%;">
+								<h:outputLabel value="#{listaInstrutor.inscricao}" />
+							</p:column>
+							<p:column headerText="Nome" sortBy="#{listaInstrutor.candidato.nome}" filterBy="#{listaInstrutor.candidato.nome}"
+								filterMatchMode="contains" style="width:25%;">
+								<h:outputLabel value="#{listaInstrutor.candidato.nome}" />
+							</p:column>
+							<p:column headerText="CPF/Estrangeiro" sortBy="#{listaInstrutor.candidato.cpf}" filterBy="#{listaInstrutor.candidato.cpf}"
+								filterMatchMode="contains" style="width:10%;">
+								<h:outputText value="#{listaInstrutor.candidato.cpf}" converter="CPFConverter"
+									rendered="#{listaInstrutor.candidato.cpf != null and !empty listaInstrutor.candidato.cpf}" />
+								<h:outputText value="#{listaInstrutor.candidato.docEstrangeiro}"
+									rendered="#{listaInstrutor.candidato.docEstrangeiro != null and !empty listaInstrutor.candidato.docEstrangeiro}" />
+							</p:column>
+							<p:column headerText="Órgão" sortBy="#{listaInstrutor.candidato.orgao.nome}" filterBy="#{listaInstrutor.candidato.orgao.nome}"
+								filterMatchMode="contains" style="width:15%;">
+								<h:outputLabel value="#{listaInstrutor.candidato.orgao.nome}" />
+							</p:column>
+							<p:column headerText="Telefone" style="width:10%;">
+								<h:outputLabel value="#{listaInstrutor.candidato.telComercial}" converter="telefoneConverter" />
+							</p:column>
+							<p:column headerText="Município" style="width:15%;">
+								<h:outputLabel value="#{listaInstrutor.candidato.municipioOrgao.descricao}" />
+							</p:column>
+							<p:column headerText="UF" style="width:5%;">
+								<h:outputLabel value="#{listaInstrutor.candidato.municipioOrgao.uf.sigla}" />
+							</p:column>
+							<p:column headerText="Status" sortBy="#{listaInstrutor.ultimoStatus.status.descricao}"
+								filterBy="#{listaInstrutor.ultimoStatus.status.descricao}" filterMatchMode="contains" style="width:15%;">
+								<h:outputLabel value="#{listaInstrutor.ultimoStatus.status.descricao}" />
 							</p:column>
 						</p:dataTable>
 					</p:panel>
