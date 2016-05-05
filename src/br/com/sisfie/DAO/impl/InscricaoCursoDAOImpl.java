@@ -597,6 +597,7 @@ public class InscricaoCursoDAOImpl extends HibernateDaoSupport implements Inscri
 		return (InscricaoGrade) getSession().createSQLQuery(sql.toString()).addEntity(InscricaoGrade.class).uniqueResult();
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public InscricaoCurso recuperarInscricao(Integer idCurso, Integer idTurma, Integer idTurno) {
 		Criteria criteria = getSession().createCriteria(InscricaoCurso.class);
@@ -607,10 +608,15 @@ public class InscricaoCursoDAOImpl extends HibernateDaoSupport implements Inscri
 			criteria.add(Restrictions.eq("ta.id", idTurma));
 		}
 		if (idTurno != null && idTurno != 0) {
-			criteria.createAlias("c.turno", "to");
+			criteria.createAlias("c.turno", "tu");
 			criteria.add(Restrictions.eq("tu.id", idTurno));
 		}
-		return (InscricaoCurso) criteria.uniqueResult();
+		
+		List<InscricaoCurso> listaInscricaoCurso = criteria.list();
+		if (listaInscricaoCurso != null && !listaInscricaoCurso.isEmpty()){
+			return listaInscricaoCurso.get(0);
+		}
+		return null;
 	}
 
 	@Override

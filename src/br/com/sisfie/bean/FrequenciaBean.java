@@ -416,6 +416,10 @@ public class FrequenciaBean extends PaginableBean<Frequencia> {
 				}
 			} else {
 				inscricaoCurso = inscricaoCursoService.recuperarInscricao(curso.getId(), turma.getId(), turno.getId());
+				if (inscricaoCurso == null){
+					FacesMessagesUtil.addErrorMessage("", "Curso sem inscrição até o momento.");
+					return;
+				}
 				listaFrequenciaEmAberto = frequenciaService.pesquisarFrequenciasAbertasSemOficina(inscricaoCurso.getId());
 			}
 
@@ -427,7 +431,7 @@ public class FrequenciaBean extends PaginableBean<Frequencia> {
 				}
 				FacesMessagesUtil.addInfoMessage("", "Frequência da turma finalizada com sucesso.");
 			} else {
-				FacesMessagesUtil.addErrorMessage("", "Não há inscrições para serem finalizadas.");
+				FacesMessagesUtil.addInfoMessage("", "Não há inscrições a serem finalizadas.");
 			}
 			carregarListaFrequencia(gradeOficina, inscricaoCurso);
 		} catch (Exception e) {
