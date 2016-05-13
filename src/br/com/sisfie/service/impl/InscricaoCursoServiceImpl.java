@@ -26,7 +26,10 @@ import br.com.sisfie.entidade.Curso;
 import br.com.sisfie.entidade.EmailCursoPrivado;
 import br.com.sisfie.entidade.InscricaoCurso;
 import br.com.sisfie.entidade.InscricaoGrade;
+import br.com.sisfie.entidade.Situacao;
+import br.com.sisfie.entidade.Status;
 import br.com.sisfie.entidade.StatusInscricao;
+import br.com.sisfie.entidade.Usuario;
 import br.com.sisfie.service.InscricaoCursoService;
 import br.com.sisfie.util.Constantes;
 
@@ -334,5 +337,16 @@ public class InscricaoCursoServiceImpl implements InscricaoCursoService {
 	@Override
 	public InscricaoCurso recuperarInscricao(String numInscricao) {
 		return inscricaoCursoDAO.recuperarInscricao(numInscricao);
+	}
+
+	@Override
+	@Transactional(readOnly = false, rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
+	public void cancelarInstrutor(InscricaoCurso instrutor, Usuario usuario) throws Exception {
+		StatusInscricao statusInscricao = new StatusInscricao(new InscricaoCurso(instrutor.getId()), usuario,
+				new Status(Status.CANCELADO), new Date());
+		
+		dao.save(statusInscricao);
+		instrutor.setUltimoStatus(new StatusInscricao(statusInscricao.getId()));
+		dao.merge(instrutor);
 	}
 }

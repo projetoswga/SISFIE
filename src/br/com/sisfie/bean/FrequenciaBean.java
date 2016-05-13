@@ -241,6 +241,11 @@ public class FrequenciaBean extends PaginableBean<Frequencia> {
 
 			long diferencaEmMinutos = 0;
 			for (Frequencia frequencia : inscricaoCurso.getFrequencias()) {
+				if (frequencia.getHorarioSaida() == null){
+					FacesMessagesUtil.addErrorMessage("", "Exite candidato com registro de frequência não finalizada.");
+					exibirConteudo = false;
+					return;
+				}
 				diferencaEmMinutos += ((frequencia.getHorarioSaida().getTime() - frequencia.getHorarioEntrada().getTime())
 						/ (60 * 1000)) + 1;
 			}

@@ -1264,6 +1264,16 @@ public class GerenciarCursoBean extends BaseBean<Curso> {
 		return redirect("gerenciarCurso.jsf");
 
 	}
+	
+	public void cancelarInstrutor(InscricaoCurso instrutor){
+		try {
+			inscricaoCursoService.cancelarInstrutor(instrutor, loginBean.getModel());
+			listaInstrutores = cursoService.carregarListaInstrutores(curso);
+			FacesMessagesUtil.addInfoMessage("", "Instrutor cancelado com sucesso.");
+		} catch (Exception e) {
+			ExcecaoUtil.tratarExcecao(e);
+		}
+	}
 
 	@SuppressWarnings("unchecked")
 	public String invalidarComprovante() {

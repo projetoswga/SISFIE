@@ -8,6 +8,7 @@ import br.com.sisfie.entidade.EmailCursoPrivado;
 import br.com.sisfie.entidade.InscricaoCurso;
 import br.com.sisfie.entidade.InscricaoGrade;
 import br.com.sisfie.entidade.StatusInscricao;
+import br.com.sisfie.entidade.Usuario;
 
 public interface InscricaoCursoService {
 
@@ -64,5 +65,7 @@ public interface InscricaoCursoService {
 	List<InscricaoCurso> listarInscricoes(Curso curso, InscricaoCurso inscricaoCurso, Integer idTurma);
 
 	InscricaoCurso recuperarInscricao(String numInscricao);
+
+	void cancelarInstrutor(InscricaoCurso instrutor, Usuario usuario) throws Exception;
 
 }
