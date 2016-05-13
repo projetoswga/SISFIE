@@ -59,13 +59,16 @@
 							<f:facet name="header">
 								<h:outputLabel value="Participantes com inscrições aprovadas: #{frequenciaBean.listaInscricoesAprovadas.size()}" />
 							</f:facet>
-							<p:column headerText="Inscrição" style="width:30%;">
+							<p:column headerText="Inscrição" style="width:20%;">
 								<h:outputLabel value="#{inscricaoAprovada.inscricao}" />
 							</p:column>
-							<p:column headerText="Nome" style="width:30%;">
+							<p:column headerText="Nome" style="width:25%;">
 								<h:outputLabel value="#{inscricaoAprovada.candidato.nome}" />
 							</p:column>
-							<p:column headerText="Total de Frequência" style="width:30%;">
+								<p:column headerText="Órgão" style="width:25%;">
+								<h:outputLabel value="#{inscricaoAprovada.candidato.orgao.nomeSiglaFormat}" />
+							</p:column>
+							<p:column headerText="Total de Frequência" style="width:20%;">
 								<h:outputLabel value="#{inscricaoAprovada.totalFrequencia}" />
 							</p:column>
 							<p:column headerText="Ações" style="width:10%;text-align:center;">
@@ -92,13 +95,16 @@
 							<f:facet name="header">
 								<h:outputLabel value="Participantes com inscrições reprovadas: #{frequenciaBean.listaInscricoesReprovadas.size()}" />
 							</f:facet>
-							<p:column headerText="Inscrição" style="width:30%;">
+							<p:column headerText="Inscrição" style="width:20%;">
 								<h:outputLabel value="#{inscricaoReprovada.inscricao}" />
 							</p:column>
-							<p:column headerText="Nome" style="width:30%;">
+							<p:column headerText="Nome" style="width:25%;">
 								<h:outputLabel value="#{inscricaoReprovada.candidato.nome}" />
 							</p:column>
-							<p:column headerText="Total de Frequência" style="width:30%;">
+							<p:column headerText="Órgão" style="width:25%;">
+								<h:outputLabel value="#{inscricaoReprovada.candidato.orgao.nomeSiglaFormat}" />
+							</p:column>
+							<p:column headerText="Total de Frequência" style="width:20%;">
 								<h:outputLabel value="#{inscricaoReprovada.totalFrequencia}" />
 							</p:column>
 							<p:column headerText="Ações" style="width:10%;text-align:center;">
