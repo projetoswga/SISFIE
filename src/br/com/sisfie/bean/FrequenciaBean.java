@@ -89,7 +89,6 @@ public class FrequenciaBean extends PaginableBean<Frequencia> {
 	private List<InscricaoCurso> listaInscricoesAprovadas;
 	private List<InscricaoCurso> listaInscricoesReprovadas;
 	private List<Curso> listaArquivosFrequencia;
-	private Integer quantidadeInscritos;
 	private boolean exibirTurma;
 	private boolean exibirHorario;
 	private boolean exibirTurno;
@@ -306,7 +305,6 @@ public class FrequenciaBean extends PaginableBean<Frequencia> {
 					listaTurno = universalManager.getAll(Turno.class);
 					exibirTurno = Boolean.TRUE;
 				}
-				quantidadeInscritos = cursoService.retornarQuantidadeInscritos(curso);
 			} else {
 				exibirBotaoFinalizar = Boolean.TRUE;
 			}
@@ -357,6 +355,19 @@ public class FrequenciaBean extends PaginableBean<Frequencia> {
 
 	public void registrar() {
 		try {
+			if (!validarCampos()) {
+				return;
+			}
+			if (inscricaoCurso.getCurso().getFlgPossuiOficina() && !validarCredenciamento()) {
+				return;
+			}
+			if (inscricaoCurso.getId() == null){
+				recuperarInscricao();
+			}
+			if (inscricaoCurso == null){
+				FacesMessagesUtil.addErrorMessage("", "Inscricão não encontrada.");
+				return;
+			}
 			frequencia = frequenciaService.recuperarUltimaFrequencia(inscricaoCurso.getInscricao());
 			verificandoComoSeraRegistradoFrequencia();
 			carregarListaFrequencia(inscricaoGrade.getGradeOficina(), inscricaoCurso);
@@ -444,20 +455,6 @@ public class FrequenciaBean extends PaginableBean<Frequencia> {
 		}
 	}
 
-	public void pesquisar() {
-		try {
-			if (!validarCampos()) {
-				return;
-			}
-			if (inscricaoCurso.getCurso().getFlgPossuiOficina() && !validarCredenciamento()) {
-				return;
-			}
-			carregarListaFrequencia(inscricaoGrade.getGradeOficina(), inscricaoCurso);
-		} catch (Exception e) {
-			ExcecaoUtil.tratarExcecao(e);
-		}
-	}
-
 	@SuppressWarnings("unchecked")
 	private boolean validarCredenciamento() throws Exception {
 		Credenciamento credenciamento = new Credenciamento();
@@ -502,20 +499,7 @@ public class FrequenciaBean extends PaginableBean<Frequencia> {
 
 		if (getModel() != null && getModel().getInscricaoCurso() != null && getModel().getInscricaoCurso().getInscricao() != null
 				&& !getModel().getInscricaoCurso().getInscricao().isEmpty()) {
-			if (curso.getFlgPossuiOficina()) {
-				inscricaoCurso = inscricaoCursoService.recupararInscricao(getModel().getInscricaoCurso().getInscricao(),
-						curso.getId(), turma.getId(), horario.getId());
-				inscricaoGrade = inscricaoCursoService.recupararInscricaoGrade(getModel().getInscricaoCurso().getInscricao(),
-						curso.getId(), turma.getId(), horario.getId());
-			} else {
-				if (curso.getTurmas() != null && !curso.getTurmas().isEmpty()) {
-					inscricaoCurso = inscricaoCursoService.recupararInscricaoSemOficina(
-							getModel().getInscricaoCurso().getInscricao(), curso.getId(), turma.getId(), turno.getId());
-				} else {
-					inscricaoCurso = inscricaoCursoService.recupararInscricaoSemOficina(
-							getModel().getInscricaoCurso().getInscricao(), curso.getId(), null, null);
-				}
-			}
+			recuperarInscricao();
 			if (inscricaoCurso == null || inscricaoCurso.getId() == null || inscricaoCurso.getId() == 0) {
 				FacesMessagesUtil.addErrorMessage("", "Inscrição não encontrada conforme dados informados.");
 				return Boolean.FALSE;
@@ -526,6 +510,23 @@ public class FrequenciaBean extends PaginableBean<Frequencia> {
 		}
 
 		return Boolean.TRUE;
+	}
+
+	private void recuperarInscricao() {
+		if (curso.getFlgPossuiOficina()) {
+			inscricaoCurso = inscricaoCursoService.recupararInscricao(getModel().getInscricaoCurso().getInscricao(),
+					curso.getId(), turma.getId(), horario.getId());
+			inscricaoGrade = inscricaoCursoService.recupararInscricaoGrade(getModel().getInscricaoCurso().getInscricao(),
+					curso.getId(), turma.getId(), horario.getId());
+		} else {
+			if (curso.getTurmas() != null && !curso.getTurmas().isEmpty()) {
+				inscricaoCurso = inscricaoCursoService.recupararInscricaoSemOficina(
+						getModel().getInscricaoCurso().getInscricao(), curso.getId(), turma.getId(), turno.getId());
+			} else {
+				inscricaoCurso = inscricaoCursoService.recupararInscricaoSemOficina(
+						getModel().getInscricaoCurso().getInscricao(), curso.getId(), null, null);
+			}
+		}
 	}
 
 	public Curso getCurso() {
@@ -646,14 +647,6 @@ public class FrequenciaBean extends PaginableBean<Frequencia> {
 
 	public void setTurmaService(TurmaService turmaService) {
 		this.turmaService = turmaService;
-	}
-
-	public Integer getQuantidadeInscritos() {
-		return quantidadeInscritos;
-	}
-
-	public void setQuantidadeInscritos(Integer quantidadeInscritos) {
-		this.quantidadeInscritos = quantidadeInscritos;
 	}
 
 	public HorarioService getHorarioService() {

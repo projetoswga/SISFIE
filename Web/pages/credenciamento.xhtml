@@ -36,7 +36,7 @@
 				<br />
 
 				<h:panelGroup id="grupoInformacoesConfirmacoes">
-					<p:panel header="Dados da inscrição selecionada"
+					<p:panel header="Dados da inscrição"
 						rendered="#{credenciamentoBean.inscricaoCurso != null and credenciamentoBean.inscricaoCurso.id != null}">
 						<h:panelGrid columns="2" border="0" columnClasses="coluna20,coluna80" width="100%">
 							<h:outputLabel value="Curso:" />
@@ -49,8 +49,54 @@
 							<h:outputText value="#{credenciamentoBean.inscricaoCurso.candidato.orgao.nomeSiglaFormat}" />
 						</h:panelGrid>
 					</p:panel>
+
+					<br />
+
+					<h:panelGroup id="grupoInformacoesTurma">
+						<p:panel header="Dados da turma"
+							rendered="#{credenciamentoBean.inscricaoCurso != null and credenciamentoBean.inscricaoCurso.id != null and credenciamentoBean.exibirTurma and credenciamentoBean.inscricaoCurso.curso.flgPossuiOficina}">
+							<p:dataTable paginatorAlwaysVisible="false" paginatorPosition="bottom" var="inscricaoGrade" id="listaFrequencia"
+								emptyMessage="#{credenciamentoBean.emptyMessage}" update="listaFrequencia" rowsPerPageTemplate="#{credenciamentoBean.paginacao}"
+								styleClass="coluna100" value="#{credenciamentoBean.listaInscricaoGrade}" paginator="true" rows="5"
+								rowStyleClass="#{empty rowIx or rowIx mod 2 ne 0 ? 'linhaImpar' : 'linhaPar'}" rowIndexVar="rowIx">
+								
+								<p:column headerText="Turma">
+									<h:outputLabel value="#{inscricaoGrade.gradeOficina.turma.descricao}" />
+								</p:column>
+								<p:column headerText="Conteúdo">
+									<h:outputLabel value="#{inscricaoGrade.gradeOficina.oficina.nomOficina}" />
+								</p:column>
+								<p:column headerText="Horário">
+									<h:outputLabel value="#{inscricaoGrade.gradeOficina.horario.desHorario}" />
+								</p:column>
+								<p:column headerText="Instrutor">
+									<h:outputLabel value="#{inscricaoGrade.gradeOficina.professorEvento.candidato.nome}" />
+								</p:column>
+								<p:column headerText="Sala">
+									<h:outputLabel value="#{inscricaoGrade.gradeOficina.sala.nomSala}" />
+								</p:column>
+								<p:column headerText="Capacidade">
+									<h:outputLabel value="#{inscricaoGrade.gradeOficina.sala.numCapacidade}" />
+								</p:column>
+							</p:dataTable>
+						</p:panel>
+					</h:panelGroup>
+
+					<h:panelGroup id="grupoInformacoesTurmaSemOficina">
+						<p:panel header="Dados da turma"
+							rendered="#{credenciamentoBean.inscricaoCurso != null and credenciamentoBean.inscricaoCurso.id != null and credenciamentoBean.exibirTurma and !credenciamentoBean.inscricaoCurso.curso.flgPossuiOficina}">
+							<h:panelGrid columns="2" border="0" columnClasses="coluna20,coluna80" width="100%">
+								<h:outputLabel value="Curso" />
+								<h:outputText value="#{credenciamentoBean.inscricaoCurso.curso.cursoData}" />
+								<h:outputLabel value="Turma:" />
+								<h:outputText value="#{credenciamentoBean.inscricaoCurso.turma.descricao}" />
+								<h:outputLabel value="Inscritos" />
+								<h:outputText value="#{credenciamentoBean.inscricaoCurso.turma.inscricaoCursos.size()}" />
+							</h:panelGrid>
+						</p:panel>
+					</h:panelGroup>
 					
-					<p:separator rendered="#{credenciamentoBean.inscricaoCurso != null and credenciamentoBean.inscricaoCurso.id != null}"/>
+					<p:separator rendered="#{credenciamentoBean.inscricaoCurso != null and credenciamentoBean.inscricaoCurso.id != null}" />
 
 					<br />
 					<div align="center">

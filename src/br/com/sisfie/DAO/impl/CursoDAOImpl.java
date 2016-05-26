@@ -212,7 +212,7 @@ public class CursoDAOImpl extends HibernateDaoSupport implements CursoDAO {
 
 			if (lista != null && !lista.isEmpty()) {
 				for (InscricaoCurso obj : lista) {
-					if (obj.getUltimoStatus().getStatus().getId().equals(idStatus)) {
+					if (obj.getUltimoStatus() != null && obj.getUltimoStatus().getStatus().getId().equals(idStatus)) {
 						listaRetorno.add(obj);
 					}
 				}
@@ -265,7 +265,7 @@ public class CursoDAOImpl extends HibernateDaoSupport implements CursoDAO {
 						continue;
 					}
 					for (Integer id : idsStatus) {
-						if (obj.getUltimoStatus().getStatus().getId().equals(id)) {
+						if (obj.getUltimoStatus() != null && obj.getUltimoStatus().getStatus().getId().equals(id)) {
 							listaRetorno.add(obj);
 							break;
 						}
@@ -312,7 +312,7 @@ public class CursoDAOImpl extends HibernateDaoSupport implements CursoDAO {
 						continue;
 					}
 					for (Integer id : idsStatus) {
-						if (obj.getUltimoStatus().getStatus().getId().equals(id)) {
+						if (obj.getUltimoStatus() != null && obj.getUltimoStatus().getStatus().getId().equals(id)) {
 							listaRetorno.add(obj);
 							break;
 						}
@@ -365,7 +365,7 @@ public class CursoDAOImpl extends HibernateDaoSupport implements CursoDAO {
 				}
 				
 				for (Integer idStatus : idsStatus) {
-					if (inscricaoCurso.getUltimoStatus().getStatus().getId().equals(idStatus)) {
+					if (inscricaoCurso.getUltimoStatus() != null && inscricaoCurso.getUltimoStatus().getStatus().getId().equals(idStatus)) {
 						if (!listaRetorno.contains(inscricaoCurso)) {
 							listaRetorno.add(inscricaoCurso);
 							break;

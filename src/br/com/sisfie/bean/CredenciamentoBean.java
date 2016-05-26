@@ -1,11 +1,13 @@
 package br.com.sisfie.bean;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
+import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
 
 import br.com.arquitetura.bean.PaginableBean;
@@ -14,32 +16,52 @@ import br.com.arquitetura.util.FacesMessagesUtil;
 import br.com.sisfie.entidade.Credenciamento;
 import br.com.sisfie.entidade.Curso;
 import br.com.sisfie.entidade.InscricaoCurso;
+import br.com.sisfie.entidade.InscricaoGrade;
+import br.com.sisfie.service.GradeOficinaService;
+import br.com.sisfie.service.InscricaoCursoService;
 
 @ManagedBean(name = "credenciamentoBean")
 @ViewScoped
 public class CredenciamentoBean extends PaginableBean<Credenciamento> {
 
 	private static final long serialVersionUID = -8294188998250807722L;
+	
+	@ManagedProperty(value = "#{inscricaoCursoService}")
+	protected InscricaoCursoService inscricaoCursoService;
+	
+	@ManagedProperty(value = "#{gradeOficinaService}")
+	protected GradeOficinaService gradeOficinaService;
 
-	private Curso curso;
+	private boolean exibirTurma;
 	private InscricaoCurso inscricaoCurso;
+	private List<InscricaoGrade> listaInscricaoGrade;
 
 	public CredenciamentoBean() {
-		curso = new Curso();
-		inscricaoCurso = new InscricaoCurso();
+		inicializarDados();
 	}
 
-	@SuppressWarnings("unchecked")
 	public void pesquisar() {
 		try {
 			if (getModel().getNumInscricao() != null && !getModel().getNumInscricao().isEmpty()){
-				inscricaoCurso.setInscricao(getModel().getNumInscricao());
-				List<InscricaoCurso> listaConsulta = universalManager.listBy(inscricaoCurso);
-				if (listaConsulta != null && !listaConsulta.isEmpty()) {
-					inscricaoCurso = listaConsulta.get(0);
-				} else {
+				
+				inscricaoCurso = inscricaoCursoService.recuperarInscricao(getModel().getNumInscricao());
+				
+				if (inscricaoCurso == null) {
 					FacesMessagesUtil.addErrorMessage("Credenciamento", "Inscrição não encontrada!");
+					return;
 				}
+
+				exibirTurma = Boolean.TRUE;
+				if (inscricaoCurso.getCurso().getFlgPossuiOficina()) {
+					List<Integer> ids = new ArrayList<>();
+					ids.add(inscricaoCurso.getId());
+					listaInscricaoGrade = gradeOficinaService.listarInscricaoGrades(inscricaoCurso.getCurso().getId(), ids);
+					if (listaInscricaoGrade != null && !listaInscricaoGrade.isEmpty()){
+						exibirTurma = Boolean.TRUE;
+					} else {
+						exibirTurma = Boolean.FALSE;
+					}
+				} 
 			} else {
 				FacesMessagesUtil.addErrorMessage("Credenciamento", "É necessário informar um número de inscrição!");
 			}
@@ -47,7 +69,7 @@ public class CredenciamentoBean extends PaginableBean<Credenciamento> {
 			ExcecaoUtil.tratarExcecao(e);
 		}
 	}
-
+	
 	@SuppressWarnings("unchecked")
 	@Override
 	public String save() {
@@ -70,8 +92,13 @@ public class CredenciamentoBean extends PaginableBean<Credenciamento> {
 				ExcecaoUtil.tratarExcecao(e);
 			}
 		}
-		inscricaoCurso = new InscricaoCurso();
+		inicializarDados();
 		return "";
+	}
+
+	private void inicializarDados() {
+		inscricaoCurso = new InscricaoCurso();
+		listaInscricaoGrade = new ArrayList<>();
 	}
 
 	@Override
@@ -99,19 +126,43 @@ public class CredenciamentoBean extends PaginableBean<Credenciamento> {
 		return false;
 	}
 
-	public Curso getCurso() {
-		return curso;
-	}
-
-	public void setCurso(Curso curso) {
-		this.curso = curso;
-	}
-
 	public InscricaoCurso getInscricaoCurso() {
 		return inscricaoCurso;
 	}
 
 	public void setInscricaoCurso(InscricaoCurso inscricaoCurso) {
 		this.inscricaoCurso = inscricaoCurso;
+	}
+
+	public InscricaoCursoService getInscricaoCursoService() {
+		return inscricaoCursoService;
+	}
+
+	public void setInscricaoCursoService(InscricaoCursoService inscricaoCursoService) {
+		this.inscricaoCursoService = inscricaoCursoService;
+	}
+
+	public GradeOficinaService getGradeOficinaService() {
+		return gradeOficinaService;
+	}
+
+	public void setGradeOficinaService(GradeOficinaService gradeOficinaService) {
+		this.gradeOficinaService = gradeOficinaService;
+	}
+
+	public List<InscricaoGrade> getListaInscricaoGrade() {
+		return listaInscricaoGrade;
+	}
+
+	public void setListaInscricaoGrade(List<InscricaoGrade> listaInscricaoGrade) {
+		this.listaInscricaoGrade = listaInscricaoGrade;
+	}
+
+	public boolean isExibirTurma() {
+		return exibirTurma;
+	}
+
+	public void setExibirTurma(boolean exibirTurma) {
+		this.exibirTurma = exibirTurma;
 	}
 }
