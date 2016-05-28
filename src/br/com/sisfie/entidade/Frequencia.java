@@ -23,6 +23,9 @@ import br.com.arquitetura.entidade.Entidade;
 public class Frequencia extends Entidade<Integer> {
 
 	private static final long serialVersionUID = 6732893309744157963L;
+	
+	public static final String APROVADO = "A";
+	public static final String REPROVADO = "R";
 
 	@Id
 	@Column(name = "id_frequencia", unique = true, nullable = false)

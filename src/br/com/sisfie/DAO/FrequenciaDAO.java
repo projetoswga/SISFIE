@@ -14,7 +14,7 @@ public interface FrequenciaDAO {
 
 	List<Frequencia> pesquisarFrequenciasAbertas(Integer idGradeOficina);
 
-	List<Frequencia> listarFrequenciasSemOficina(InscricaoCurso inscricaoCurso);
+	List<Frequencia> listarFrequenciasSemOficina(List<InscricaoCurso> listaInscricaoCurso);
 
 	List<Frequencia> pesquisarFrequenciasAbertasSemOficina(Integer idInscricaoCurso);
 

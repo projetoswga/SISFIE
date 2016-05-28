@@ -231,6 +231,19 @@ public class MenuBean {
 		frequencia.getChildren().add(item);
 		
 		menu.addSubmenu(frequencia);
+		
+		/**
+		 * Secretaria
+		 */
+		Submenu secretaria = new Submenu();
+		secretaria.setLabel("Secretaria");
+
+		item = new MenuItem();
+		item.setValue("Gerenciar");
+		item.setUrl("/pages/gerenciamentoSecretaria.jsf");
+		secretaria.getChildren().add(item);
+		
+		menu.addSubmenu(secretaria);
 
 		/**
 		 * ACESSO

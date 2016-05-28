@@ -320,7 +320,7 @@ public class InscricaoCursoServiceImpl implements InscricaoCursoService {
 	}
 
 	@Override
-	public InscricaoCurso recuperarInscricao(Integer idCurso, Integer idTurma, Integer idTurno) {
+	public List<InscricaoCurso> recuperarInscricao(Integer idCurso, Integer idTurma, Integer idTurno) {
 		return inscricaoCursoDAO.recuperarInscricao(idCurso, idTurma, idTurno);
 	}
 

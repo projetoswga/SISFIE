@@ -5,7 +5,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -40,18 +39,11 @@ import br.com.sisfie.service.TurmaService;
 import br.com.sisfie.util.Constantes;
 import br.com.sisfie.util.ImagemUtil;
 
-/**
- * @author Wesley Marra
- *
- */
 @ManagedBean(name = "frequenciaBean")
 @ViewScoped
 public class FrequenciaBean extends PaginableBean<Frequencia> {
 
 	private static final long serialVersionUID = 1L;
-
-	private static final String APROVADO = "A";
-	private static final String REPROVADO = "R";
 
 	@ManagedProperty(value = "#{login}")
 	protected LoginBean loginBean;
@@ -95,6 +87,7 @@ public class FrequenciaBean extends PaginableBean<Frequencia> {
 	private boolean exibirInscricao;
 	private boolean exibirBotaoFinalizar;
 	private boolean exibirConteudo;
+	private Integer porcentagemAprovacao;
 
 	public FrequenciaBean() {
 		curso = new Curso();
@@ -167,8 +160,12 @@ public class FrequenciaBean extends PaginableBean<Frequencia> {
 	public void reprovarInscricao(InscricaoCurso inscricaoCurso) {
 		try {
 			listaInscricoesAprovadas.remove(inscricaoCurso);
+			if (!inscricaoCurso.getTotalFrequencia().contains("(")){
+				inscricaoCurso.setTotalFrequencia(
+						String.format("%s (%s)", inscricaoCurso.getTotalFrequencia(), "Alterado pelo gestor"));
+			}
 			listaInscricoesReprovadas.add(inscricaoCurso);
-			inscricaoCurso.setStatus(REPROVADO);
+			inscricaoCurso.setStatus(Frequencia.REPROVADO);
 			universalManager.save(inscricaoCurso);
 			FacesMessagesUtil.addInfoMessage("", "Inscrição reprovada.");
 		} catch (Exception e) {
@@ -179,8 +176,12 @@ public class FrequenciaBean extends PaginableBean<Frequencia> {
 	public void aprovarInscricao(InscricaoCurso inscricaoCurso) {
 		try {
 			listaInscricoesReprovadas.remove(inscricaoCurso);
+			if (!inscricaoCurso.getTotalFrequencia().contains("(")){
+				inscricaoCurso.setTotalFrequencia(
+						String.format("%s (%s)", inscricaoCurso.getTotalFrequencia(), "Alterado pelo gestor"));
+			}
 			listaInscricoesAprovadas.add(inscricaoCurso);
-			inscricaoCurso.setStatus(APROVADO);
+			inscricaoCurso.setStatus(Frequencia.APROVADO);
 			universalManager.save(inscricaoCurso);
 			FacesMessagesUtil.addInfoMessage("", "Inscrição aprovada.");
 		} catch (Exception e) {
@@ -199,77 +200,13 @@ public class FrequenciaBean extends PaginableBean<Frequencia> {
 	}
 
 	public void carregarListas() {
-		exibirConteudo = true;
 		listaInscricoesAprovadas = new ArrayList<>();
 		listaInscricoesReprovadas = new ArrayList<>();
 		listaArquivosFrequencia = new ArrayList<>();
-
-		if (curso.getNomeArquivoFrequencia() != null && !curso.getNomeArquivoFrequencia().isEmpty()) {
-			listaArquivosFrequencia.add(curso);
-		}
-
-		int cargaHorariaCurso = 0;
-
-		if (curso.getFlgPossuiOficina()) {
-			cargaHorariaCurso = curso.getCargaHoraria();
-		} else {
-			Calendar inicioCurso = Calendar.getInstance();
-			inicioCurso.setTime(curso.getDtRealizacaoInicio());
-
-			Calendar fimCurso = Calendar.getInstance();
-			fimCurso.setTime(curso.getDtRealizacaoFim());
-
-			int qtdDiasCurso = fimCurso.get(Calendar.DAY_OF_YEAR) - inicioCurso.get(Calendar.DAY_OF_YEAR);
-			cargaHorariaCurso = qtdDiasCurso * 8;
-
-			if (curso.getTurno() != null && curso.getTurno().getId() != null && !curso.getTurno().getId().equals(Turno.AMBOS)) {
-				cargaHorariaCurso /= 2;
-			}
-		}
-
-		if (curso.getPorcentagem() == null) {
-			FacesMessagesUtil.addErrorMessage("",
-					"É necessário informar um percentual de frequência para aprovação na edição do curso.");
-			return;
-		}
-
-		Integer porcentagemAprovacao = cargaHorariaCurso * curso.getPorcentagem() / 100;
-
 		List<InscricaoCurso> listaCandidatoConfirmados = cursoService.carregarListaCandidatoConfirmados(curso);
-		for (InscricaoCurso inscricaoCurso : listaCandidatoConfirmados) {
 
-			long diferencaEmMinutos = 0;
-			for (Frequencia frequencia : inscricaoCurso.getFrequencias()) {
-				if (frequencia.getHorarioSaida() == null){
-					FacesMessagesUtil.addErrorMessage("", "Exite candidato com registro de frequência não finalizada.");
-					exibirConteudo = false;
-					return;
-				}
-				diferencaEmMinutos += ((frequencia.getHorarioSaida().getTime() - frequencia.getHorarioEntrada().getTime())
-						/ (60 * 1000)) + 1;
-			}
-
-			long horas = diferencaEmMinutos / 60;
-			long minutosRestantes = diferencaEmMinutos % 60;
-			inscricaoCurso.setTotalFrequencia(String.format("%d:%02d", horas, minutosRestantes));
-			
-			// Caso tenha alguma aprovação ou reprovação 
-			if (inscricaoCurso.getStatus() != null) {
-				inscricaoCurso.setTotalFrequencia(String.format("%s (%s)", inscricaoCurso.getTotalFrequencia(), "Alterado pelo gestor"));
-				if (inscricaoCurso.getStatus().equals(APROVADO)) {
-					listaInscricoesAprovadas.add(inscricaoCurso);
-				} else if (inscricaoCurso.getStatus().equals(REPROVADO)) {
-					listaInscricoesReprovadas.add(inscricaoCurso);
-				}
-				continue;
-			}
-
-			if (horas >= porcentagemAprovacao) {
-				listaInscricoesAprovadas.add(inscricaoCurso);
-			} else {
-				listaInscricoesReprovadas.add(inscricaoCurso);
-			}
-		}
+		exibirConteudo = frequenciaService.carregarListas(listaInscricoesAprovadas, listaInscricoesReprovadas,
+				listaArquivosFrequencia, listaCandidatoConfirmados, curso);
 	}
 
 	public List<Curso> completeCurso(String query) {
@@ -361,16 +298,18 @@ public class FrequenciaBean extends PaginableBean<Frequencia> {
 			if (inscricaoCurso.getCurso().getFlgPossuiOficina() && !validarCredenciamento()) {
 				return;
 			}
-			if (inscricaoCurso.getId() == null){
+			if (inscricaoCurso.getId() == null) {
 				recuperarInscricao();
 			}
-			if (inscricaoCurso == null){
+			if (inscricaoCurso == null) {
 				FacesMessagesUtil.addErrorMessage("", "Inscricão não encontrada.");
 				return;
 			}
 			frequencia = frequenciaService.recuperarUltimaFrequencia(inscricaoCurso.getInscricao());
 			verificandoComoSeraRegistradoFrequencia();
-			carregarListaFrequencia(inscricaoGrade.getGradeOficina(), inscricaoCurso);
+			List<InscricaoCurso> listaInscricao = new ArrayList<>();
+			listaInscricao.add(inscricaoCurso);
+			carregarListaFrequencia(inscricaoGrade.getGradeOficina(), listaInscricao);
 			limparCampos();
 			FacesMessagesUtil.addInfoMessage("", "Registro realizado com sucesso.");
 		} catch (Exception e) {
@@ -378,11 +317,11 @@ public class FrequenciaBean extends PaginableBean<Frequencia> {
 		}
 	}
 
-	private void carregarListaFrequencia(GradeOficina gradeOficina, InscricaoCurso inscricaoCurso) throws Exception {
+	private void carregarListaFrequencia(GradeOficina gradeOficina, List<InscricaoCurso> listaInscricaoCurso) throws Exception {
 		if (curso.getFlgPossuiOficina()) {
 			listaFrequencia = frequenciaService.listarFrequencias(gradeOficina.getId());
 		} else {
-			listaFrequencia = frequenciaService.listarFrequenciasSemOficina(inscricaoCurso);
+			listaFrequencia = frequenciaService.listarFrequenciasSemOficina(listaInscricaoCurso);
 		}
 	}
 
@@ -423,7 +362,7 @@ public class FrequenciaBean extends PaginableBean<Frequencia> {
 		try {
 			List<Frequencia> listaFrequenciaEmAberto = new ArrayList<Frequencia>();
 			GradeOficina gradeOficina = new GradeOficina();
-			InscricaoCurso inscricaoCurso = new InscricaoCurso();
+			List<InscricaoCurso> listaInscricoes = new ArrayList<>();
 
 			if (curso.getFlgPossuiOficina()) {
 				gradeOficina = gradeOficinaService.recupararGradeOficina(curso.getId(), turma.getId(), horario.getId());
@@ -431,25 +370,27 @@ public class FrequenciaBean extends PaginableBean<Frequencia> {
 					listaFrequenciaEmAberto = frequenciaService.pesquisarFrequenciasAbertas(gradeOficina.getId());
 				}
 			} else {
-				inscricaoCurso = inscricaoCursoService.recuperarInscricao(curso.getId(), turma.getId(), turno.getId());
-				if (inscricaoCurso == null){
+				listaInscricoes = inscricaoCursoService.recuperarInscricao(curso.getId(), turma.getId(), turno.getId());
+				if (listaInscricoes == null) {
 					FacesMessagesUtil.addErrorMessage("", "Curso sem inscrição até o momento.");
 					return;
 				}
-				listaFrequenciaEmAberto = frequenciaService.pesquisarFrequenciasAbertasSemOficina(inscricaoCurso.getId());
-			}
+				for (InscricaoCurso inscricaoCurso : listaInscricoes) {
 
-			if (listaFrequenciaEmAberto != null && !listaFrequenciaEmAberto.isEmpty()) {
-				for (Frequencia frequencia : listaFrequenciaEmAberto) {
-					Frequencia frequenciaClone = (Frequencia) frequencia.clone();
-					frequenciaClone.setHorarioSaida(new Timestamp(new Date().getTime()));
-					frequenciaService.salvar(frequenciaClone);
+					listaFrequenciaEmAberto = frequenciaService.pesquisarFrequenciasAbertasSemOficina(inscricaoCurso.getId());
+
+					if (listaFrequenciaEmAberto != null && !listaFrequenciaEmAberto.isEmpty()) {
+						for (Frequencia frequencia : listaFrequenciaEmAberto) {
+							Frequencia frequenciaClone = (Frequencia) frequencia.clone();
+							frequenciaClone.setHorarioSaida(new Timestamp(new Date().getTime()));
+							frequenciaService.salvar(frequenciaClone);
+						}
+					}
 				}
 				FacesMessagesUtil.addInfoMessage("", "Frequência da turma finalizada com sucesso.");
-			} else {
-				FacesMessagesUtil.addInfoMessage("", "Não há inscrições a serem finalizadas.");
+				carregarListaFrequencia(gradeOficina, listaInscricoes);
 			}
-			carregarListaFrequencia(gradeOficina, inscricaoCurso);
+
 		} catch (Exception e) {
 			ExcecaoUtil.tratarExcecao(e);
 		}
@@ -520,11 +461,11 @@ public class FrequenciaBean extends PaginableBean<Frequencia> {
 					curso.getId(), turma.getId(), horario.getId());
 		} else {
 			if (curso.getTurmas() != null && !curso.getTurmas().isEmpty()) {
-				inscricaoCurso = inscricaoCursoService.recupararInscricaoSemOficina(
-						getModel().getInscricaoCurso().getInscricao(), curso.getId(), turma.getId(), turno.getId());
+				inscricaoCurso = inscricaoCursoService.recupararInscricaoSemOficina(getModel().getInscricaoCurso().getInscricao(),
+						curso.getId(), turma.getId(), turno.getId());
 			} else {
-				inscricaoCurso = inscricaoCursoService.recupararInscricaoSemOficina(
-						getModel().getInscricaoCurso().getInscricao(), curso.getId(), null, null);
+				inscricaoCurso = inscricaoCursoService.recupararInscricaoSemOficina(getModel().getInscricaoCurso().getInscricao(),
+						curso.getId(), null, null);
 			}
 		}
 	}
@@ -775,5 +716,13 @@ public class FrequenciaBean extends PaginableBean<Frequencia> {
 
 	public void setListaArquivosFrequencia(List<Curso> listaArquivosFrequencia) {
 		this.listaArquivosFrequencia = listaArquivosFrequencia;
+	}
+
+	public Integer getPorcentagemAprovacao() {
+		return porcentagemAprovacao;
+	}
+
+	public void setPorcentagemAprovacao(Integer porcentagemAprovacao) {
+		this.porcentagemAprovacao = porcentagemAprovacao;
 	}
 }

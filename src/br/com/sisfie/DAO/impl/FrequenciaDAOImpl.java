@@ -92,27 +92,18 @@ public class FrequenciaDAOImpl extends HibernateDaoSupport implements Frequencia
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<Frequencia> listarFrequenciasSemOficina(InscricaoCurso inscricaoCurso) {
+	public List<Frequencia> listarFrequenciasSemOficina(List<InscricaoCurso> listaInscricaoCurso) {
 		List<Frequencia> listaFrequencia = null;
 		StringBuilder sql = new StringBuilder();
 		sql.append(" select max(id_frequencia) from frequencia f ");
 		sql.append(" join inscricao_curso ic on ic.id_inscricao_curso = f.id_inscricao_curso ");
 		sql.append(" join curso c on c.id_curso = ic.id_curso ");
-		if (inscricaoCurso.getTurma() != null && inscricaoCurso.getTurma().getId() > 0) {
-			sql.append(" join turma t on t.id_turma = ic.id_turma ");
+		StringBuffer ids = new StringBuffer();;
+		for (InscricaoCurso inscricaoCurso : listaInscricaoCurso) {
+			ids.append(",");
+			ids.append(inscricaoCurso.getId());
 		}
-		if (inscricaoCurso.getCurso() != null && inscricaoCurso.getCurso().getTurno() != null
-				&& inscricaoCurso.getCurso().getTurno().getId() > 0) {
-			sql.append(" join turno tu on tu.id_turno = c.id_turno ");
-		}
-		sql.append(" where ic.id_inscricao_curso = " + inscricaoCurso.getId());
-		if (inscricaoCurso.getTurma() != null && inscricaoCurso.getTurma().getId() > 0) {
-			sql.append(" and t.id_turma = " + inscricaoCurso.getTurma().getId());
-		}
-		if (inscricaoCurso.getCurso() != null && inscricaoCurso.getCurso().getTurno() != null
-				&& inscricaoCurso.getCurso().getTurno().getId() > 0) {
-			sql.append(" and tu.id_turno = " + inscricaoCurso.getCurso().getTurno().getId());
-		}
+		sql.append(" where ic.id_inscricao_curso in (" + ids.substring(1, ids.length()) + ") ");
 		sql.append(" group by ic.num_inscricao ");
 		List<Integer> idsFrequencia = getSession().createSQLQuery(sql.toString()).list();
 

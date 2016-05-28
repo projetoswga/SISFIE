@@ -10,19 +10,22 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import br.com.arquitetura.DAO.UniversalDAO;
+import br.com.arquitetura.util.FacesMessagesUtil;
 import br.com.sisfie.DAO.FrequenciaDAO;
+import br.com.sisfie.entidade.Curso;
 import br.com.sisfie.entidade.Frequencia;
 import br.com.sisfie.entidade.InscricaoCurso;
+import br.com.sisfie.entidade.Turno;
 import br.com.sisfie.service.FrequenciaService;
 
 @Service(value = "frequenciaService")
 @Transactional(readOnly = true, rollbackFor = Exception.class, propagation = Propagation.SUPPORTS)
 public class FrequenciaServiceImpl implements FrequenciaService {
-	
+
 	@Autowired(required = true)
 	@Qualifier(value = "universalDAO")
 	protected UniversalDAO dao;
-	
+
 	@Autowired(required = true)
 	@Qualifier(value = "frequenciaDAO")
 	protected FrequenciaDAO frequenciaDAO;
@@ -57,7 +60,7 @@ public class FrequenciaServiceImpl implements FrequenciaService {
 	}
 
 	@Override
-	public List<Frequencia> listarFrequencias(Integer idGradeOficina) throws Exception  {
+	public List<Frequencia> listarFrequencias(Integer idGradeOficina) throws Exception {
 		return frequenciaDAO.listarFrequencias(idGradeOficina);
 	}
 
@@ -73,8 +76,8 @@ public class FrequenciaServiceImpl implements FrequenciaService {
 	}
 
 	@Override
-	public List<Frequencia> listarFrequenciasSemOficina(InscricaoCurso inscricaoCurso) {
-		return frequenciaDAO.listarFrequenciasSemOficina(inscricaoCurso);
+	public List<Frequencia> listarFrequenciasSemOficina(List<InscricaoCurso> listaInscricaoCurso) {
+		return frequenciaDAO.listarFrequenciasSemOficina(listaInscricaoCurso);
 	}
 
 	@Override
@@ -90,5 +93,78 @@ public class FrequenciaServiceImpl implements FrequenciaService {
 	@Override
 	public List<Frequencia> carregarFrequencias(Integer idCurso) {
 		return frequenciaDAO.carregarFrequencias(idCurso);
+	}
+
+	@Override
+	public boolean carregarListas(List<InscricaoCurso> listaInscricoesAprovadas,
+			List<InscricaoCurso> listaInscricoesReprovadas, List<Curso> listaArquivosFrequencia,
+			List<InscricaoCurso> listaCandidatoConfirmados, Curso curso) {
+		
+		if (curso.getNomeArquivoFrequencia() != null && !curso.getNomeArquivoFrequencia().isEmpty()) {
+			listaArquivosFrequencia.add(curso);
+		}
+
+		int cargaHorariaCurso = 0;
+
+		if (curso.getFlgPossuiOficina()) {
+			cargaHorariaCurso = curso.getCargaHoraria();
+		} else {
+			Calendar inicioCurso = Calendar.getInstance();
+			inicioCurso.setTime(curso.getDtRealizacaoInicio());
+
+			Calendar fimCurso = Calendar.getInstance();
+			fimCurso.setTime(curso.getDtRealizacaoFim());
+
+			int qtdDiasCurso = fimCurso.get(Calendar.DAY_OF_YEAR) - inicioCurso.get(Calendar.DAY_OF_YEAR);
+			cargaHorariaCurso = qtdDiasCurso * 8;
+
+			if (curso.getTurno() != null && curso.getTurno().getId() != null && !curso.getTurno().getId().equals(Turno.AMBOS)) {
+				cargaHorariaCurso /= 2;
+			}
+		}
+
+		if (curso.getPorcentagem() == null) {
+			FacesMessagesUtil.addErrorMessage("",
+					"É necessário informar um percentual de frequência para aprovação na edição do curso.");
+			return false;
+		}
+
+		Integer porcentagemAprovacao = cargaHorariaCurso * curso.getPorcentagem() / 100;
+
+		for (InscricaoCurso inscricaoCurso : listaCandidatoConfirmados) {
+
+			long diferencaEmMinutos = 0;
+			for (Frequencia frequencia : inscricaoCurso.getFrequencias()) {
+				if (frequencia.getHorarioSaida() == null) {
+					FacesMessagesUtil.addErrorMessage("", "Exite candidato com registro de frequência não finalizada.");
+					return false;
+				}
+				diferencaEmMinutos += ((frequencia.getHorarioSaida().getTime() - frequencia.getHorarioEntrada().getTime())
+						/ (60 * 1000)) + 1;
+			}
+
+			long horas = diferencaEmMinutos / 60;
+			long minutosRestantes = diferencaEmMinutos % 60;
+			inscricaoCurso.setTotalFrequencia(String.format("%d:%02d", horas, minutosRestantes));
+
+			// Caso tenha alguma aprovação ou reprovação
+			if (inscricaoCurso.getStatus() != null) {
+				inscricaoCurso.setTotalFrequencia(
+						String.format("%s (%s)", inscricaoCurso.getTotalFrequencia(), "Alterado pelo gestor"));
+				if (inscricaoCurso.getStatus().equals(Frequencia.APROVADO)) {
+					listaInscricoesAprovadas.add(inscricaoCurso);
+				} else if (inscricaoCurso.getStatus().equals(Frequencia.REPROVADO)) {
+					listaInscricoesReprovadas.add(inscricaoCurso);
+				}
+				continue;
+			}
+
+			if (horas >= porcentagemAprovacao) {
+				listaInscricoesAprovadas.add(inscricaoCurso);
+			} else {
+				listaInscricoesReprovadas.add(inscricaoCurso);
+			}
+		}
+		return true;
 	}
 }
