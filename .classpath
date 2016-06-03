@@ -86,21 +86,6 @@
 			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="lib/itext-2.1.0.jar">
-		<attributes>
-			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="lib/jasperreports-4.5.0.jar">
-		<attributes>
-			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="lib/jasperreports-fonts-4.5.0.jar">
-		<attributes>
-			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
-		</attributes>
-	</classpathentry>
 	<classpathentry kind="lib" path="lib/javassist-3.9.0.GA.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
@@ -327,5 +312,43 @@
 			<attribute name="owner.project.facets" value="java"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="lib/barcode4j.jar"/>
+	<classpathentry kind="lib" path="lib/batik-1.8.jar"/>
+	<classpathentry kind="lib" path="lib/batik-anim-1.8.jar"/>
+	<classpathentry kind="lib" path="lib/batik-awt-util-1.8.jar"/>
+	<classpathentry kind="lib" path="lib/batik-bridge-1.8.jar"/>
+	<classpathentry kind="lib" path="lib/batik-codec-1.8.jar"/>
+	<classpathentry kind="lib" path="lib/batik-css-1.8.jar"/>
+	<classpathentry kind="lib" path="lib/batik-dom-1.8.jar"/>
+	<classpathentry kind="lib" path="lib/batik-ext-1.8.jar"/>
+	<classpathentry kind="lib" path="lib/batik-extension-1.8.jar"/>
+	<classpathentry kind="lib" path="lib/batik-gui-util-1.8.jar"/>
+	<classpathentry kind="lib" path="lib/batik-gvt-1.8.jar"/>
+	<classpathentry kind="lib" path="lib/batik-parser-1.8.jar"/>
+	<classpathentry kind="lib" path="lib/batik-rasterizer-1.8.jar"/>
+	<classpathentry kind="lib" path="lib/batik-script-1.8.jar"/>
+	<classpathentry kind="lib" path="lib/batik-slideshow-1.8.jar"/>
+	<classpathentry kind="lib" path="lib/batik-squiggle-1.8.jar"/>
+	<classpathentry kind="lib" path="lib/batik-svg-dom-1.8.jar"/>
+	<classpathentry kind="lib" path="lib/batik-svggen-1.8.jar"/>
+	<classpathentry kind="lib" path="lib/batik-svgpp-1.8.jar"/>
+	<classpathentry kind="lib" path="lib/batik-swing-1.8.jar"/>
+	<classpathentry kind="lib" path="lib/batik-transcoder-1.8.jar"/>
+	<classpathentry kind="lib" path="lib/batik-ttf2svg-1.8.jar"/>
+	<classpathentry kind="lib" path="lib/batik-util-1.8.jar"/>
+	<classpathentry kind="lib" path="lib/batik-xml-1.8.jar"/>
+	<classpathentry kind="lib" path="lib/core-3.2.1.jar"/>
+	<classpathentry kind="lib" path="lib/fop-transcoder-allinone-1.1.jar"/>
+	<classpathentry kind="lib" path="lib/itext-4.2.1.jar"/>
+	<classpathentry kind="lib" path="lib/jasperreports-6.2.2.jar"/>
+	<classpathentry kind="lib" path="lib/jasperreports-fonts-6.2.2.jar"/>
+	<classpathentry kind="lib" path="lib/javase-3.2.1.jar"/>
+	<classpathentry kind="lib" path="lib/JFlex.jar"/>
+	<classpathentry kind="lib" path="lib/js.jar"/>
+	<classpathentry kind="lib" path="lib/junit.jar"/>
+	<classpathentry kind="lib" path="lib/org.hamcrest.core_1.3.0.v201303031735.jar"/>
+	<classpathentry kind="lib" path="lib/svg-dom-java-1.1.jar"/>
+	<classpathentry kind="lib" path="lib/xml-apis-1.4.01.jar"/>
+	<classpathentry kind="lib" path="lib/xml-apis-ext-1.3.04.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>

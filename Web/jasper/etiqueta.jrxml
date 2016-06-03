@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.2.2.final using JasperReports Library version 6.2.2  -->
+<!-- 2016-05-31T19:10:32 -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Inscritos" columnCount="2" printOrder="Horizontal" pageWidth="595" pageHeight="842" whenNoDataType="AllSectionsNoDetail" columnWidth="297" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" isIgnorePagination="true" uuid="827347bd-da27-4b70-9a4e-b1969941ff39">
 	<property name="ireport.zoom" value="1.331000000000012"/>
 	<property name="ireport.x" value="0"/>
@@ -49,27 +51,25 @@
 	<field name="inscricao" class="java.lang.String"/>
 	<detail>
 		<band height="135">
-			<elementGroup>
-				<componentElement>
-					<reportElement positionType="FixRelativeToBottom" isPrintRepeatedValues="false" mode="Opaque" x="48" y="65" width="159" height="49" uuid="cf73fc41-c0f6-457b-95c1-2297c721d0fa"/>
-					<jr:barbecue xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd" type="Code128" drawText="true" checksumRequired="true" barWidth="2" barHeight="45">
-						<jr:codeExpression><![CDATA[$F{inscricao}]]></jr:codeExpression>
-					</jr:barbecue>
-				</componentElement>
-				<textField>
-					<reportElement positionType="Float" isPrintRepeatedValues="false" x="32" y="45" width="197" height="20" uuid="81f86072-1390-4e61-b864-be601ad6ccd0"/>
-					<textElement textAlignment="Center" verticalAlignment="Middle"/>
-					<textFieldExpression><![CDATA[$F{nomeCompleto}]]></textFieldExpression>
-				</textField>
-			</elementGroup>
-			<staticText>
-				<reportElement x="32" y="0" width="197" height="45" uuid="f1f1a452-8834-4d7f-bad9-e4f70ee6bed4"/>
-				<text><![CDATA[]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="32" y="114" width="197" height="21" uuid="08933a9d-62fb-4f0e-991d-f0a035fd27b2"/>
-				<text><![CDATA[]]></text>
-			</staticText>
+			<elementGroup/>
+			<componentElement>
+				<reportElement x="50" y="40" width="150" height="95" uuid="30de9892-ce7b-4522-94a4-1314ce9ecbb9">
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+				</reportElement>
+				<jr:QRCode xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
+					<jr:codeExpression><![CDATA[$F{inscricao}]]></jr:codeExpression>
+				</jr:QRCode>
+			</componentElement>
+			<textField>
+				<reportElement positionType="Float" isPrintRepeatedValues="false" x="31" y="0" width="197" height="20" uuid="81f86072-1390-4e61-b864-be601ad6ccd0"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{inscricao}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement positionType="Float" isPrintRepeatedValues="false" x="31" y="20" width="197" height="20" uuid="a6279d42-f3ff-4491-9cf1-6bb70202d82d"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{nomeCompleto}]]></textFieldExpression>
+			</textField>
 		</band>
 	</detail>
 </jasperReport>

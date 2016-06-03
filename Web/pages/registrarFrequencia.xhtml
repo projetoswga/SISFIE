@@ -13,6 +13,10 @@
 					$('#numInscricao').val('');
 				}
 			}
+			function callbackAfterQRCodeDecoded(QRCodeDecoded) {
+				$('#numInscricao').val(QRCodeDecoded);
+				verificarQuantidadeDigitosExecutarEnter();
+			}
 		</script>
 
 		<f:loadBundle basename="constantes" var="const" />
@@ -60,13 +64,36 @@
 				</h:panelGrid>
 
 				<h:panelGroup id="grupoInscricao">
-					<h:panelGrid id="panelInscricao" columns="2" border="0" columnClasses="coluna20,coluna80" width="100%"
+					<h:panelGrid id="panelInscricao" columns="3" border="0" columnClasses="coluna20,coluna20,coluna20" width="300"
 						rendered="#{frequenciaBean.exibirInscricao}">
 						<h:outputLabel value="Inscrição" styleClass="icoObrigatorio" />
 						<p:inputText id="numInscricao" value="#{frequenciaBean.model.inscricaoCurso.inscricao}" maxlength="14"
 							onkeyup="verificarQuantidadeDigitosExecutarEnter();" />
+						<h:graphicImage style="cursor: pointer;" library="design/imagem" name="qr-code-cellphone-icon-mini.png" onclick="$('#numInscricao').val('');load(callbackAfterQRCodeDecoded);"/>
 					</h:panelGrid>
 				</h:panelGroup>
+
+				<f:verbatim escape="true" >
+					<center>
+						<div id="mainbody" style="display: inline;"/>
+						<table style="padding:0px;border:0; width: 325px;text-align: center;" align="center">
+							<tr>
+								<td align="center">
+									<div id="outdiv" style="width:320px;height:240px;border:solid;border-width: 3px 3px 3px 3px;display:none;">
+										<video id="v" style="width:320px;height:240px;" autoplay="" src=""></video>
+										<!--video id="v" autoplay="" src="blob:https%3A//webqr.com/40165d8b-9e5c-4d25-ad22-57f181fb4c17"></video-->
+									</div>
+								</td>
+							</tr>
+							<tr>
+								<td align="center">
+									<div id="result"></div>
+								</td>
+							</tr>
+						</table>
+						<canvas id="qr-canvas" width="5" height="5" style="width: 800px; height: 600px;display:none;"></canvas>
+					</center>
+				</f:verbatim>
 
 				<p:spacer height="30" />
 				

@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.2.2.final using JasperReports Library version 6.2.2  -->
+<!-- 2016-05-31T19:11:58 -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="cracha" columnCount="3" pageWidth="842" pageHeight="595" orientation="Landscape" whenNoDataType="AllSectionsNoDetail" columnWidth="250" leftMargin="50" rightMargin="40" topMargin="40" bottomMargin="40" uuid="3fe01a4d-0e43-4aa7-a550-7a7a184ea05d">
 	<property name="ireport.zoom" value="2.357947691000002"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
-	<style name="Crosstab Data Text" hAlign="Center"/>
+	<style name="Crosstab Data Text" hTextAlign="Center" hImageAlign="Center"/>
 	<subDataset name="Dataset1" uuid="1413d222-8428-4de1-b036-27ce22238c2d"/>
 	<parameter name="SUBREPORT" class="java.lang.String" isForPrompting="false"/>
 	<queryString>
@@ -17,50 +19,52 @@
 	<detail>
 		<band height="296">
 			<textField>
-				<reportElement uuid="e542165d-216b-4a8f-b88a-ff175aefb080" x="5" y="22" width="211" height="20"/>
+				<reportElement x="5" y="22" width="211" height="20" uuid="e542165d-216b-4a8f-b88a-ff175aefb080"/>
 				<textElement textAlignment="Center">
 					<font size="14" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{nomeCracha}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement uuid="4a2dbf8d-4707-47ea-8baa-47c82e9b1955" positionType="Float" x="5" y="72" width="211" height="20"/>
+				<reportElement positionType="Float" x="5" y="42" width="211" height="20" uuid="4a2dbf8d-4707-47ea-8baa-47c82e9b1955"/>
 				<textElement textAlignment="Center">
 					<font size="12"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{orgao}]]></textFieldExpression>
 			</textField>
-			<componentElement>
-				<reportElement uuid="3c079345-7b05-49d0-8eda-f1109f60bb02" positionType="Float" isPrintRepeatedValues="false" mode="Opaque" x="33" y="120" width="159" height="58"/>
-				<jr:barbecue xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd" type="Code128" drawText="true" checksumRequired="true" barWidth="2" barHeight="45">
-					<jr:codeExpression><![CDATA[$F{inscricao}]]></jr:codeExpression>
-				</jr:barbecue>
-			</componentElement>
 			<line>
-				<reportElement uuid="b22a6803-4085-4644-ae8d-09342af28322" x="4" y="183" width="212" height="1"/>
+				<reportElement x="4" y="183" width="212" height="1" uuid="b22a6803-4085-4644-ae8d-09342af28322"/>
 				<graphicElement>
 					<pen lineStyle="Dashed"/>
 				</graphicElement>
 			</line>
 			<textField>
-				<reportElement uuid="5404489b-9899-4ad9-8739-fa7a3c168154" positionType="Float" x="4" y="185" width="212" height="13"/>
+				<reportElement positionType="Float" x="4" y="185" width="212" height="13" uuid="5404489b-9899-4ad9-8739-fa7a3c168154"/>
 				<textElement>
 					<font isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{inscricao}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement uuid="c92bf4a3-bb09-446a-a33a-be193ad6fb51" positionType="Float" x="4" y="198" width="212" height="15"/>
+				<reportElement positionType="Float" x="4" y="198" width="212" height="15" uuid="c92bf4a3-bb09-446a-a33a-be193ad6fb51"/>
 				<textElement>
 					<font isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{nomeCompleto}]]></textFieldExpression>
 			</textField>
 			<subreport isUsingCache="false">
-				<reportElement uuid="4ddf34bc-3deb-4444-a4d5-24eb4ebd631a" positionType="Float" x="4" y="214" width="212" height="34"/>
+				<reportElement positionType="Float" x="4" y="214" width="212" height="34" uuid="4ddf34bc-3deb-4444-a4d5-24eb4ebd631a"/>
 				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource((Collection)$F{oficinas})]]></dataSourceExpression>
 				<subreportExpression><![CDATA[$P{SUBREPORT}+"cracha_subreport1.jasper"]]></subreportExpression>
 			</subreport>
+			<componentElement>
+				<reportElement x="36" y="80" width="148" height="93" uuid="84c8e370-0f51-4674-91ee-47bcbcc291b7">
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+				</reportElement>
+				<jr:QRCode xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
+					<jr:codeExpression><![CDATA[$F{inscricao}]]></jr:codeExpression>
+				</jr:QRCode>
+			</componentElement>
 		</band>
 	</detail>
 </jasperReport>
