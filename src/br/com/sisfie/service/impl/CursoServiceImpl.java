@@ -56,6 +56,7 @@ import br.com.sisfie.service.CursoService;
 import br.com.sisfie.thread.ThreadEmail;
 import br.com.sisfie.util.Constantes;
 import br.com.sisfie.util.CriptoUtil;
+import br.com.sisfie.util.TipoEmail;
 
 @Service(value = "CursoService")
 @Transactional(readOnly = true, rollbackFor = Exception.class, propagation = Propagation.SUPPORTS)
@@ -118,7 +119,7 @@ public class CursoServiceImpl implements CursoService {
 	@SuppressWarnings("unchecked")
 	@Override
 	@Transactional(readOnly = false, rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
-	public void save(Curso model, boolean enviarEmailParceiros) throws Exception {
+	public void save(Curso model, boolean enviarEmailParceirosInstrutoresOuPrivados) throws Exception {
 		// Clona as listas para serem salvar
 		List<HomologacaoCurso> homologacaoCursosSalvar = new ArrayList<HomologacaoCurso>();
 		List<EsferaCurso> esferaCursosSalvar = new ArrayList<EsferaCurso>();
@@ -326,8 +327,12 @@ public class CursoServiceImpl implements CursoService {
 				dao.save(obj);
 			}
 
-			// Verifica se é para mandar email para os parceiros. Caso seja, envia email somente para os registros novos
-			if (enviarEmailParceiros) {
+			/**
+			 * Verifica se é para mandar email para os parceiros, instrutores ou privados. Caso seja, envia email somente para os registros
+			 * novos. OBS.: Somente a funcionalidade de incluir parceiros é que pode desabilitar o envio dos emails, porém, por default
+			 * a variável enviarEmailParceirosInstrutoresOuPrivados é true
+			 */
+			if (enviarEmailParceirosInstrutoresOuPrivados) {
 				if (!isEdicao){
 					// Recuperando o path da imagem
 					String caminhoImagem = Constantes.ENDERECO_SERVIDOR_COM_PATH
@@ -337,48 +342,11 @@ public class CursoServiceImpl implements CursoService {
 					
 					// Preenchendo o corpo do Email
 					StringBuilder textoEmail = new StringBuilder();
-					textoEmail.append("Prezado(a),");
-					textoEmail.append("<br/>");
-					textoEmail.append("<br/>");
-					textoEmail.append("Seu e-mail foi adicionado para realiza&ccedil;&atilde;o de um curso na ESAF, para fazer sua inscri&ccedil;&atilde;o:");
-					textoEmail.append("<br/>");
-					textoEmail.append("<b>Se j&aacute; tem cadastro na ESAF</b>, por gentileza entre no seu cadastro e escolha o curso na aba 'Inscri&ccedil;&otilde;es Abertas'.");
-					textoEmail.append("<br/>");
-					textoEmail.append("<b>Se ainda n&atilde;o &eacute; cadastrado</b>, fa&ccedil;a seu cadastro no link " + linkServidor);
-					textoEmail.append("<br/>");
-					textoEmail.append("Ao concluir o cadastro, o sistema enviar&aacute; a senha para seu e-mail. Retorne ao sistema e fa&ccedil;a o login utilizando o seu e-mail completo e a senha enviada.");
-					textoEmail.append("<br/>");
-					textoEmail.append("<br/>");
-					textoEmail.append("<table cellspacing='0' cellpadding='0' width='750' border='1'>");
-					textoEmail.append("<tr><td>");
-					textoEmail.append("<table cellspacing='0' cellpadding='0' width='100%' >");
-					textoEmail.append("<br/>");
-					textoEmail.append("<tr>");
-					textoEmail.append("<td width='35%'><img src='" + caminhoImagem + "'></td>");
-					textoEmail.append("<td width='65%'><b>DESCRI&Ccedil;&Atilde;O DO CURSO</b></td>");
-					textoEmail.append("</tr>");
-					textoEmail.append("<br/>");
-					textoEmail.append("</table>");
-					textoEmail.append("</td></tr>");
-					textoEmail.append("<tr><td>");
-					textoEmail.append("<table cellspacing='0' cellpadding='0' width='100%'>");
-					textoEmail.append("<br/>");
-					textoEmail.append("<tr><td><b>Curso:</b> " + obj.getCurso().getCursoData() + " </td></tr>");
-					obj.setCurso((Curso) dao.get(Curso.class, obj.getCurso().getId()));
-					obj.getCurso().setLocalizacao((Localizacao) dao.get(Localizacao.class, obj.getCurso().getLocalizacao().getId()));
-					textoEmail.append("<tr><td><b>Local:</b> " + obj.getCurso().getLocalizacao().getDescricao() + " </td></tr>");
-					textoEmail.append("<tr><td><b>Data:</b> " + obj.getCurso().getDataRealizacaoInicio() + " </td></tr>");
-					textoEmail.append("<br/>");
-					textoEmail.append("</table>");
-					textoEmail.append("</td></tr>");
-					textoEmail.append("</table>");
-					textoEmail.append("<br/>");
-					textoEmail
-					.append("<p><b>OBS.: Em caso de d&uacute;vida, procurar o coordenador do curso para obter maiores informa&ccedil;&otilde;es. <b></p>");
-					textoEmail.append("<p>Coordenador: " + obj.getCurso().getUsuario().getNome());
-					textoEmail.append("<br/>");
-					textoEmail.append("Email Contato: " + obj.getCurso().getUsuario().getEmail() + "</p>");
-					textoEmail.append("<p>Mensagem Autom&aacute;tica - N&atilde;o responder</p>");
+					if (obj.getTipo().equals(TipoEmail.INSTRUTOR.getTipo())){
+						preecherCorpoEmailInstrutores(obj, caminhoImagem, linkServidor, textoEmail);
+					} else {
+						preecherCorpoEmailParceirosOuPrivados(obj, caminhoImagem, linkServidor, textoEmail);
+					}
 					
 					String assunto = "Sistema SISFIE - DESCRIÇÃO DE CURSO ";
 					
@@ -461,6 +429,96 @@ public class CursoServiceImpl implements CursoService {
 				}
 			}
 		}
+	}
+
+	private void preecherCorpoEmailInstrutores(EmailCursoPrivado obj, String caminhoImagem, String linkServidor,
+			StringBuilder textoEmail) {
+		textoEmail.append("Prezado(a),");
+		textoEmail.append("<br/>");
+		textoEmail.append("<br/>");
+		textoEmail.append("Seu e-mail foi adicionado para a inscri&ccedil;&atilde;o como <b>Docente</b> para um Curso na ESAF. Para confirmar sua <b>colabora&ccedil;&atilde;o</b>:");
+		textoEmail.append("<br/>");
+		textoEmail.append("<ul>");
+		textoEmail.append("<li><b>Se j&aacute; tem cadastro na ESAF</b>, por gentileza entre no seu cadastro e escolha o curso em que foi escolhido como docente na aba 'Inscri&ccedil;&otilde;es Abertas' e inscreva-se no curso.</li>");
+		textoEmail.append("<li><b>Se ainda n&atilde;o &eacute; cadastrado</b>, fa&ccedil;a seu cadastro no link " + linkServidor + "</li>");
+		textoEmail.append("</ul>");
+		textoEmail.append("Ao concluir o cadastro, o sistema enviar&aacute; a senha para seu e-mail. Retorne ao sistema e fa&ccedil;a o login utilizando o seu e-mail completo e a senha enviada.");
+		textoEmail.append("<br/>");
+		textoEmail.append("<br/>");
+		textoEmail.append("<table cellspacing='0' cellpadding='0' width='750' border='1'>");
+		textoEmail.append("<tr><td>");
+		textoEmail.append("<table cellspacing='0' cellpadding='0' width='100%' >");
+		textoEmail.append("<br/>");
+		textoEmail.append("<tr>");
+		textoEmail.append("<td width='35%'><img src='" + caminhoImagem + "'></td>");
+		textoEmail.append("<td width='65%'><b>DESCRI&Ccedil;&Atilde;O DO CURSO</b></td>");
+		textoEmail.append("</tr>");
+		textoEmail.append("<br/>");
+		textoEmail.append("</table>");
+		textoEmail.append("</td></tr>");
+		textoEmail.append("<tr><td>");
+		textoEmail.append("<table cellspacing='0' cellpadding='0' width='100%'>");
+		textoEmail.append("<br/>");
+		obj.setCurso((Curso) dao.get(Curso.class, obj.getCurso().getId()));
+		obj.getCurso().setLocalizacao((Localizacao) dao.get(Localizacao.class, obj.getCurso().getLocalizacao().getId()));
+		textoEmail.append("<tr><td><b>Curso:</b> " + obj.getCurso().getCursoData() + " </td></tr>");
+		textoEmail.append("<tr><td><b>Local:</b> " + obj.getCurso().getLocalizacao().getDescricao() + " </td></tr>");
+		textoEmail.append("<tr><td><b>Data:</b> " + obj.getCurso().getDataRealizacaoInicio() + " </td></tr>");
+		textoEmail.append("<br/>");
+		textoEmail.append("</table>");
+		textoEmail.append("</td></tr>");
+		textoEmail.append("</table>");
+		textoEmail.append("<br/>");
+		textoEmail.append("<p><b>OBS.: Em caso de d&uacute;vida, procurar o coordenador do curso para obter maiores informa&ccedil;&otilde;es. <b></p>");
+		textoEmail.append("<p>Coordenador: " + obj.getCurso().getUsuario().getNome());
+		textoEmail.append("<br/>");
+		textoEmail.append("Email Contato: " + obj.getCurso().getUsuario().getEmail() + "</p>");
+		textoEmail.append("<p>Mensagem Autom&aacute;tica - N&atilde;o responder</p>");
+		
+	}
+
+	private void preecherCorpoEmailParceirosOuPrivados(EmailCursoPrivado obj, String caminhoImagem, String linkServidor, StringBuilder textoEmail) {
+		textoEmail.append("Prezado(a),");
+		textoEmail.append("<br/>");
+		textoEmail.append("<br/>");
+		textoEmail.append("Seu e-mail foi adicionado para realiza&ccedil;&atilde;o de um curso na ESAF. Para fazer sua inscri&ccedil;&atilde;o:");
+		textoEmail.append("<br/>");
+		textoEmail.append("<ul>");
+		textoEmail.append("<b><li>Se j&aacute; tem cadastro na ESAF</b>, por gentileza entre no seu cadastro e escolha o curso na aba 'Inscri&ccedil;&otilde;es Abertas'.</li>");
+		textoEmail.append("<b><li>Se ainda n&atilde;o &eacute; cadastrado</b>, fa&ccedil;a seu cadastro no link " + linkServidor + "</li>");
+		textoEmail.append("</ul>");
+		textoEmail.append("Ao concluir o cadastro, o sistema enviar&aacute; a senha para seu e-mail. Retorne ao sistema e fa&ccedil;a o login utilizando o seu e-mail completo e a senha enviada.");
+		textoEmail.append("<br/>");
+		textoEmail.append("<br/>");
+		textoEmail.append("<table cellspacing='0' cellpadding='0' width='750' border='1'>");
+		textoEmail.append("<tr><td>");
+		textoEmail.append("<table cellspacing='0' cellpadding='0' width='100%' >");
+		textoEmail.append("<br/>");
+		textoEmail.append("<tr>");
+		textoEmail.append("<td width='35%'><img src='" + caminhoImagem + "'></td>");
+		textoEmail.append("<td width='65%'><b>DESCRI&Ccedil;&Atilde;O DO CURSO</b></td>");
+		textoEmail.append("</tr>");
+		textoEmail.append("<br/>");
+		textoEmail.append("</table>");
+		textoEmail.append("</td></tr>");
+		textoEmail.append("<tr><td>");
+		textoEmail.append("<table cellspacing='0' cellpadding='0' width='100%'>");
+		textoEmail.append("<br/>");
+		obj.setCurso((Curso) dao.get(Curso.class, obj.getCurso().getId()));
+		obj.getCurso().setLocalizacao((Localizacao) dao.get(Localizacao.class, obj.getCurso().getLocalizacao().getId()));
+		textoEmail.append("<tr><td><b>Curso:</b> " + obj.getCurso().getCursoData() + " </td></tr>");
+		textoEmail.append("<tr><td><b>Local:</b> " + obj.getCurso().getLocalizacao().getDescricao() + " </td></tr>");
+		textoEmail.append("<tr><td><b>Data:</b> " + obj.getCurso().getDataRealizacaoInicio() + " </td></tr>");
+		textoEmail.append("<br/>");
+		textoEmail.append("</table>");
+		textoEmail.append("</td></tr>");
+		textoEmail.append("</table>");
+		textoEmail.append("<br/>");
+		textoEmail.append("<p><b>OBS.: Em caso de d&uacute;vida, procurar o coordenador do curso para obter maiores informa&ccedil;&otilde;es. <b></p>");
+		textoEmail.append("<p>Coordenador: " + obj.getCurso().getUsuario().getNome());
+		textoEmail.append("<br/>");
+		textoEmail.append("Email Contato: " + obj.getCurso().getUsuario().getEmail() + "</p>");
+		textoEmail.append("<p>Mensagem Autom&aacute;tica - N&atilde;o responder</p>");
 	}
 
 	private String recuperarLink() {
