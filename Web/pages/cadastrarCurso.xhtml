@@ -94,9 +94,9 @@
 				</h:panelGrid>
 				
 				<h:panelGrid id="percenturalFrequencia" columns="3" columnClasses="coluna20,coluna40,coluna40" border="0" width="100%">
-					<h:outputLabel value="Percentural de Frequência:" id="perFreq"/>
+					<h:outputLabel value="Percentural de Frequência:" id="perFreq" styleClass="icoObrigatorio"/>
 					<h:panelGrid columns="2">
-						<p:inputText value="#{CadastrarCursoBean.model.porcentagem}" size="3" id="porcentagem" maxlength="3" />
+						<p:inputText value="#{CadastrarCursoBean.model.porcentagem}" size="3" id="porcentagem" maxlength="3" requiredMessage="#{CadastrarCursoBean.requiredMessage}" required="true"/>
 						<h:outputLabel value="%" />
 					</h:panelGrid>
 					<p:message for="porcentagem" />
