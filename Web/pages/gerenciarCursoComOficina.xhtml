@@ -761,7 +761,7 @@
 			<p:confirmDialog appendToBody="true" message="Confirma a Exclusão" header="Exclusão" severity="alert"
 				widgetVar="confirmationGradeOficina">
 				<h:panelGrid columns="2">
-					<p:commandButton value="Sim" update=":form:tabviewGrades:listaGradeOficina" oncomplete="confirmationGradeOficina.hide()" actionListener="#{gerenciarCursoComOficinaBean.excluirGradeOficina}"
+					<p:commandButton value="Sim" update=":form:tabviewGrades:dataTableGradeOficinas" oncomplete="confirmationGradeOficina.hide()" actionListener="#{gerenciarCursoComOficinaBean.excluirGradeOficina}"
 						immediate="true" />
 					<p:commandButton value="Não" onclick="confirmationGradeOficina.hide()" />
 				</h:panelGrid>
