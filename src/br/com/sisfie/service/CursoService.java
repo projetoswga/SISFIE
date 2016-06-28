@@ -8,6 +8,7 @@ import br.com.sisfie.entidade.Curso;
 import br.com.sisfie.entidade.EmailCursoPrivado;
 import br.com.sisfie.entidade.InscricaoCurso;
 import br.com.sisfie.entidade.InscricaoInfoComplementar;
+import br.com.sisfie.entidade.ModeloDocumento;
 import br.com.sisfie.entidade.Municipio;
 import br.com.sisfie.entidade.Oficina;
 import br.com.sisfie.entidade.Status;
@@ -28,6 +29,7 @@ public interface CursoService {
 	List<Curso> paginateCurso(int first, int pageSize, CursoDTO dto);
 
 	void save(Curso model, boolean enviarEmailParceiros) throws Exception;
+	void saveAnexo(ModeloDocumento model) throws Exception;
 
 	List<InscricaoCurso> carregarListaCandidato(Curso curso, Integer idStatus);
 

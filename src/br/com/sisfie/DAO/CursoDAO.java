@@ -10,6 +10,7 @@ import br.com.sisfie.entidade.EmailCursoPrivado;
 import br.com.sisfie.entidade.EsferaCurso;
 import br.com.sisfie.entidade.HomologacaoCurso;
 import br.com.sisfie.entidade.InscricaoCurso;
+import br.com.sisfie.entidade.ModeloDocumento;
 import br.com.sisfie.entidade.Municipio;
 import br.com.sisfie.entidade.Oficina;
 import br.com.sisfie.entidade.Status;
@@ -87,4 +88,6 @@ public interface CursoDAO {
 	List<Curso> recuperarCursosComInscricoes(Curso curso) throws Exception;
 
 	List<InscricaoCurso> carregarListaInstrutores(Curso curso);
+
+	void saveAnexo(ModeloDocumento model)throws Exception ;
 }

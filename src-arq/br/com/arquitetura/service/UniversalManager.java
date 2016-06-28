@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
+import br.com.sisfie.entidade.ModeloDocumento;
+
 public interface UniversalManager extends Serializable {
 
 	Object get(Class clazz, Serializable id);
@@ -20,6 +22,7 @@ public interface UniversalManager extends Serializable {
 	Object save(Object o) throws Exception;
 
 	List listBy(Object o) throws Exception;
+	void anexarDocumento(ModeloDocumento model)throws Exception;
 
 	void remove(Class clazz, Serializable id) throws Exception;
 

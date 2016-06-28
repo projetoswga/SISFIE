@@ -7,6 +7,7 @@ import java.util.Map;
 import org.hibernate.Session;
 
 import br.com.arquitetura.util.CriteriaMC;
+import br.com.sisfie.entidade.ModeloDocumento;
 
 public interface UniversalDAO extends Serializable {
 
@@ -46,4 +47,6 @@ public interface UniversalDAO extends Serializable {
 
 	@SuppressWarnings("rawtypes")
 	Long getCount(int first, int pageSize, String sortField, boolean sortOrder, Map<String, String> filters, Class clazz) throws Exception;
+
+	void anexarDocumento(ModeloDocumento model) throws Exception;
 }

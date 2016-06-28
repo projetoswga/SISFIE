@@ -12,31 +12,26 @@
 			<p:fieldset legend="#{areaBean.qualifiedName}" id="fieldPrincipal">
 				<h:panelGrid columns="4" id="panelCadastro" border="1" columnClasses="coluna15,coluna30,coluna20,coluna45"
 					width="100%">
-					<h:outputLabel value="Descrição:" styleClass="icoObrigatorio" />
-					<p:inputText value="#{areaBean.model.descricao}" requiredMessage="#{areaBean.requiredMessage}" required="true"
+					<h:outputLabel value="Sigla:" styleClass="icoObrigatorio" />
+					<p:inputText value="#{areaBean.model.sigla}" requiredMessage="#{areaBean.requiredMessage}" required="true"
 						id="descricao" size="50" maxlength="255" />
 					<p:message for="descricao" />
 					<h:outputText value=" " />
 
-					<h:outputLabel value="Detalhamento:" />
-					<p:inputTextarea value="#{areaBean.model.detalhamento}" id="detalhamento" rows="6" autoResize="false" cols="100" />
 					<h:outputText value=" " />
 					<h:outputText value=" " />
-
-					<h:outputLabel value="Ativo?" />
-					<p:selectOneRadio id="options" value="#{areaBean.model.flgAtivo}">
-						<f:selectItem itemLabel="Sim" itemValue="true" />
-						<f:selectItem itemLabel="Não" itemValue="false" />
-					</p:selectOneRadio>
-					<h:outputText value=" " />
-					<h:outputText value=" " />
+				</h:panelGrid>
+				<h:panelGrid>
+					 <p:fileUpload value="#{areaBean.file}" mode="advanced" skinSimple="true" fileUploadListener ="#{areaBean.anexarArquivo}"
+					 dragDropSupport="false"  sizeLimit="100000" fileLimit="1" allowTypes="/(\.|\/)(doc|docx)$/"/>
+ 
 				</h:panelGrid>
 				<br />
 				<div align="center">
 					<p:commandButton value="Limpar" immediate="true" ajax="false" action="area.jsf" />
 					<p:spacer width="10" />
 					<p:commandButton rendered="#{p:ifGranted('ROLE_AREA_CADASTRAR')}" value="Salvar" ajax="true" process="@form"
-						update="@form" action="#{areaBean.save}" />
+						update="@form" action="#{areaBean.saveModel}" />
 				</div>
 				<br />
 				<p:dataTable paginatorAlwaysVisible="false" paginatorPosition="bottom" var="lista" id="lista"
@@ -47,12 +42,8 @@
 					<f:facet name="header">
 						<h:outputLabel value="Lista de Áreas de Interesse" />
 					</f:facet>
-					<p:column headerText="Descrição" sortBy="#{lista.descricao}" filterBy="#{lista.descricao}" style="width:20%">
-						<h:outputLabel value="#{lista.descricao}" />
-					</p:column>
-					<p:column headerText="Detalhamento" sortBy="#{lista.detalhamento}" filterBy="#{lista.detalhamento}"
-						style="width:20%">
-						<h:outputLabel value="#{lista.detalhamento}" />
+					<p:column headerText="Sigla" sortBy="#{lista.sigla}" filterBy="#{lista.sigla}" style="width:20%">
+						<h:outputLabel value="#{lista.sigla}" />
 					</p:column>
 					<p:column headerText="Ativo" sortBy="#{lista.flgAtivo}" style="width:10%">
 						<h:outputLabel value="#{lista.ativoFormat}" />
@@ -70,6 +61,10 @@
 							oncomplete="confirmation.show()">
 							<h:graphicImage library="design/imagem" name="icone-excluir.png" />
 							<f:setPropertyActionListener target="#{areaBean.model}" value="#{lista}" />
+						</p:commandLink>
+						<p:commandLink rendered="#{p:ifGranted('ROLE_AREA_EXCLUIR')}" action="#{areaBean.ativacaoModelo(lista)}" title="Ativo" update="@form" process="@this">
+							<h:graphicImage library="design/imagem" name="#{lista.imageAtivo}" />
+							
 						</p:commandLink>
 					</p:column>
 				</p:dataTable>

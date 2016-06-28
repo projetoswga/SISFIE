@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import br.com.arquitetura.DAO.UniversalDAO;
 import br.com.arquitetura.service.UniversalManager;
+import br.com.sisfie.entidade.ModeloDocumento;
 
 /*MANDATORY
  Support a current transaction, throw an exception if none exists.
@@ -61,7 +62,9 @@ public class UniversalManagerImpl implements UniversalManager {
 	public void remove(Class clazz, Serializable id) throws Exception {
 		dao.remove(clazz, id);
 	}
-
+	
+	
+	
 	@Override
 	@Transactional(readOnly = false, rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
 	public Object save(Object o) throws Exception {
@@ -127,5 +130,13 @@ public class UniversalManagerImpl implements UniversalManager {
 	@Override
 	public List listBy(Object o, boolean like) throws Exception {
 		return dao.listBy(o, like);
+	}
+
+
+
+	@Override
+	public void anexarDocumento(ModeloDocumento model) throws Exception {
+		dao.anexarDocumento(model);
+		
 	}
 }

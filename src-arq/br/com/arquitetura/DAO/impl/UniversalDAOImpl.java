@@ -29,6 +29,7 @@ import br.com.arquitetura.util.ClasseUtil;
 import br.com.arquitetura.util.CriteriaMC;
 import br.com.arquitetura.util.TypelessLikeExpression;
 import br.com.sisfie.entidade.InscricaoCurso;
+import br.com.sisfie.entidade.ModeloDocumento;
 import br.com.sisfie.entidade.StatusInscricao;
 
 @Repository(value = "universalDAO")
@@ -421,6 +422,12 @@ public class UniversalDAOImpl extends HibernateDaoSupport implements UniversalDA
 		Criteria c =getSession().createCriteria(clazz);
 		c.setProjection(Projections.max("id"));  
 		return (Integer) c.uniqueResult();
+	}
+
+	@Override
+	public void anexarDocumento(ModeloDocumento model) throws Exception {
+		save(model);
+		
 	}
 
 	

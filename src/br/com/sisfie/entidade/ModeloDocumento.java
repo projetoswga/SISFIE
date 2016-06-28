@@ -14,6 +14,7 @@ import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
 import org.hibernate.envers.Audited;
+import org.primefaces.model.StreamedContent;
 
 import br.com.arquitetura.entidade.Entidade;
 
@@ -43,9 +44,9 @@ public class ModeloDocumento extends Entidade<Integer> {
 
 	@Column(name = "flg_ativo", nullable = false)
 	private Boolean flgAtivo;
+	@Transient
+	private String imageAtivo;
 
-	@Column(name = "ativo")
-	private Boolean ativo;
 
 	@Temporal(TemporalType.DATE)
 	@Column(name = "dt_cadastro", nullable = false, length = 13)
@@ -53,6 +54,13 @@ public class ModeloDocumento extends Entidade<Integer> {
 
 	@Transient
 	private String ativoFormat;
+	
+	@Transient
+	private byte[] modeloDoc;
+
+	@Transient
+	private StreamedContent content;
+
 
 	public ModeloDocumento() {
 	}
@@ -125,13 +133,6 @@ public class ModeloDocumento extends Entidade<Integer> {
 		this.sigla = sigla;
 	}
 
-	public Boolean getAtivo() {
-		return ativo;
-	}
-
-	public void setAtivo(Boolean ativo) {
-		this.ativo = ativo;
-	}
 
 	public Date getDataCadastro() {
 		return dataCadastro;
@@ -140,5 +141,37 @@ public class ModeloDocumento extends Entidade<Integer> {
 	public void setDataCadastro(Date dataCadastro) {
 		this.dataCadastro = dataCadastro;
 	}
+
+	
+
+	public byte[] getModeloDoc() {
+		return modeloDoc;
+	}
+
+	public void setModeloDoc(byte[] modeloDoc) {
+		this.modeloDoc = modeloDoc;
+	}
+
+	public StreamedContent getContent() {
+		return content;
+	}
+
+	public void setContent(StreamedContent content) {
+		this.content = content;
+	}
+
+	public String getImageAtivo() {
+		if(this.flgAtivo!=null&&this.flgAtivo){
+			imageAtivo = "icone-finalizar.png";
+		}else{
+			imageAtivo = "icone-cancelar.png";
+		}
+		return imageAtivo;
+	}
+
+	public void setImageAtivo(String imageAtivo) {
+		this.imageAtivo = imageAtivo;
+	}
+	
 
 }

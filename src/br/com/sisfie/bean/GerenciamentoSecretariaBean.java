@@ -75,9 +75,15 @@ public class GerenciamentoSecretariaBean extends PaginableBean<InscricaoCursoCer
 		List<InscricaoCurso> listaInscricoesReprovadas = new ArrayList<>();
 		
 		if (modeloCertificados == null || modeloCertificados.isEmpty()){
-			modeloCertificados = universalManager.getAll(ModeloDocumento.class);
+			List<ModeloDocumento> modelo = universalManager.getAll(ModeloDocumento.class);
+			for (ModeloDocumento modeloDocumento : modelo) {
+				if(modeloDocumento.getFlgAtivo()){
+					modeloCertificados.add(modeloDocumento);
+				}else{
+					continue;
+				}
+			}
 		}
-		
 		List<InscricaoCurso> listaCandidatoConfirmados = cursoService.carregarListaCandidatoConfirmados(curso);
 
 		exibirConteudo = frequenciaService.carregarListas(listaInscricoesAprovadas, listaInscricoesReprovadas, listaArquivosFrequencia,

@@ -18,6 +18,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import br.com.arquitetura.DAO.UniversalDAO;
 import br.com.arquitetura.util.DateUtil;
@@ -31,7 +33,9 @@ import br.com.sisfie.entidade.EmailCursoPrivado;
 import br.com.sisfie.entidade.EsferaCurso;
 import br.com.sisfie.entidade.HomologacaoCurso;
 import br.com.sisfie.entidade.InscricaoCurso;
+import br.com.sisfie.entidade.InscricaoCursoCertificado;
 import br.com.sisfie.entidade.InscricaoGrade;
+import br.com.sisfie.entidade.ModeloDocumento;
 import br.com.sisfie.entidade.Municipio;
 import br.com.sisfie.entidade.Oficina;
 import br.com.sisfie.entidade.Situacao;
@@ -759,4 +763,11 @@ public class CursoDAOImpl extends HibernateDaoSupport implements CursoDAO {
 		criteria.add(Restrictions.not(Restrictions.eq("s.id", Status.CANCELADO)));
 		return criteria.list();
 	}
+
+	@Override
+	@Transactional(readOnly = false, rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
+	public void saveAnexo(ModeloDocumento model) throws Exception {
+		getSession().save(model);
+	}
+	
 }
