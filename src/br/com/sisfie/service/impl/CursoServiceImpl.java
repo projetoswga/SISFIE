@@ -37,6 +37,7 @@ import br.com.sisfie.entidade.InscricaoCurso;
 import br.com.sisfie.entidade.InscricaoDocumento;
 import br.com.sisfie.entidade.InscricaoInfoComplementar;
 import br.com.sisfie.entidade.Localizacao;
+import br.com.sisfie.entidade.ModeloDocumento;
 import br.com.sisfie.entidade.Municipio;
 import br.com.sisfie.entidade.MunicipioCurso;
 import br.com.sisfie.entidade.Oficina;
@@ -1217,5 +1218,10 @@ public class CursoServiceImpl implements CursoService {
 	@Override
 	public List<InscricaoCurso> carregarListaInstrutores(Curso curso) {
 		return cursoDAO.carregarListaInstrutores(curso);
+	}
+
+	@Override
+	public void saveAnexo(ModeloDocumento model) throws Exception {
+		cursoDAO.saveAnexo(model);
 	}
 }

@@ -15,16 +15,9 @@ import org.primefaces.model.UploadedFile;
 
 import br.com.arquitetura.bean.PaginableBean;
 import br.com.arquitetura.excecao.ExcecaoUtil;
-import br.com.arquitetura.service.UniversalManager;
 import br.com.arquitetura.util.FacesMessagesUtil;
-import br.com.sisfie.entidade.Area;
-import br.com.sisfie.entidade.InscricaoComprovante;
-import br.com.sisfie.entidade.InscricaoCurso;
 import br.com.sisfie.entidade.ModeloDocumento;
-import br.com.sisfie.entidade.Usuario;
 import br.com.sisfie.service.CursoService;
-import br.com.sisfie.service.InscricaoCursoService;
-import br.com.sisfie.service.ModeloDocumentoService;
 import br.com.sisfie.util.Constantes;
 import br.com.sisfie.util.ImagemUtil;
 

@@ -114,7 +114,7 @@ public class MenuBean {
 
 		if (acessoBean.verificarAcesso("ROLE_AREA")) {
 			item = new MenuItem();
-			item.setValue("Área de Interesse");
+			item.setValue("Modelo de Documento");
 			item.setUrl("/pages/area.jsf");
 			Apoio.getChildren().add(item);
 		}
