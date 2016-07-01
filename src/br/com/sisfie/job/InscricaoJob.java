@@ -40,6 +40,7 @@ public class InscricaoJob {
 	@Scheduled(cron = "0 0 0 ? * *")
 	public void cancelarInscricao() {
 		try {
+			hoje = new Date();
 			mapaInscricaoStatus = new HashMap<InscricaoCurso, StatusInscricao>();
 			List<Curso> listaCursoAtivos = cursoService.recuperarCursosAtivos();
 
