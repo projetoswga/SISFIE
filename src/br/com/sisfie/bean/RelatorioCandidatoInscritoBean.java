@@ -33,13 +33,16 @@ import br.com.sisfie.dto.RelatorioPesquisaDTO;
 import br.com.sisfie.entidade.Candidato;
 import br.com.sisfie.entidade.Curso;
 import br.com.sisfie.entidade.InscricaoCurso;
+import br.com.sisfie.entidade.InscricaoGrade;
 import br.com.sisfie.entidade.MunicipioCurso;
 import br.com.sisfie.entidade.Orgao;
 import br.com.sisfie.entidade.Turma;
 import br.com.sisfie.service.CandidatoService;
 import br.com.sisfie.service.CursoService;
+import br.com.sisfie.service.InscricaoCursoService;
 import br.com.sisfie.service.OrgaoService;
 import br.com.sisfie.service.TurmaService;
+import br.com.sisfie.service.impl.InscricaoCursoServiceImpl;
 import br.com.sisfie.util.Constantes;
 
 @ManagedBean(name = "relatorioCandidatoInscritoBean")
@@ -57,6 +60,9 @@ public class RelatorioCandidatoInscritoBean extends BaseBean<Candidato> {
 
 	@ManagedProperty(value = "#{CursoService}")
 	protected CursoService cursoService;
+	
+	@ManagedProperty(value = "#{inscricaoCursoService}")
+	protected InscricaoCursoService inscricaoCursoService;
 
 	@ManagedProperty(value = "#{login}")
 	protected LoginBean loginBean;
@@ -198,8 +204,8 @@ public class RelatorioCandidatoInscritoBean extends BaseBean<Candidato> {
 							}
 							detailCandidatosInscritosDTO.setNomeCandidato(inscricaoCurso.getCandidato().getNome());
 
-							if (inscricaoCurso.getTurma() != null) {
-								detailCandidatosInscritosDTO.setTurma(inscricaoCurso.getTurma().getDescricao());
+							if (dto.getTurma() != null) {
+								detailCandidatosInscritosDTO.setTurma(dto.getTurma());
 							} else {
 								detailCandidatosInscritosDTO.setTurma("");
 							}
@@ -237,23 +243,37 @@ public class RelatorioCandidatoInscritoBean extends BaseBean<Candidato> {
 
 		// Adiciona os instrutores
 		String turmas = "";
-		int cont = 0;
-		if (inscricaoCurso.getCurso() != null && inscricaoCurso.getCurso().getTurmas() != null) {
-			// Ordena as turmas por ordem alfabetica
-			List<Turma> listaOrdenada = new ArrayList<Turma>(inscricaoCurso.getCurso().getTurmas());
-			Collections.sort(listaOrdenada, new Comparator<Turma>() {
-				@Override
-				public int compare(Turma o1, Turma o2) {
-					return o1.getDescricao().trim().compareToIgnoreCase(o2.getDescricao().trim());
+		int count = 0;
+		if (inscricaoCurso.getCurso() != null){
+			if (inscricaoCurso.getCurso().getFlgPossuiOficina()){
+				List<InscricaoGrade> inscricaoGrades = inscricaoCursoService.listarInscricaoGrade(inscricaoCurso);
+				for (InscricaoGrade inscricaoGrade : inscricaoGrades) {
+					if (count == 0) {
+						turmas = inscricaoGrade.getGradeOficina().getTurma().getDescricao();
+						count++;
+					} else {
+						turmas = turmas + ", " + inscricaoGrade.getGradeOficina().getTurma().getDescricao();
+					}
 				}
-			});
-
-			for (Turma turma : listaOrdenada) {
-				if (cont == 0) {
-					turmas = turma.getDescricao();
-					cont++;
-				} else {
-					turmas = turmas + ", " + turma.getDescricao();
+			} else {
+				if (inscricaoCurso.getCurso().getTurmas() != null) {
+					// Ordena as turmas por ordem alfabetica
+					List<Turma> listaOrdenada = new ArrayList<Turma>(inscricaoCurso.getCurso().getTurmas());
+					Collections.sort(listaOrdenada, new Comparator<Turma>() {
+						@Override
+						public int compare(Turma o1, Turma o2) {
+							return o1.getDescricao().trim().compareToIgnoreCase(o2.getDescricao().trim());
+						}
+					});
+					
+					for (Turma turma : listaOrdenada) {
+						if (count == 0) {
+							turmas = turma.getDescricao();
+							count++;
+						} else {
+							turmas = turmas + ", " + turma.getDescricao();
+						}
+					}
 				}
 			}
 		}
@@ -527,6 +547,14 @@ public class RelatorioCandidatoInscritoBean extends BaseBean<Candidato> {
 
 	public void setCountInscricao(Integer countInscricao) {
 		this.countInscricao = countInscricao;
+	}
+
+	public InscricaoCursoService getInscricaoCursoService() {
+		return inscricaoCursoService;
+	}
+
+	public void setInscricaoCursoService(InscricaoCursoService inscricaoCursoService) {
+		this.inscricaoCursoService = inscricaoCursoService;
 	}
 
 }
