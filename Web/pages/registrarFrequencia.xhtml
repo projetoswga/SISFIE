@@ -127,7 +127,11 @@
 							<p:column headerText="Inscrição">
 								<h:outputLabel value="#{listaFrequencia.inscricaoCurso.inscricao}" />
 							</p:column>
-							<p:column headerText="Participante">
+							<p:column headerText="Tipo Inscrição">
+								<h:outputText value="Instrutor" rendered="#{listaFrequencia.inscricaoCurso.flgInstrutor}"/>
+								<h:outputText value="Participante" rendered="#{!listaFrequencia.inscricaoCurso.flgInstrutor}"/>
+							</p:column>
+							<p:column headerText="Nome">
 								<h:outputLabel value="#{listaFrequencia.inscricaoCurso.candidato.nome}" />
 							</p:column>
 							<p:column headerText="Turma" rendered="#{frequenciaBean.curso.flgPossuiOficina}">

@@ -203,7 +203,7 @@ public class FrequenciaBean extends PaginableBean<Frequencia> {
 		listaInscricoesAprovadas = new ArrayList<>();
 		listaInscricoesReprovadas = new ArrayList<>();
 		listaArquivosFrequencia = new ArrayList<>();
-		List<InscricaoCurso> listaCandidatoConfirmados = cursoService.carregarListaCandidatoConfirmados(curso);
+		List<InscricaoCurso> listaCandidatoConfirmados = cursoService.carregarListaCandidatoConfirmadosComInstrutores(curso);
 
 		exibirConteudo = frequenciaService.carregarListas(listaInscricoesAprovadas, listaInscricoesReprovadas,
 				listaArquivosFrequencia, listaCandidatoConfirmados, curso);

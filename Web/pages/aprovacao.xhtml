@@ -57,10 +57,14 @@
 							rowStyleClass="#{empty rowIx or rowIx mod 2 ne 0 ? 'linhaImpar' : 'linhaPar'}" rowIndexVar="rowIx">
 
 							<f:facet name="header">
-								<h:outputLabel value="Participantes com inscrições aprovadas: #{frequenciaBean.listaInscricoesAprovadas.size()}" />
+								<h:outputLabel value="Participantes com percentual de frequência atingido: #{frequenciaBean.listaInscricoesAprovadas.size()}" />
 							</f:facet>
-							<p:column headerText="Inscrição" style="width:20%;">
+							<p:column headerText="Inscrição" style="width:10%;">
 								<h:outputLabel value="#{inscricaoAprovada.inscricao}" />
+							</p:column>
+							<p:column headerText="Tipo Inscrição" style="width:10%">
+								<h:outputText value="Instrutor" rendered="#{inscricaoAprovada.flgInstrutor}"/>
+								<h:outputText value="Participante" rendered="#{!inscricaoAprovada.flgInstrutor}"/>
 							</p:column>
 							<p:column headerText="Nome" style="width:25%;">
 								<h:outputLabel value="#{inscricaoAprovada.candidato.nome}" />
@@ -93,10 +97,14 @@
 							rowStyleClass="#{empty rowIx or rowIx mod 2 ne 0 ? 'linhaImpar' : 'linhaPar'}" rowIndexVar="rowIx">
 
 							<f:facet name="header">
-								<h:outputLabel value="Participantes com inscrições reprovadas: #{frequenciaBean.listaInscricoesReprovadas.size()}" />
+								<h:outputLabel value="Participantes sem percentual de frequência atingido: #{frequenciaBean.listaInscricoesReprovadas.size()}" />
 							</f:facet>
-							<p:column headerText="Inscrição" style="width:20%;">
+							<p:column headerText="Inscrição" style="width:10%;">
 								<h:outputLabel value="#{inscricaoReprovada.inscricao}" />
+							</p:column>
+							<p:column headerText="Tipo Inscrição" style="width:10%">
+								<h:outputText value="Instrutor" rendered="#{inscricaoReprovada.flgInstrutor}"/>
+								<h:outputText value="Participante" rendered="#{!inscricaoReprovada.flgInstrutor}"/>
 							</p:column>
 							<p:column headerText="Nome" style="width:25%;">
 								<h:outputLabel value="#{inscricaoReprovada.candidato.nome}" />

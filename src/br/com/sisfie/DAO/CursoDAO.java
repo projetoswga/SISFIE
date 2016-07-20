@@ -68,6 +68,8 @@ public interface CursoDAO {
 	List<Curso> recuperarCursos(Curso a) throws Exception;
 
 	List<InscricaoCurso> carregarListaCandidatoConfirmados(Curso curso);
+	
+	List<InscricaoCurso> carregarListaCandidatoConfirmadosComInstrutores(Curso curso);
 
 	List<Curso> recuperarCursosComOficina(Curso curso) throws Exception;
 
