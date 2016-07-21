@@ -183,6 +183,25 @@ public class CandidatoDAOImpl extends HibernateDaoSupport implements CandidatoDA
 				}
 			}
 		}
+		
+		if (dto.getIdMunicipioSelecionado() != null && !dto.getIdMunicipioSelecionado().equals(0)) {
+			criteria.add(Restrictions.eq("ca.municipioOrgao.id", dto.getIdMunicipioSelecionado()));
+		}
+		
+		if (dto.getIdUfOrgaoSelecionado() != null && !dto.getIdUfOrgaoSelecionado().equals(0)) {
+			criteria.createAlias("ca.municipioOrgao", "mo");
+			criteria.add(Restrictions.eq("mo.uf.id", dto.getIdUfOrgaoSelecionado()));
+		}
+		
+		if (dto.getIdMunicipioEnderecoSelecionado() != null && !dto.getIdMunicipioEnderecoSelecionado().equals(0)) {
+			criteria.add(Restrictions.eq("ca.municipioEndereco.id", dto.getIdMunicipioEnderecoSelecionado()));
+		}
+		
+		if (dto.getIdUfEnderecoSelecionado() != null && !dto.getIdUfEnderecoSelecionado().equals(0)) {
+			criteria.createAlias("ca.municipioEndereco", "me");
+			criteria.add(Restrictions.eq("me.uf.id", dto.getIdUfEnderecoSelecionado()));
+		}
+		
 		if (dto.getOrgaoCandidato() != null && dto.getOrgaoCandidato().getId() != null && !dto.getOrgaoCandidato().getId().equals(0)) {
 			criteria.createAlias("ca.orgao", "or");
 			criteria.add(Restrictions.eq("or.id", dto.getOrgaoCandidato().getId()));
