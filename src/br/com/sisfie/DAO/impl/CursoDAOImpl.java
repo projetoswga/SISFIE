@@ -33,7 +33,6 @@ import br.com.sisfie.entidade.EmailCursoPrivado;
 import br.com.sisfie.entidade.EsferaCurso;
 import br.com.sisfie.entidade.HomologacaoCurso;
 import br.com.sisfie.entidade.InscricaoCurso;
-import br.com.sisfie.entidade.InscricaoCursoCertificado;
 import br.com.sisfie.entidade.InscricaoGrade;
 import br.com.sisfie.entidade.ModeloDocumento;
 import br.com.sisfie.entidade.Municipio;
@@ -315,6 +314,50 @@ public class CursoDAOImpl extends HibernateDaoSupport implements CursoDAO {
 					if (obj.getFlgInstrutor()){
 						continue;
 					}
+					for (Integer id : idsStatus) {
+						if (obj.getUltimoStatus() != null && obj.getUltimoStatus().getStatus().getId().equals(id)) {
+							listaRetorno.add(obj);
+							break;
+						}
+					}
+				}
+				return listaRetorno;
+			}
+		}
+
+		return new ArrayList<InscricaoCurso>();
+
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<InscricaoCurso> carregarListaCandidatoConfirmadosComInstrutores(Curso curso) {
+		// Status
+
+		List<Integer> idsStatus = new ArrayList<Integer>();
+		idsStatus.add(Status.PRESENCA_CONFIRMADA);
+
+		Criteria c = getSession().createCriteria(InscricaoCurso.class);
+		c.createAlias("curso", "c");
+		c.add(Restrictions.eq("c.id", curso.getId()));
+		c.createAlias("situacao", "s");
+		c.add(Restrictions.eq("s.id", Situacao.INSCRITO));
+		c.createAlias("statusInscricoes", "st");
+		c.createAlias("st.status", "status");
+		c.add(Restrictions.in("status.id", idsStatus));
+		c.setProjection(Projections.distinct(Projections.property("id")));
+		List<Integer> ids = c.list();
+
+		if (ids != null && !ids.isEmpty()) {
+			Criteria c2 = getSession().createCriteria(InscricaoCurso.class);
+			c2.add(Restrictions.in("id", ids));
+			c2.setFetchMode("candidato", FetchMode.JOIN);
+
+			List<InscricaoCurso> lista = c2.list();
+			List<InscricaoCurso> listaRetorno = new ArrayList<InscricaoCurso>();
+
+			if (lista != null && !lista.isEmpty()) {
+				for (InscricaoCurso obj : lista) {
 					for (Integer id : idsStatus) {
 						if (obj.getUltimoStatus() != null && obj.getUltimoStatus().getStatus().getId().equals(id)) {
 							listaRetorno.add(obj);

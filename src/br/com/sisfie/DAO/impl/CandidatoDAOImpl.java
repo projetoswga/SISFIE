@@ -28,6 +28,7 @@ import br.com.sisfie.entidade.CandidatoCargo;
 import br.com.sisfie.entidade.CandidatoComplemento;
 import br.com.sisfie.entidade.GradeOficina;
 import br.com.sisfie.entidade.InscricaoCurso;
+import br.com.sisfie.entidade.InscricaoGrade;
 import br.com.sisfie.entidade.Situacao;
 import br.com.sisfie.entidade.Status;
 import br.com.sisfie.entidade.StatusInscricao;
@@ -166,7 +167,41 @@ public class CandidatoDAOImpl extends HibernateDaoSupport implements CandidatoDA
 
 		if (dto.getCurso() != null && dto.getCurso().getId() != null && dto.getCurso().getId() != 0) {
 			criteria.add(Restrictions.eq("c.id", dto.getCurso().getId()));
+			if (dto.getTurma() != null && dto.getTurma().getId() != null && dto.getTurma().getId() != 0) {
+				if (dto.getCurso().getFlgPossuiOficina()) {
+					DetachedCriteria subCriteria = DetachedCriteria.forClass(InscricaoGrade.class);
+					subCriteria.createAlias("inscricaoCurso", "insc");
+					subCriteria.setProjection(Property.forName("insc.id"));
+					subCriteria.createAlias("gradeOficina", "grade");
+					subCriteria.createAlias("grade.turma", "t");
+					subCriteria.add(Restrictions.eq("t.id", dto.getTurma().getId()));
+					
+					criteria.add(Subqueries.propertyIn("id", subCriteria));
+				} else {
+					criteria.createAlias("turma", "t");
+					criteria.add(Restrictions.eq("t.id", dto.getTurma().getId()));
+				}
+			}
 		}
+		
+		if (dto.getIdMunicipioSelecionado() != null && !dto.getIdMunicipioSelecionado().equals(0)) {
+			criteria.add(Restrictions.eq("ca.municipioOrgao.id", dto.getIdMunicipioSelecionado()));
+		}
+		
+		if (dto.getIdUfOrgaoSelecionado() != null && !dto.getIdUfOrgaoSelecionado().equals(0)) {
+			criteria.createAlias("ca.municipioOrgao", "mo");
+			criteria.add(Restrictions.eq("mo.uf.id", dto.getIdUfOrgaoSelecionado()));
+		}
+		
+		if (dto.getIdMunicipioEnderecoSelecionado() != null && !dto.getIdMunicipioEnderecoSelecionado().equals(0)) {
+			criteria.add(Restrictions.eq("ca.municipioEndereco.id", dto.getIdMunicipioEnderecoSelecionado()));
+		}
+		
+		if (dto.getIdUfEnderecoSelecionado() != null && !dto.getIdUfEnderecoSelecionado().equals(0)) {
+			criteria.createAlias("ca.municipioEndereco", "me");
+			criteria.add(Restrictions.eq("me.uf.id", dto.getIdUfEnderecoSelecionado()));
+		}
+		
 		if (dto.getOrgaoCandidato() != null && dto.getOrgaoCandidato().getId() != null && !dto.getOrgaoCandidato().getId().equals(0)) {
 			criteria.createAlias("ca.orgao", "or");
 			criteria.add(Restrictions.eq("or.id", dto.getOrgaoCandidato().getId()));
@@ -176,10 +211,6 @@ public class CandidatoDAOImpl extends HibernateDaoSupport implements CandidatoDA
 		}
 		if (dto.getDataFinal() != null) {
 			criteria.add(Restrictions.le("c.dtRealizacaoFim", dto.getDataFinal()));
-		}
-		if (dto.getTurma() != null && dto.getTurma().getId() != null && dto.getTurma().getId() != 0) {
-			criteria.createAlias("turma", "t");
-			criteria.add(Restrictions.eq("t.id", dto.getTurma().getId()));
 		}
 		if (dto.getOrgaoSolicitante() != null && dto.getOrgaoSolicitante().getId() != 0) {
 			criteria.createAlias("c.orgao", "orSol");

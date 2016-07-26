@@ -54,4 +54,6 @@ public interface InscricaoCursoDAO {
 
 	InscricaoCurso recuperarInscricao(String numInscricao);
 
+	List<InscricaoGrade> listarInscricaoGrade(InscricaoCurso inscricaoCurso);
+
 }

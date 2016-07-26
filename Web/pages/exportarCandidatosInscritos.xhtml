@@ -45,6 +45,34 @@
 						id="idOrgaos" size="70" completeMethod="#{relatorioCandidatoInscritoBean.completeOrgao}" forceSelection="true"
 						var="lista" itemLabel="#{lista.nomeSiglaFormat}" itemValue="#{lista.id}" converter="OrgaoConverter">
 					</p:autoComplete>
+					
+					<h:outputLabel value="UF(Orgão):"/>
+					<p:selectOneMenu effect="fade" style="width:360px;" value="#{relatorioCandidatoInscritoBean.idUfOrgaoSelecionado}" id="idUf">
+						<f:selectItem itemLabel="Selecione" itemValue="" />
+						<f:selectItems value="#{relatorioCandidatoInscritoBean.ufOrgaos}" var="objeto" itemLabel="#{objeto.sigla}" itemValue="#{objeto.id}" />
+						<p:ajax update="idMunicipio" process="@this" event="change" listener="#{relatorioCandidatoInscritoBean.changeUF}" />
+					</p:selectOneMenu>
+					<h:outputLabel value="Munícipio(Orgão):"/>
+					<p:selectOneMenu effect="fade" style="width:360px;" value="#{relatorioCandidatoInscritoBean.idMunicipioSelecionado}"
+						id="idMunicipio">
+						<f:selectItem itemLabel="Selecione" itemValue="" />
+						<f:selectItems value="#{relatorioCandidatoInscritoBean.municipioOrgaos}" var="objeto" itemLabel="#{objeto.descricao}"
+							itemValue="#{objeto.id}" />
+					</p:selectOneMenu>
+					
+					<h:outputLabel value="UF(Endereço):"/>
+					<p:selectOneMenu effect="fade" style="width:360px;" value="#{relatorioCandidatoInscritoBean.idUfEnderecoSelecionado}" id="idUfEndereco">
+						<f:selectItem itemLabel="Selecione" itemValue="" />
+						<f:selectItems value="#{relatorioCandidatoInscritoBean.ufEnderecos}" var="objeto" itemLabel="#{objeto.sigla}" itemValue="#{objeto.id}" />
+						<p:ajax update="idMunicipioEndereco" process="@this" event="change" listener="#{relatorioCandidatoInscritoBean.changeUFEndereco}" />
+					</p:selectOneMenu>
+					<h:outputLabel value="Munícipio(Endereço):"/>
+					<p:selectOneMenu effect="fade" style="width:360px;" value="#{relatorioCandidatoInscritoBean.idMunicipioEnderecoSelecionado}"
+						id="idMunicipioEndereco">
+						<f:selectItem itemLabel="Selecione" itemValue="" />
+						<f:selectItems value="#{relatorioCandidatoInscritoBean.municipioEnderecos}" var="objeto" itemLabel="#{objeto.descricao}"
+							itemValue="#{objeto.id}" />
+					</p:selectOneMenu>
 
 					<h:outputLabel value="Data Início Realização" />
 					<h:panelGrid columns="2" border="0" columnClasses="coluna75,coluna25">

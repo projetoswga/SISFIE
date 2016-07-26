@@ -705,4 +705,20 @@ public class InscricaoCursoDAOImpl extends HibernateDaoSupport implements Inscri
 		criteria.add(Restrictions.like("inscricao", numInscricao));
 		return (InscricaoCurso) criteria.uniqueResult();
 	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<InscricaoGrade> listarInscricaoGrade(InscricaoCurso inscricaoCurso) {
+		StringBuilder sql = new StringBuilder();
+		sql.append(" select ig.* from inscricao_grade ig ");
+		sql.append(" join inscricao_curso ic on ic.id_inscricao_curso = ig.id_inscricao_curso ");
+		sql.append(" join grade_oficina gro on gro.id_grade_oficina = ig.id_grade_oficina ");
+		sql.append(" join turma t on t.id_turma = gro.id_turma ");
+		sql.append(" join horario h on h.id_horario = gro.id_horario ");
+		sql.append(" join curso c on c.id_curso = ic.id_curso ");
+		sql.append(" where c.id_curso = " + inscricaoCurso.getCurso().getId());
+		sql.append(" and ic.num_inscricao like '" + inscricaoCurso.getInscricao() + "' ");
+		sql.append(" order by t.descricao ");
+		return getSession().createSQLQuery(sql.toString()).addEntity(InscricaoGrade.class).list();
+	}
 }

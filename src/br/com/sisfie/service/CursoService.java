@@ -57,6 +57,8 @@ public interface CursoService {
 	List<InscricaoCurso> carregarListaCandidatoParticipante(Curso curso);
 
 	List<InscricaoCurso> carregarListaCandidatoConfirmados(Curso curso);
+	
+	List<InscricaoCurso> carregarListaCandidatoConfirmadosComInstrutores(Curso curso);
 
 	void elegerCandidato(InscricaoCurso inscricaoCurso, Status status) throws Exception;
 

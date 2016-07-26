@@ -128,8 +128,8 @@
 				</h:panelGrid>
 			</p:fieldset>
 
-			<p:confirmDialog appendToBody="true" message="Confirma Envido de E-mail?" header="Confirmação" severity="alert"
-				widgetVar="enviarEmail" id="idPopEmail" width="400">
+			<p:dialog appendToBody="true" header="Confirmação" widgetVar="enviarEmail" 
+				id="idPopEmail" width="400" height="400" >
 				<h:outputText value="#{comunicadoBean.msgAviso}" escape="false" />
 
 				<h:panelGrid columns="2">
@@ -137,7 +137,7 @@
 						onclick="enviarEmail.hide()" />
 					<p:commandButton value="Não" onclick="enviarEmail.hide()" />
 				</h:panelGrid>
-			</p:confirmDialog>
+			</p:dialog>
 
 		</h:form>
 	</ui:define>

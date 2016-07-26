@@ -16,6 +16,7 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
+import javax.faces.event.AjaxBehaviorEvent;
 import javax.faces.model.SelectItem;
 
 import org.primefaces.event.SelectEvent;
@@ -33,11 +34,15 @@ import br.com.sisfie.dto.RelatorioPesquisaDTO;
 import br.com.sisfie.entidade.Candidato;
 import br.com.sisfie.entidade.Curso;
 import br.com.sisfie.entidade.InscricaoCurso;
+import br.com.sisfie.entidade.InscricaoGrade;
+import br.com.sisfie.entidade.Municipio;
 import br.com.sisfie.entidade.MunicipioCurso;
 import br.com.sisfie.entidade.Orgao;
 import br.com.sisfie.entidade.Turma;
+import br.com.sisfie.entidade.Uf;
 import br.com.sisfie.service.CandidatoService;
 import br.com.sisfie.service.CursoService;
+import br.com.sisfie.service.InscricaoCursoService;
 import br.com.sisfie.service.OrgaoService;
 import br.com.sisfie.service.TurmaService;
 import br.com.sisfie.util.Constantes;
@@ -57,6 +62,9 @@ public class RelatorioCandidatoInscritoBean extends BaseBean<Candidato> {
 
 	@ManagedProperty(value = "#{CursoService}")
 	protected CursoService cursoService;
+
+	@ManagedProperty(value = "#{inscricaoCursoService}")
+	protected InscricaoCursoService inscricaoCursoService;
 
 	@ManagedProperty(value = "#{login}")
 	protected LoginBean loginBean;
@@ -81,6 +89,14 @@ public class RelatorioCandidatoInscritoBean extends BaseBean<Candidato> {
 	private List<SelectItem> situacaoInscricoes;
 	private List<ExportarCandidatosInscritosDTO> listaInscritos;
 	private Integer countInscricao;
+	private Integer idUfOrgaoSelecionado;
+	private Integer idMunicipioSelecionado;
+	private Integer idUfEnderecoSelecionado;
+	private Integer idMunicipioEnderecoSelecionado;
+	private List<Uf> UfOrgaos;
+	private List<Uf> UfEnderecos;
+	private List<Municipio> municipioOrgaos;
+	private List<Municipio> municipioEnderecos;
 
 	public RelatorioCandidatoInscritoBean() {
 		dataHj = new Date();
@@ -89,12 +105,64 @@ public class RelatorioCandidatoInscritoBean extends BaseBean<Candidato> {
 		turmas = new ArrayList<SelectItem>();
 		turmas.add(new SelectItem("", "Seleciona o curso"));
 		listaInscritos = new ArrayList<ExportarCandidatosInscritosDTO>();
+		UfOrgaos = new ArrayList<>();
+		UfEnderecos = new ArrayList<>();
+		municipioOrgaos = new ArrayList<>();
+		municipioEnderecos = new ArrayList<>();
 	}
 
+	@SuppressWarnings("unchecked")
 	@PostConstruct
 	public void carregarTela() {
 		try {
+			if (UfOrgaos.isEmpty()) {
+				UfOrgaos = universalManager.getAll(Uf.class);
+				Collections.sort(UfOrgaos, new Comparator<Uf>() {
+					@Override
+					public int compare(Uf o1, Uf o2) {
+						return o1.getSigla().trim().compareTo(o2.getSigla());
+					}
+				});
+			}
+
+			if (UfEnderecos.isEmpty()) {
+				UfEnderecos = universalManager.getAll(Uf.class);
+				Collections.sort(UfEnderecos, new Comparator<Uf>() {
+					@Override
+					public int compare(Uf o1, Uf o2) {
+						return o1.getSigla().trim().compareTo(o2.getSigla());
+					}
+				});
+			}
+
 			formato = "pdf";
+		} catch (Exception e) {
+			ExcecaoUtil.tratarExcecao(e);
+		}
+	}
+
+	public void changeUF(AjaxBehaviorEvent evt) {
+		if (idUfOrgaoSelecionado != null) {
+			carregarMunicipios(idUfOrgaoSelecionado, Boolean.FALSE);
+		}
+	}
+
+	public void changeUFEndereco(AjaxBehaviorEvent evt) {
+		if (idUfEnderecoSelecionado != null) {
+			carregarMunicipios(idUfEnderecoSelecionado, Boolean.TRUE);
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private void carregarMunicipios(Integer idUf, Boolean isEndereco) {
+		Municipio municipio = new Municipio();
+		municipio.setUf(new Uf(idUf));
+		try {
+			if (isEndereco) {
+				municipioEnderecos = universalManager.listBy(municipio);
+			} else {
+				municipioOrgaos = universalManager.listBy(municipio);
+			}
 		} catch (Exception e) {
 			ExcecaoUtil.tratarExcecao(e);
 		}
@@ -114,8 +182,14 @@ public class RelatorioCandidatoInscritoBean extends BaseBean<Candidato> {
 	public void gerarRelatorio() {
 		try {
 
-			RelatorioPesquisaDTO relatorioPesquisaDTO = new RelatorioPesquisaDTO(curso, orgaoSolicitante, orgao, dtInicial, dtFinal,
-					new Turma(idTurma), idSituacaoInscricao);
+			if (curso == null || curso.getId() == null) {
+				FacesMessagesUtil.addErrorMessage("", "É necessário escolher um curso!");
+				return;
+			}
+
+			RelatorioPesquisaDTO relatorioPesquisaDTO = new RelatorioPesquisaDTO(curso, orgaoSolicitante, orgao, dtInicial,
+					dtFinal, new Turma(idTurma), idSituacaoInscricao, idUfOrgaoSelecionado, idMunicipioSelecionado,
+					idUfEnderecoSelecionado, idMunicipioEnderecoSelecionado);
 
 			List<InscricaoCurso> listaInscricaoCurso = candidatoService.listarCandidatosInscritos(relatorioPesquisaDTO);
 			if (listaInscricaoCurso == null || listaInscricaoCurso.isEmpty()) {
@@ -137,7 +211,8 @@ public class RelatorioCandidatoInscritoBean extends BaseBean<Candidato> {
 				if (!idsAdicionados.contains(item.getCurso().getId())) {
 					dto = new CandidatosInscritosDTO();
 
-					dto.setCaminho(FacesContext.getCurrentInstance().getExternalContext().getRealPath("/jasper/") + File.separator);
+					dto.setCaminho(
+							FacesContext.getCurrentInstance().getExternalContext().getRealPath("/jasper/") + File.separator);
 
 					dto.setCodCurso(StringUtil.format("##.##.##.#####.##.##", item.getCurso().getCodigo()));
 					dto.setLocal(item.getCurso().getLocalizacao().getDescricao());
@@ -169,11 +244,12 @@ public class RelatorioCandidatoInscritoBean extends BaseBean<Candidato> {
 
 							detailCandidatosInscritosDTO.setContador(contador.toString());
 							contador++;
-							detailCandidatosInscritosDTO.setCargo(candidatoService.recuperarCargoAtivo(inscricaoCurso.getCandidato()
-									.getId()));
-							if (inscricaoCurso.getCandidato().getCpf() != null && !inscricaoCurso.getCandidato().getCpf().isEmpty()) {
-								detailCandidatosInscritosDTO.setCpf(StringUtil.format("###.###.###-##", inscricaoCurso.getCandidato()
-										.getCpf()));
+							detailCandidatosInscritosDTO
+									.setCargo(candidatoService.recuperarCargoAtivo(inscricaoCurso.getCandidato().getId()));
+							if (inscricaoCurso.getCandidato().getCpf() != null
+									&& !inscricaoCurso.getCandidato().getCpf().isEmpty()) {
+								detailCandidatosInscritosDTO
+										.setCpf(StringUtil.format("###.###.###-##", inscricaoCurso.getCandidato().getCpf()));
 							} else {
 								detailCandidatosInscritosDTO.setCpf("");
 							}
@@ -198,8 +274,8 @@ public class RelatorioCandidatoInscritoBean extends BaseBean<Candidato> {
 							}
 							detailCandidatosInscritosDTO.setNomeCandidato(inscricaoCurso.getCandidato().getNome());
 
-							if (inscricaoCurso.getTurma() != null) {
-								detailCandidatosInscritosDTO.setTurma(inscricaoCurso.getTurma().getDescricao());
+							if (dto.getTurma() != null) {
+								detailCandidatosInscritosDTO.setTurma(dto.getTurma());
 							} else {
 								detailCandidatosInscritosDTO.setTurma("");
 							}
@@ -220,11 +296,11 @@ public class RelatorioCandidatoInscritoBean extends BaseBean<Candidato> {
 			Map<String, Object> map = new HashMap<String, Object>();
 
 			map.put("dataAtual", DateUtil.getDataHora(new Date(), "dd/MM/yyyy"));
-			map.put("IMAGE",
-					FacesContext.getCurrentInstance().getExternalContext()
-							.getRealPath("/resources/design/imagem-default/logo_esaf_relatorio.png"));
+			map.put("IMAGE", FacesContext.getCurrentInstance().getExternalContext()
+					.getRealPath("/resources/design/imagem-default/logo_esaf_relatorio.png"));
 
-			map.put("SUBREPORT_DIR", FacesContext.getCurrentInstance().getExternalContext().getRealPath("/jasper/") + File.separator);
+			map.put("SUBREPORT_DIR",
+					FacesContext.getCurrentInstance().getExternalContext().getRealPath("/jasper/") + File.separator);
 			map.put("LISTA", listareRelatoriosDTOs);
 
 			RelatorioUtil.gerarRelatorio(map, caminho, "Relacao_Inscritos", formato);
@@ -237,23 +313,37 @@ public class RelatorioCandidatoInscritoBean extends BaseBean<Candidato> {
 
 		// Adiciona os instrutores
 		String turmas = "";
-		int cont = 0;
-		if (inscricaoCurso.getCurso() != null && inscricaoCurso.getCurso().getTurmas() != null) {
-			// Ordena as turmas por ordem alfabetica
-			List<Turma> listaOrdenada = new ArrayList<Turma>(inscricaoCurso.getCurso().getTurmas());
-			Collections.sort(listaOrdenada, new Comparator<Turma>() {
-				@Override
-				public int compare(Turma o1, Turma o2) {
-					return o1.getDescricao().trim().compareToIgnoreCase(o2.getDescricao().trim());
+		int count = 0;
+		if (inscricaoCurso.getCurso() != null) {
+			if (inscricaoCurso.getCurso().getFlgPossuiOficina()) {
+				List<InscricaoGrade> inscricaoGrades = inscricaoCursoService.listarInscricaoGrade(inscricaoCurso);
+				for (InscricaoGrade inscricaoGrade : inscricaoGrades) {
+					if (count == 0) {
+						turmas = inscricaoGrade.getGradeOficina().getTurma().getDescricao();
+						count++;
+					} else {
+						turmas = turmas + ", " + inscricaoGrade.getGradeOficina().getTurma().getDescricao();
+					}
 				}
-			});
+			} else {
+				if (inscricaoCurso.getCurso().getTurmas() != null) {
+					// Ordena as turmas por ordem alfabetica
+					List<Turma> listaOrdenada = new ArrayList<Turma>(inscricaoCurso.getCurso().getTurmas());
+					Collections.sort(listaOrdenada, new Comparator<Turma>() {
+						@Override
+						public int compare(Turma o1, Turma o2) {
+							return o1.getDescricao().trim().compareToIgnoreCase(o2.getDescricao().trim());
+						}
+					});
 
-			for (Turma turma : listaOrdenada) {
-				if (cont == 0) {
-					turmas = turma.getDescricao();
-					cont++;
-				} else {
-					turmas = turmas + ", " + turma.getDescricao();
+					for (Turma turma : listaOrdenada) {
+						if (count == 0) {
+							turmas = turma.getDescricao();
+							count++;
+						} else {
+							turmas = turmas + ", " + turma.getDescricao();
+						}
+					}
 				}
 			}
 		}
@@ -312,8 +402,10 @@ public class RelatorioCandidatoInscritoBean extends BaseBean<Candidato> {
 	public void buscarInscritos() {
 		try {
 			listaInscritos = new ArrayList<ExportarCandidatosInscritosDTO>();
-			RelatorioPesquisaDTO relatorioPesquisaDTO = new RelatorioPesquisaDTO(curso, orgaoSolicitante, orgao, dtInicial, dtFinal,
-					new Turma(idTurma), idSituacaoInscricao);
+			RelatorioPesquisaDTO relatorioPesquisaDTO = new RelatorioPesquisaDTO(curso, orgaoSolicitante, orgao, dtInicial,
+					dtFinal, new Turma(idTurma), idSituacaoInscricao, idUfOrgaoSelecionado, idMunicipioSelecionado,
+					idUfEnderecoSelecionado, idMunicipioEnderecoSelecionado);
+			
 			List<InscricaoCurso> listaInscricaoCurso = candidatoService.listarCandidatosInscritos(relatorioPesquisaDTO);
 			if (listaInscricaoCurso == null || listaInscricaoCurso.isEmpty()) {
 				FacesMessagesUtil.addErrorMessage("", "Nenhum registro encontrado.");
@@ -336,8 +428,12 @@ public class RelatorioCandidatoInscritoBean extends BaseBean<Candidato> {
 				dto.setNomeOrgao(inscricaoCurso.getCandidato().getOrgao().getNomeSiglaFormat());
 				dto.setStatus(inscricaoCurso.getUltimoStatus().getStatus().getDescricao());
 				dto.setTelComercial(inscricaoCurso.getCandidato().getTelComercial());
-				if (inscricaoCurso.getTurma() != null){
-					dto.setTurma(inscricaoCurso.getTurma().getDescricao());
+				// Se tiver filtro de turma usa o do Filtro.
+				if (idTurma != null && idTurma != 0) {
+					Turma turma = (Turma) universalManager.get(Turma.class, idTurma);
+					dto.setTurma(turma.getDescricao());
+				} else {
+					dto.setTurma(formatTurmas(inscricaoCurso));
 				}
 				dto.setCurso(inscricaoCurso.getCurso().getCursoData());
 				dto.setUf(inscricaoCurso.getCandidato().getMunicipioOrgao().getUf().getSigla());
@@ -527,6 +623,78 @@ public class RelatorioCandidatoInscritoBean extends BaseBean<Candidato> {
 
 	public void setCountInscricao(Integer countInscricao) {
 		this.countInscricao = countInscricao;
+	}
+
+	public InscricaoCursoService getInscricaoCursoService() {
+		return inscricaoCursoService;
+	}
+
+	public void setInscricaoCursoService(InscricaoCursoService inscricaoCursoService) {
+		this.inscricaoCursoService = inscricaoCursoService;
+	}
+
+	public Integer getIdUfOrgaoSelecionado() {
+		return idUfOrgaoSelecionado;
+	}
+
+	public void setIdUfOrgaoSelecionado(Integer idUfOrgaoSelecionado) {
+		this.idUfOrgaoSelecionado = idUfOrgaoSelecionado;
+	}
+
+	public Integer getIdMunicipioSelecionado() {
+		return idMunicipioSelecionado;
+	}
+
+	public void setIdMunicipioSelecionado(Integer idMunicipioSelecionado) {
+		this.idMunicipioSelecionado = idMunicipioSelecionado;
+	}
+
+	public Integer getIdUfEnderecoSelecionado() {
+		return idUfEnderecoSelecionado;
+	}
+
+	public void setIdUfEnderecoSelecionado(Integer idUfEnderecoSelecionado) {
+		this.idUfEnderecoSelecionado = idUfEnderecoSelecionado;
+	}
+
+	public Integer getIdMunicipioEnderecoSelecionado() {
+		return idMunicipioEnderecoSelecionado;
+	}
+
+	public void setIdMunicipioEnderecoSelecionado(Integer idMunicipioEnderecoSelecionado) {
+		this.idMunicipioEnderecoSelecionado = idMunicipioEnderecoSelecionado;
+	}
+
+	public List<Uf> getUfOrgaos() {
+		return UfOrgaos;
+	}
+
+	public void setUfOrgaos(List<Uf> ufOrgaos) {
+		UfOrgaos = ufOrgaos;
+	}
+
+	public List<Uf> getUfEnderecos() {
+		return UfEnderecos;
+	}
+
+	public void setUfEnderecos(List<Uf> ufEnderecos) {
+		UfEnderecos = ufEnderecos;
+	}
+
+	public List<Municipio> getMunicipioOrgaos() {
+		return municipioOrgaos;
+	}
+
+	public void setMunicipioOrgaos(List<Municipio> municipioOrgaos) {
+		this.municipioOrgaos = municipioOrgaos;
+	}
+
+	public List<Municipio> getMunicipioEnderecos() {
+		return municipioEnderecos;
+	}
+
+	public void setMunicipioEnderecos(List<Municipio> municipioEnderecos) {
+		this.municipioEnderecos = municipioEnderecos;
 	}
 
 }

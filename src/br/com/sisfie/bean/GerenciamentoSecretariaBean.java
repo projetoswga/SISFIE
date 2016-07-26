@@ -84,7 +84,7 @@ public class GerenciamentoSecretariaBean extends PaginableBean<InscricaoCursoCer
 				}
 			}
 		}
-		List<InscricaoCurso> listaCandidatoConfirmados = cursoService.carregarListaCandidatoConfirmados(curso);
+		List<InscricaoCurso> listaCandidatoConfirmados = cursoService.carregarListaCandidatoConfirmadosComInstrutores(curso);
 
 		exibirConteudo = frequenciaService.carregarListas(listaInscricoesAprovadas, listaInscricoesReprovadas, listaArquivosFrequencia,
 				listaCandidatoConfirmados, curso);

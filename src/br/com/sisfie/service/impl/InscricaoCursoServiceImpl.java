@@ -349,4 +349,9 @@ public class InscricaoCursoServiceImpl implements InscricaoCursoService {
 		instrutor.setUltimoStatus(new StatusInscricao(statusInscricao.getId()));
 		dao.merge(instrutor);
 	}
+
+	@Override
+	public List<InscricaoGrade> listarInscricaoGrade(InscricaoCurso inscricaoCurso) {
+		return inscricaoCursoDAO.listarInscricaoGrade(inscricaoCurso);
+	}
 }

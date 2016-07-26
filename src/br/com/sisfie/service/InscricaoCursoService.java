@@ -68,4 +68,6 @@ public interface InscricaoCursoService {
 
 	void cancelarInstrutor(InscricaoCurso instrutor, Usuario usuario) throws Exception;
 
+	List<InscricaoGrade> listarInscricaoGrade(InscricaoCurso inscricaoCurso);
+
 }

@@ -30,6 +30,7 @@ public class MenuBean {
 
 	@PostConstruct
 	public void carregarMenu() {
+		Usuario user = (Usuario) getSessionMap().get(Constantes.USUARIO_SESSAO);
 		menu = new DefaultMenuModel();
 
 		/**
@@ -118,10 +119,12 @@ public class MenuBean {
 			item.setUrl("/pages/area.jsf");
 			Apoio.getChildren().add(item);
 		}
+
 		item = new MenuItem();
 		item.setValue("Área de Conhecimento");
 		item.setUrl("/pages/areaConhecimento.jsf");
 		Apoio.getChildren().add(item);
+
 		if (acessoBean.verificarAcesso("ROLE_ATUACAO")) {
 			item = new MenuItem();
 			item.setValue("Atuação");
@@ -134,7 +137,6 @@ public class MenuBean {
 			item.setValue("Cargo");
 			item.setUrl("/pages/cargo.jsf");
 			Apoio.getChildren().add(item);
-
 		}
 
 		if (acessoBean.verificarAcesso("ROLE_LOCALIZACAO")) {
@@ -191,7 +193,7 @@ public class MenuBean {
 		item.setValue("Credenciamento");
 		item.setUrl("/pages/credenciamento.jsf");
 		frequencia.getChildren().add(item);
-		
+
 		item = new MenuItem();
 		item.setValue("Espelho Frequência");
 		item.setUrl("/pages/espelhoFrequencia.jsf");
@@ -207,43 +209,45 @@ public class MenuBean {
 		item.setValue("Credenciamento");
 		item.setUrl("/pages/relatorioCredenciamento.jsf");
 		relatoriosFrequencia.getChildren().add(item);
-		
+
 		item = new MenuItem();
 		item.setValue("Etiquetas");
 		item.setUrl("/pages/relatorioEtiqueta.jsf");
 		relatoriosFrequencia.getChildren().add(item);
-		
+
 		item = new MenuItem();
 		item.setValue("Crachás");
 		item.setUrl("/pages/relatorioCrachas.jsf");
 		relatoriosFrequencia.getChildren().add(item);
-		
+
 		item = new MenuItem();
 		item.setValue("Mapa Frequência");
 		item.setUrl("/pages/relatorioMapaFrequencia.jsf");
 		relatoriosFrequencia.getChildren().add(item);
 
 		frequencia.getChildren().add(relatoriosFrequencia);
-		
+
 		item = new MenuItem();
 		item.setValue("Aprovação");
 		item.setUrl("/pages/aprovacao.jsf");
 		frequencia.getChildren().add(item);
-		
+
 		menu.addSubmenu(frequencia);
-		
+
 		/**
 		 * Secretaria
 		 */
-		Submenu secretaria = new Submenu();
-		secretaria.setLabel("Secretaria");
+		if (!user.getPerfil().getDescricao().equalsIgnoreCase("Coordenador")) {
+			Submenu secretaria = new Submenu();
+			secretaria.setLabel("Secretaria");
 
-		item = new MenuItem();
-		item.setValue("Gerenciar");
-		item.setUrl("/pages/gerenciamentoSecretaria.jsf");
-		secretaria.getChildren().add(item);
-		
-		menu.addSubmenu(secretaria);
+			item = new MenuItem();
+			item.setValue("Gerenciar");
+			item.setUrl("/pages/gerenciamentoSecretaria.jsf");
+			secretaria.getChildren().add(item);
+
+			menu.addSubmenu(secretaria);
+		}
 
 		/**
 		 * ACESSO
@@ -283,27 +287,22 @@ public class MenuBean {
 		/**
 		 * BD
 		 */
-		try {
-			Usuario user = (Usuario) getSessionMap().get(Constantes.USUARIO_SESSAO);
-			if (user.getPerfil().getDescricao().equals(Constantes.PERFIL_SISFIE)) {
+		if (user.getPerfil().getDescricao().equalsIgnoreCase(Constantes.PERFIL_SISFIE)) {
 
-				Submenu BD = new Submenu();
-				BD.setLabel("BD");
+			Submenu BD = new Submenu();
+			BD.setLabel("BD");
 
-				item = new MenuItem();
-				item.setValue("Sequence");
-				item.setUrl("/pages/sequence.jsf");
-				BD.getChildren().add(item);
+			item = new MenuItem();
+			item.setValue("Sequence");
+			item.setUrl("/pages/sequence.jsf");
+			BD.getChildren().add(item);
 
-				item = new MenuItem();
-				item.setValue("Atualizar Último Status");
-				item.setUrl("/pages/atualizarUltimoStatusInscricao.jsf");
-				BD.getChildren().add(item);
+			item = new MenuItem();
+			item.setValue("Atualizar Último Status");
+			item.setUrl("/pages/atualizarUltimoStatusInscricao.jsf");
+			BD.getChildren().add(item);
 
-				menu.addSubmenu(BD);
-			}
-		} catch (Exception e) {
-			// nao trata a exceÃ§Ã£o do menu BD Menu interno do sisfie.
+			menu.addSubmenu(BD);
 		}
 	}
 
