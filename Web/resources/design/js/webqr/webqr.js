@@ -139,6 +139,8 @@ function load(callbackBeforeQRCodeDecoded)
 
 		functionCallback=callbackBeforeQRCodeDecoded;
 		
+		stype=0;
+		
         setwebcam();
 	}
 	else

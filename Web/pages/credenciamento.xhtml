@@ -12,6 +12,7 @@
 				if ($('#numInscricao').val().length == 14){
 					$('#btnPesquisar').click();
 					$('#btnConfirmar').focus();
+					load(callbackAfterQRCodeDecoded); //prepare QR Code scanner
 				}
 			}
 			

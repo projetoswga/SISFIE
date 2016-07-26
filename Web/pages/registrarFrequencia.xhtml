@@ -10,7 +10,7 @@
 			function verificarQuantidadeDigitosExecutarEnter(){
 				if ($('#numInscricao').val().length == 14){
 					$('#btnRegistrar').click();
-					$('#numInscricao').val('');
+					load(callbackAfterQRCodeDecoded); //prepare QR Code scanner
 				}
 			}
 			function callbackAfterQRCodeDecoded(QRCodeDecoded) {
