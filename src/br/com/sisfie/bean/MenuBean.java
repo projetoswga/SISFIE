@@ -245,6 +245,11 @@ public class MenuBean {
 			item.setValue("Gerenciar");
 			item.setUrl("/pages/gerenciamentoSecretaria.jsf");
 			secretaria.getChildren().add(item);
+			
+			item = new MenuItem();
+			item.setValue("Livro de Registros");
+			item.setUrl("/pages/livroRegistros.jsf");
+			secretaria.getChildren().add(item);
 
 			menu.addSubmenu(secretaria);
 		}

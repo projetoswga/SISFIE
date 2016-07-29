@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui" template="/templates/template.xhtml">
+
+	<ui:define name="body">
+
+		<f:loadBundle basename="constantes" var="const" />
+
+		<h:form id="formId" prependId="false">
+			<p:fieldset legend="Livro de Registros" id="fieldPrincipal">
+				<h:panelGrid id="panelPrincipal" columns="2" border="0" columnClasses="coluna20,coluna80" width="100%">
+					<h:outputLabel value="Curso" styleClass="icoObrigatorio" />
+					<p:autoComplete dropdown="true" queryDelay="500" value="#{livroRegistrosBean.curso}" minQueryLength="2" id="curso" size="68"
+						scrollHeight="300" completeMethod="#{livroRegistrosBean.completeCurso}" forceSelection="true" var="lista"
+						itemLabel="#{lista.cursoData}" itemValue="#{lista.id}" converter="cursoConverter" global="false">
+						<p:ajax event="itemSelect" update="@form" process="@form" listener="#{livroRegistrosBean.visualizarConteudo}" />
+					</p:autoComplete>
+				</h:panelGrid>
+
+				<p:spacer height="20" />
+
+				<h:panelGrid width="100%" id="panelConteudo">
+					<h:panelGrid rendered="#{livroRegistrosBean.exibirConteudo}" columns="2" border="0" columnClasses="coluna20,coluna80" width="100%">
+						<h:outputLabel value="candidato/Instrutor" />
+						<p:autoComplete dropdown="true" queryDelay="500" value="#{livroRegistrosBean.candidato}" minQueryLength="2" id="candidato" size="68"
+							scrollHeight="300" completeMethod="#{livroRegistrosBean.completeCandidato}" forceSelection="true" var="listaCandidato"
+							itemLabel="#{listaCandidato.nome}" itemValue="#{listaCandidato.id}" converter="candidatoConverter" global="false">
+						</p:autoComplete>
+					</h:panelGrid>
+				</h:panelGrid>
+
+				<p:spacer height="20" />
+
+				<div align="center">
+					<p:commandButton value="Limpar" immediate="true" ajax="false" action="livroRegistros.jsf" />
+					<p:spacer width="10" />
+					<p:commandButton value="Gerar" process="@form" update="@form" action="#{livroRegistrosBean.gerarRelatorio}" />
+				</div>
+			</p:fieldset>
+		</h:form>
+	</ui:define>
+</ui:composition>

@@ -26,9 +26,9 @@ import br.com.sisfie.entidade.Curso;
 import br.com.sisfie.entidade.EmailCursoPrivado;
 import br.com.sisfie.entidade.InscricaoCurso;
 import br.com.sisfie.entidade.InscricaoGrade;
-import br.com.sisfie.entidade.Situacao;
 import br.com.sisfie.entidade.Status;
 import br.com.sisfie.entidade.StatusInscricao;
+import br.com.sisfie.entidade.Turma;
 import br.com.sisfie.entidade.Usuario;
 import br.com.sisfie.service.InscricaoCursoService;
 import br.com.sisfie.util.Constantes;
@@ -353,5 +353,10 @@ public class InscricaoCursoServiceImpl implements InscricaoCursoService {
 	@Override
 	public List<InscricaoGrade> listarInscricaoGrade(InscricaoCurso inscricaoCurso) {
 		return inscricaoCursoDAO.listarInscricaoGrade(inscricaoCurso);
+	}
+
+	@Override
+	public InscricaoCurso recuperarDocente(Integer idCurso, Turma turma) {
+		return inscricaoCursoDAO.recuperarDocente(idCurso, turma);
 	}
 }

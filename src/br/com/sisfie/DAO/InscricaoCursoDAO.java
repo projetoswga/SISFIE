@@ -7,6 +7,7 @@ import br.com.sisfie.entidade.EmailCursoPrivado;
 import br.com.sisfie.entidade.InscricaoCurso;
 import br.com.sisfie.entidade.InscricaoGrade;
 import br.com.sisfie.entidade.StatusInscricao;
+import br.com.sisfie.entidade.Turma;
 
 public interface InscricaoCursoDAO {
 
@@ -55,5 +56,7 @@ public interface InscricaoCursoDAO {
 	InscricaoCurso recuperarInscricao(String numInscricao);
 
 	List<InscricaoGrade> listarInscricaoGrade(InscricaoCurso inscricaoCurso);
+
+	InscricaoCurso recuperarDocente(Integer idCurso, Turma turma);
 
 }

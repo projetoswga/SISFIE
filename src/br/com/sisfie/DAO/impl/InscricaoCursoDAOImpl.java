@@ -28,6 +28,7 @@ import br.com.sisfie.entidade.InscricaoGrade;
 import br.com.sisfie.entidade.MunicipioCurso;
 import br.com.sisfie.entidade.Status;
 import br.com.sisfie.entidade.StatusInscricao;
+import br.com.sisfie.entidade.Turma;
 import br.com.sisfie.entidade.UfCurso;
 
 @Repository(value = "inscricaoCursoDAO")
@@ -720,5 +721,21 @@ public class InscricaoCursoDAOImpl extends HibernateDaoSupport implements Inscri
 		sql.append(" and ic.num_inscricao like '" + inscricaoCurso.getInscricao() + "' ");
 		sql.append(" order by t.descricao ");
 		return getSession().createSQLQuery(sql.toString()).addEntity(InscricaoGrade.class).list();
+	}
+
+	@Override
+	public InscricaoCurso recuperarDocente(Integer idCurso, Turma turma) {
+		Criteria criteria = getSession().createCriteria(InscricaoCurso.class);
+		criteria.add(Restrictions.eq("flgInstrutor", true));
+		criteria.createAlias("curso", "c");
+		criteria.add(Restrictions.eq("c.id", idCurso));
+		if (turma != null && turma.getId() != null) {
+			criteria.createAlias("turma", "t");
+			criteria.add(Restrictions.eq("t.id", turma.getId()));
+		}
+		criteria.createAlias("ultimoStatus", "ut");
+		criteria.createAlias("ut.status", "s");
+		criteria.add(Restrictions.ne("s.id", Status.CANCELADO));
+		return (InscricaoCurso) criteria.uniqueResult();
 	}
 }

@@ -12,6 +12,8 @@ import org.springframework.stereotype.Repository;
 
 import br.com.arquitetura.DAO.UniversalDAO;
 import br.com.sisfie.DAO.SecretariaDAO;
+import br.com.sisfie.entidade.Candidato;
+import br.com.sisfie.entidade.Curso;
 import br.com.sisfie.entidade.InscricaoCursoCertificado;
 
 @Repository(value = "secretariaDAO")
@@ -36,4 +38,17 @@ public class SecretariaDAOImpl extends HibernateDaoSupport implements Secretaria
 		return criteria.list();
 	}
 
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<InscricaoCursoCertificado> listarInscricaoCursoCertificados(Curso curso, Candidato candidato) {
+		Criteria criteria = getSession().createCriteria(InscricaoCursoCertificado.class);
+		criteria.createAlias("inscricaoCurso", "ic");
+		criteria.createAlias("ic.curso", "c");
+		criteria.add(Restrictions.eq("c.id", curso.getId()));
+		if (candidato != null && candidato.getId() != null && candidato.getId() != 0) {
+			criteria.createAlias("ic.candidato", "ca");
+			criteria.add(Restrictions.eq("ca.id", candidato.getId()));
+		}
+		return criteria.list();
+	}
 }

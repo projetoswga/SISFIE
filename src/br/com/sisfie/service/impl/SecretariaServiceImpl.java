@@ -10,6 +10,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import br.com.arquitetura.DAO.UniversalDAO;
 import br.com.sisfie.DAO.SecretariaDAO;
+import br.com.sisfie.entidade.Candidato;
+import br.com.sisfie.entidade.Curso;
 import br.com.sisfie.entidade.InscricaoCursoCertificado;
 import br.com.sisfie.service.SecretariaService;
 
@@ -44,6 +46,11 @@ public class SecretariaServiceImpl implements SecretariaService {
 	@Override
 	public List<InscricaoCursoCertificado> recuperarInscricoesJaHomologadas(List<Integer> idsInscricoesAprovadas) {
 		return secretariaDAO.recuperarInscricoesJaHomologadas(idsInscricoesAprovadas);
+	}
+
+	@Override
+	public List<InscricaoCursoCertificado> listarInscricaoCursoCertificados(Curso curso, Candidato candidato) {
+		return secretariaDAO.listarInscricaoCursoCertificados(curso, candidato);
 	}
 
 }

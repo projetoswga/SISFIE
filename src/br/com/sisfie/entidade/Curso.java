@@ -550,6 +550,14 @@ public class Curso extends Entidade<Integer> {
 		}
 		return cursoData;
 	}
+	
+	public String getPeriodoRealizacaoCurso() {
+		if (dtRealizacaoInicio != null && dtRealizacaoFim != null) {
+			return DateUtil.getDataHora(dtRealizacaoInicio, "dd/MM/yyyy") + " a "
+					+ DateUtil.getDataHora(dtRealizacaoFim, "dd/MM/yyyy");
+		}
+		return "Período não definido";
+	}
 
 	public void setCursoData(String cursoData) {
 		this.cursoData = cursoData;

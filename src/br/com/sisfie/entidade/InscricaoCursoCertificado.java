@@ -1,5 +1,7 @@
 package br.com.sisfie.entidade;
 
+import java.util.Date;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -10,6 +12,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import org.hibernate.envers.Audited;
 
@@ -40,6 +44,19 @@ public class InscricaoCursoCertificado extends Entidade<Integer> {
 
 	@Column(name = "flg_homologado")
 	private Boolean flgHomologado;
+
+	@Column(name = "codigo_livro")
+	private Integer codigoLivro;
+
+	@Column(name = "cont_programatico_docente", columnDefinition = "text")
+	private String conteudoProgramaticoDocente;
+
+	@Column(name = "cont_programatico_participante", columnDefinition = "text")
+	private String conteudoProgramaticoParticipante;
+
+	@Temporal(TemporalType.DATE)
+	@Column(name = "dt_publ_livro", length = 13)
+	private Date dataPublicacaoLivro;
 
 	public InscricaoCursoCertificado() {
 	}
@@ -86,5 +103,37 @@ public class InscricaoCursoCertificado extends Entidade<Integer> {
 
 	public void setInscricaoCurso(InscricaoCurso inscricaoCurso) {
 		this.inscricaoCurso = inscricaoCurso;
+	}
+
+	public Integer getCodigoLivro() {
+		return codigoLivro;
+	}
+
+	public void setCodigoLivro(Integer codigoLivro) {
+		this.codigoLivro = codigoLivro;
+	}
+
+	public String getConteudoProgramaticoDocente() {
+		return conteudoProgramaticoDocente;
+	}
+
+	public void setConteudoProgramaticoDocente(String conteudoProgramaticoDocente) {
+		this.conteudoProgramaticoDocente = conteudoProgramaticoDocente;
+	}
+
+	public String getConteudoProgramaticoParticipante() {
+		return conteudoProgramaticoParticipante;
+	}
+
+	public void setConteudoProgramaticoParticipante(String conteudoProgramaticoParticipante) {
+		this.conteudoProgramaticoParticipante = conteudoProgramaticoParticipante;
+	}
+
+	public Date getDataPublicacaoLivro() {
+		return dataPublicacaoLivro;
+	}
+
+	public void setDataPublicacaoLivro(Date dataPublicacaoLivro) {
+		this.dataPublicacaoLivro = dataPublicacaoLivro;
 	}
 }

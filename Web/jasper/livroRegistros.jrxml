@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="paginaLivroDocente" pageWidth="595" pageHeight="842" columnWidth="511" leftMargin="42" rightMargin="42" topMargin="42" bottomMargin="42" uuid="2e71c76b-4905-4e79-9919-b78df2483a15">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<field name="anoCorrente" class="java.lang.String"/>
+	<field name="docente" class="java.lang.String"/>
+	<field name="nomeCandidato" class="java.lang.String"/>
+	<field name="tituloCurso" class="java.lang.String"/>
+	<field name="numeroProjeto" class="java.lang.String"/>
+	<field name="periodoRealizacao" class="java.lang.String"/>
+	<field name="localizacaoCurso" class="java.lang.String"/>
+	<field name="usuario" class="java.lang.String"/>
+	<field name="diretor" class="java.lang.String"/>
+	<field name="dataAtualRegistro" class="java.lang.String"/>
+	<field name="registroInicial" class="java.lang.String"/>
+	<field name="registroAtual" class="java.lang.String"/>
+	<field name="conteudoProgramaticoDocente" class="java.lang.String"/>
+	<field name="conteudoProgramaticoParticipante" class="java.lang.String"/>
+	<field name="cargaHoraria" class="java.lang.String"/>
+	<detail>
+		<band height="701" splitType="Stretch">
+			<textField>
+				<reportElement positionType="Float" x="0" y="13" width="511" height="26" uuid="29038992-6477-4758-81b8-e4cba01d6969"/>
+				<textElement textAlignment="Center" markup="none">
+					<font size="16" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["REGISTRO Nº D-$F{registroAtual}/$F{anoCorrente}-SD"]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement positionType="Float" x="0" y="48" width="511" height="20" uuid="b5b47cc1-a5b1-4d5f-b477-6f88867887fb"/>
+				<textElement textAlignment="Justified">
+					<font size="14"/>
+				</textElement>
+				<text><![CDATA[Ministério da Fazenda. Escola de Administração Fazendária. CERTIFICADO de]]></text>
+			</staticText>
+			<textField>
+				<reportElement positionType="Float" x="0" y="78" width="511" height="20" uuid="f2fe04d4-309f-4358-8c3f-6978178fab20"/>
+				<textElement textAlignment="Center">
+					<font size="14" isBold="true" isUnderline="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{docente}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement positionType="Float" x="0" y="108" width="511" height="40" uuid="fa4fb577-516f-479c-9605-daf506fdbfd7"/>
+				<textElement textAlignment="Justified">
+					<font size="14"/>
+				</textElement>
+				<text><![CDATA[O Diretor-Geral da Escola de Administração Fazendária, no uso de suas atribuições, confere a]]></text>
+			</staticText>
+			<textField>
+				<reportElement positionType="Float" x="0" y="159" width="511" height="20" uuid="35479c4c-ab71-49ba-987b-653512fb4ae2"/>
+				<textElement textAlignment="Center">
+					<font size="14" isBold="true" isUnderline="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{nomeCandidato}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement positionType="Float" x="0" y="204" width="200" height="20" uuid="479b3ea7-a222-4f6d-a9d2-c21e0b04cbb6"/>
+				<textElement>
+					<font size="12"/>
+				</textElement>
+				<text><![CDATA[O presente CERTIFICADO do curso]]></text>
+			</staticText>
+			<staticText>
+				<reportElement positionType="Float" x="0" y="224" width="200" height="20" uuid="e9c9cf4c-0ec5-42f1-8118-11851c10bb86"/>
+				<textElement>
+					<font size="12"/>
+				</textElement>
+				<text><![CDATA[Projeto n°:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement positionType="Float" x="0" y="244" width="200" height="20" uuid="be58cb6f-ccd0-43e9-99eb-c2349066b2ff"/>
+				<textElement>
+					<font size="12"/>
+				</textElement>
+				<text><![CDATA[Realizado no período de:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement positionType="Float" x="0" y="264" width="200" height="20" uuid="00d51b60-1c10-49d2-9759-3604a5a65387"/>
+				<textElement>
+					<font size="12"/>
+				</textElement>
+				<text><![CDATA[Local:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement positionType="Float" x="0" y="284" width="200" height="20" uuid="fd484aeb-0765-4922-a4dc-a1cc3f44cfc2"/>
+				<textElement>
+					<font size="12"/>
+				</textElement>
+				<text><![CDATA[Coordenador:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement positionType="Float" x="0" y="304" width="200" height="20" uuid="249e1ba7-925a-47f5-b870-e6dcad18104d"/>
+				<textElement>
+					<font size="12"/>
+				</textElement>
+				<text><![CDATA[Diretor-Geral da Esaf:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement positionType="Float" x="0" y="324" width="200" height="20" uuid="30675cd0-cd8f-40d7-ad70-4643ea1c1e77"/>
+				<textElement>
+					<font size="12"/>
+				</textElement>
+				<text><![CDATA[Data do Registro:	]]></text>
+			</staticText>
+			<staticText>
+				<reportElement positionType="Float" x="0" y="344" width="200" height="20" uuid="78df457a-e360-4881-b6d9-ae54859585cd"/>
+				<textElement>
+					<font size="12"/>
+				</textElement>
+				<text><![CDATA[Carga Horária:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement positionType="Float" x="0" y="364" width="200" height="20" uuid="8c9b3721-cd59-4754-8ba0-ee9a5ceafeb0"/>
+				<textElement>
+					<font size="12"/>
+				</textElement>
+				<text><![CDATA[Registro de:]]></text>
+			</staticText>
+			<textField>
+				<reportElement positionType="Float" x="200" y="204" width="311" height="20" uuid="10641290-4318-4ace-b192-a7b3a0c8a87d"/>
+				<textElement>
+					<font size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{tituloCurso}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement positionType="Float" x="200" y="224" width="311" height="20" uuid="31d72bd0-cc6c-46aa-bc3b-0ae816ce476c"/>
+				<textElement>
+					<font size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{numeroProjeto}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement positionType="Float" x="200" y="244" width="311" height="20" uuid="f3fc7626-307d-4711-98cb-e9cd264cb313"/>
+				<textElement>
+					<font size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{periodoRealizacao}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement positionType="Float" x="200" y="264" width="311" height="20" uuid="cb8a749f-6a53-4fd0-977a-e940a31080ec"/>
+				<textElement>
+					<font size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{localizacaoCurso}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement positionType="Float" x="200" y="284" width="311" height="20" uuid="13f26260-422c-4cd6-9e6d-2c73d4b380f6"/>
+				<textElement>
+					<font size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{usuario}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement positionType="Float" x="200" y="304" width="311" height="20" uuid="341a13d2-a6f1-4ad5-8adb-6d577c6c5373"/>
+				<textElement>
+					<font size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{diretor}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement positionType="Float" x="200" y="324" width="311" height="20" uuid="e88f1317-0051-47a0-b981-8124f7e1cd97"/>
+				<textElement>
+					<font size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{dataAtualRegistro}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement positionType="Float" x="200" y="344" width="311" height="20" uuid="60550aa3-ca6c-40f1-8dda-37edca2be80a"/>
+				<textElement>
+					<font size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{cargaHoraria}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement positionType="Float" x="200" y="364" width="311" height="20" uuid="763964e5-3bc3-469f-b33b-465f5b459b4b"/>
+				<textElement>
+					<font size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["$F{registroInicial} a $F{registroAtual}"]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement positionType="Float" x="0" y="415" width="511" height="51" uuid="72b2ca35-94c8-4c1f-b14b-a02f40a29139"/>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="14" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Conteúdo Programático]]></text>
+			</staticText>
+			<textField>
+				<reportElement positionType="Float" x="0" y="466" width="511" height="214" uuid="ae2951b9-8dd0-48f7-97ac-6ffda13c888b"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Justified"/>
+				<textFieldExpression><![CDATA[new Boolean ($F{conteudoProgramaticoDocente} != null ? $F{conteudoProgramaticoDocente} : $F{conteudoProgramaticoParticipante})]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>
