@@ -4,7 +4,7 @@ public class LivroRegistrosDTO {
 
 	private String numeroRegistro;
 	private String anoCorrente;
-	private String docente;
+	private String docenteParticipante;
 	private String nomeCandidato;
 	private String tituloCurso;
 	private String numeroProjeto;
@@ -33,14 +33,6 @@ public class LivroRegistrosDTO {
 
 	public void setAnoCorrente(String anoCorrente) {
 		this.anoCorrente = anoCorrente;
-	}
-
-	public String getDocente() {
-		return docente;
-	}
-
-	public void setDocente(String docente) {
-		this.docente = docente;
 	}
 
 	public String getNomeCandidato() {
@@ -145,5 +137,13 @@ public class LivroRegistrosDTO {
 
 	public void setCargaHoraria(String cargaHoraria) {
 		this.cargaHoraria = cargaHoraria;
+	}
+
+	public String getDocenteParticipante() {
+		return docenteParticipante;
+	}
+
+	public void setDocenteParticipante(String docenteParticipante) {
+		this.docenteParticipante = docenteParticipante;
 	}
 }

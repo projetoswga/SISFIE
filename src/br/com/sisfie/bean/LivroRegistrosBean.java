@@ -19,8 +19,8 @@ import br.com.arquitetura.util.StringUtil;
 import br.com.sisfie.dto.LivroRegistrosDTO;
 import br.com.sisfie.entidade.Candidato;
 import br.com.sisfie.entidade.Curso;
-import br.com.sisfie.entidade.InscricaoCurso;
 import br.com.sisfie.entidade.InscricaoCursoCertificado;
+import br.com.sisfie.entidade.ProfessorEvento;
 import br.com.sisfie.entidade.Turno;
 import br.com.sisfie.service.CandidatoService;
 import br.com.sisfie.service.CursoService;
@@ -101,7 +101,7 @@ public class LivroRegistrosBean extends PaginableBean<InscricaoCursoCertificado>
 				listaLivroRegistroDTO = new ArrayList<>();
 				for (InscricaoCursoCertificado inscricaoCursoCertificado : listaInscricaoCursoCertificados) {
 					LivroRegistrosDTO livroRegistrosDTO = new LivroRegistrosDTO();
-					livroRegistrosDTO.setAnoCorrente(String.valueOf(Calendar.getInstance().get(Calendar.YEAR)));
+					
 					if (curso.getFlgPossuiOficina()) {
 						livroRegistrosDTO.setCargaHoraria(
 								inscricaoCursoCertificado.getInscricaoCurso().getCurso().getCargaHoraria().toString());
@@ -109,21 +109,32 @@ public class LivroRegistrosBean extends PaginableBean<InscricaoCursoCertificado>
 						livroRegistrosDTO
 								.setCargaHoraria(getCargaHoraria(inscricaoCursoCertificado.getInscricaoCurso().getCurso()));
 					}
+					
 					if (inscricaoCursoCertificado.getInscricaoCurso().getFlgInstrutor()) {
 						livroRegistrosDTO
-								.setConteudoProgramaticoDocente(inscricaoCursoCertificado.getConteudoProgramaticoDocente());
+								.setConteudoProgramaticoDocente(inscricaoCursoCertificado.getConteudoProgramaticoDocente() != null
+										? inscricaoCursoCertificado.getConteudoProgramaticoDocente() : "");
 					} else {
 						livroRegistrosDTO.setConteudoProgramaticoParticipante(
-								inscricaoCursoCertificado.getConteudoProgramaticoParticipante());
+								inscricaoCursoCertificado.getConteudoProgramaticoParticipante() != null
+										? inscricaoCursoCertificado.getConteudoProgramaticoParticipante() : "");
 					}
+					
+					livroRegistrosDTO.setDocenteParticipante("Participante");
+					if (curso.getFlgPossuiOficina()) {
+						ProfessorEvento docente = inscricaoCursoService.recuperarDocenteCursoComOficina(inscricaoCursoCertificado.getInscricaoCurso());
+						if (docente != null) {
+							livroRegistrosDTO.setDocenteParticipante("Docente");
+						}
+					} else {
+						if (inscricaoCursoCertificado.getInscricaoCurso().getFlgInstrutor()) {
+							livroRegistrosDTO.setDocenteParticipante("Docente");
+						}
+					}
+					
+					livroRegistrosDTO.setAnoCorrente(String.valueOf(Calendar.getInstance().get(Calendar.YEAR)));
 					livroRegistrosDTO.setDataAtualRegistro(inscricaoCursoCertificado.getInscricaoCurso().getDtCadastroFormat());
 					livroRegistrosDTO.setDiretor("Campo ainda não acrescentado no módulo Secretaria");
-					InscricaoCurso docente = inscricaoCursoService.recuperarDocente(
-							inscricaoCursoCertificado.getInscricaoCurso().getCurso().getId(),
-							inscricaoCursoCertificado.getInscricaoCurso().getTurma());
-					if (docente != null) {
-						livroRegistrosDTO.setDocente(docente.getCandidato().getNome());
-					}
 					livroRegistrosDTO.setLocalizacaoCurso(
 							inscricaoCursoCertificado.getInscricaoCurso().getCurso().getLocalizacao().getDescricao());
 					livroRegistrosDTO.setNomeCandidato(inscricaoCursoCertificado.getInscricaoCurso().getCandidato().getNome());
@@ -138,10 +149,10 @@ public class LivroRegistrosBean extends PaginableBean<InscricaoCursoCertificado>
 					listaLivroRegistroDTO.add(livroRegistrosDTO);
 				}
 
-				RelatorioUtil.gerarRelatorio(listaLivroRegistroDTO, new HashMap<String, Object>(), "/jasper/livroRegistros.jasper",
-						"Livro_Registros", "pdf");
+				RelatorioUtil.gerarRelatorio(listaLivroRegistroDTO, new HashMap<String, Object>(),
+						"/jasper/livroRegistros.jasper", "Livro_Registros", "pdf");
 			} else {
-				FacesMessagesUtil.addInfoMessage("Nenhum registro encontrado!");
+				FacesMessagesUtil.addInfoMessage("", "Nenhum registro encontrado!");
 			}
 		} catch (Exception e) {
 			ExcecaoUtil.tratarExcecao(e);

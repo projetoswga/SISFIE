@@ -26,9 +26,9 @@ import br.com.sisfie.entidade.EmailCursoPrivado;
 import br.com.sisfie.entidade.InscricaoCurso;
 import br.com.sisfie.entidade.InscricaoGrade;
 import br.com.sisfie.entidade.MunicipioCurso;
+import br.com.sisfie.entidade.ProfessorEvento;
 import br.com.sisfie.entidade.Status;
 import br.com.sisfie.entidade.StatusInscricao;
-import br.com.sisfie.entidade.Turma;
 import br.com.sisfie.entidade.UfCurso;
 
 @Repository(value = "inscricaoCursoDAO")
@@ -724,18 +724,23 @@ public class InscricaoCursoDAOImpl extends HibernateDaoSupport implements Inscri
 	}
 
 	@Override
-	public InscricaoCurso recuperarDocente(Integer idCurso, Turma turma) {
+	public InscricaoCurso recuperarDocente(InscricaoCurso inscricaoCurso) {
 		Criteria criteria = getSession().createCriteria(InscricaoCurso.class);
 		criteria.add(Restrictions.eq("flgInstrutor", true));
-		criteria.createAlias("curso", "c");
-		criteria.add(Restrictions.eq("c.id", idCurso));
-		if (turma != null && turma.getId() != null) {
-			criteria.createAlias("turma", "t");
-			criteria.add(Restrictions.eq("t.id", turma.getId()));
-		}
+		criteria.add(Restrictions.idEq(inscricaoCurso.getId()));
 		criteria.createAlias("ultimoStatus", "ut");
 		criteria.createAlias("ut.status", "s");
 		criteria.add(Restrictions.ne("s.id", Status.CANCELADO));
 		return (InscricaoCurso) criteria.uniqueResult();
+	}
+
+	@Override
+	public ProfessorEvento recuperarDocenteCursoComOficina(InscricaoCurso inscricaoCurso) {
+		Criteria criteria = getSession().createCriteria(ProfessorEvento.class);
+		criteria.createAlias("candidato", "ca");
+		criteria.add(Restrictions.eq("ca.id", inscricaoCurso.getCandidato().getId()));
+		criteria.createAlias("curso", "c");
+		criteria.add(Restrictions.eq("c.id", inscricaoCurso.getCurso().getId()));
+		return (ProfessorEvento) criteria.uniqueResult();
 	}
 }

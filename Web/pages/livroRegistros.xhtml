@@ -22,7 +22,7 @@
 
 				<h:panelGrid width="100%" id="panelConteudo">
 					<h:panelGrid rendered="#{livroRegistrosBean.exibirConteudo}" columns="2" border="0" columnClasses="coluna20,coluna80" width="100%">
-						<h:outputLabel value="candidato/Instrutor" />
+						<h:outputLabel value="Candidato/Instrutor" />
 						<p:autoComplete dropdown="true" queryDelay="500" value="#{livroRegistrosBean.candidato}" minQueryLength="2" id="candidato" size="68"
 							scrollHeight="300" completeMethod="#{livroRegistrosBean.completeCandidato}" forceSelection="true" var="listaCandidato"
 							itemLabel="#{listaCandidato.nome}" itemValue="#{listaCandidato.id}" converter="candidatoConverter" global="false">
@@ -35,7 +35,7 @@
 				<div align="center">
 					<p:commandButton value="Limpar" immediate="true" ajax="false" action="livroRegistros.jsf" />
 					<p:spacer width="10" />
-					<p:commandButton value="Gerar" process="@form" update="@form" action="#{livroRegistrosBean.gerarRelatorio}" />
+					<h:commandButton value="Gerar" action="#{livroRegistrosBean.gerarRelatorio}" styleClass="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" style="padding: .5em 1em"/>
 				</div>
 			</p:fieldset>
 		</h:form>
