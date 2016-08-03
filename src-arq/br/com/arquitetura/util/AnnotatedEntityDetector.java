@@ -15,7 +15,7 @@ public class AnnotatedEntityDetector implements ApplicationContextAware, Persist
 
 	private ClassPathScanningCandidateComponentProvider scanningProvider;
 
-	private String basePackage = "";
+	private String basePackage = ""; 
 
 	private ApplicationContext applicationContext;
 

@@ -1,7 +1,14 @@
 package br.com.sisfie.dto.crossTab;
 
-public class Header {
+import java.io.Serializable;
 
+public class Header implements Serializable {
+
+	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private String label;
 	private Integer posicao;
 

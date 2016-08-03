@@ -1,6 +1,8 @@
 package br.com.sisfie.dto.crossTab;
 
-public class CrossTab {
+import java.io.Serializable;
+
+public class CrossTab implements Serializable {
 
 	// Nome das Colunas
 	private Header header;
