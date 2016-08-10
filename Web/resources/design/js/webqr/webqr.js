@@ -10,6 +10,7 @@ var moz=false;
 var v=null;
 var streamV
 var functionCallback;
+var readed=false;
 
 var imghtml='<div id="qrfile"><canvas id="out-canvas" width="320" height="240"></canvas>'+
     '<div id="imghelp">drag and drop a QRCode here'+
@@ -104,13 +105,16 @@ function htmlEntities(str) {
 
 function read(a)
 {
+	if (readed) return;
+	
+	readed=true;
     var html="<br>";
     if(a.indexOf("http://") === 0 || a.indexOf("https://") === 0)
         html+="<a target='_blank' href='"+a+"'>"+a+"</a><br>";
     html+="<b>"+htmlEntities(a)+"</b><br><br>";
-    functionCallback(htmlEntities(a)); 
     document.getElementById("result").innerHTML='QR Decoded:' + htmlEntities(a);
-}	
+    setTimeout(functionCallback(htmlEntities(a)),2000); 
+}
 
 function isCanvasSupported(){
   var elem = document.createElement('canvas');
@@ -130,7 +134,7 @@ function error(error) {
 
 function load(callbackBeforeQRCodeDecoded)
 {
-	if(isCanvasSupported() && window.File && window.FileReader)
+    if(isCanvasSupported() && window.File && window.FileReader)
 	{
 		initCanvas(800, 600);
 		qrcode.callback = read;
@@ -138,9 +142,8 @@ function load(callbackBeforeQRCodeDecoded)
 		document.getElementById("outdiv").style.display='block';
 
 		functionCallback=callbackBeforeQRCodeDecoded;
-		
-		stype=0;
-		
+		//stype=0;
+		readed=false;
         setwebcam();
 	}
 	else
@@ -183,11 +186,6 @@ function setwebcam()
         moz=true;
         n.mozGetUserMedia({video: true, audio: false}, success, error);
     }
-
-    //document.getElementById("qrimg").src="qrimg2.png";
-    //document.getElementById("webcamimg").src="webcam.png";
-    //document.getElementById("qrimg").style.opacity=0.2;
-    //document.getElementById("webcamimg").style.opacity=1.0;
 
     stype=1;
     setTimeout(captureToCanvas, 500);

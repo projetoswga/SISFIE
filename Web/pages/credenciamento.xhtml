@@ -8,11 +8,14 @@
 
 		<script type="text/javascript">
 			$ = jQuery;
+			function qrCodeReadMode() {
+				$('#qr-code-read').click();
+			}
+
 			function verificarQuantidadeDigitosExecutarEnter(){
 				if ($('#numInscricao').val().length == 14){
 					$('#btnPesquisar').click();
 					$('#btnConfirmar').focus();
-					load(callbackAfterQRCodeDecoded); //prepare QR Code scanner
 				}
 			}
 			
@@ -30,7 +33,7 @@
 					<h:outputLabel value="Inscrição" styleClass="icoObrigatorio" />
 					<p:inputText id="numInscricao" value="#{credenciamentoBean.model.numInscricao}" maxlength="14"
 						onkeyup="verificarQuantidadeDigitosExecutarEnter()" />
-					<h:graphicImage style="cursor: pointer;" library="design/imagem" name="qr-code-cellphone-icon-mini.png" onclick="$('#numInscricao').val('');load(callbackAfterQRCodeDecoded);"/>
+					<h:graphicImage id="qr-code-read" style="cursor: pointer;" library="design/imagem" name="qr-code-cellphone-icon-mini.png" onclick="$('#numInscricao').val('');load(callbackAfterQRCodeDecoded);"/>
 				</h:panelGrid>
 				<br/>
 				
@@ -60,7 +63,7 @@
 				<div align="center">
 					<p:commandButton value="Limpar" immediate="true" ajax="false" action="credenciamento.jsf" />
 					<p:spacer width="10" />
-					<p:commandButton id="btnPesquisar" value="Pesquisar" process="@this, panelInscricao" update="grupoInformacoesConfirmacoes"
+					<p:commandButton id="btnPesquisar" value="Pesquisar" oncomplete="qrCodeReadMode()" process="@this, panelInscricao" update="grupoInformacoesConfirmacoes"
 						action="#{credenciamentoBean.pesquisar}" />
 				</div>
 				<br />

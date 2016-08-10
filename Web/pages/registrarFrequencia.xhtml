@@ -7,15 +7,18 @@
 
 		<script type="text/javascript">
 			$ = jQuery;
+			function qrCodeReadMode() {
+				$('#qr-code-read').click();
+			}
+			
 			function verificarQuantidadeDigitosExecutarEnter(){
 				if ($('#numInscricao').val().length == 14){
 					$('#btnRegistrar').click();
-					load(callbackAfterQRCodeDecoded); //prepare QR Code scanner
 				}
 			}
 			function callbackAfterQRCodeDecoded(QRCodeDecoded) {
 				$('#numInscricao').val(QRCodeDecoded);
-				verificarQuantidadeDigitosExecutarEnter();
+				setTimeout(verificarQuantidadeDigitosExecutarEnter(),2000); 
 			}
 		</script>
 
@@ -69,7 +72,7 @@
 						<h:outputLabel value="Inscrição" styleClass="icoObrigatorio" />
 						<p:inputText id="numInscricao" value="#{frequenciaBean.model.inscricaoCurso.inscricao}" maxlength="14"
 							onkeyup="verificarQuantidadeDigitosExecutarEnter();" />
-						<h:graphicImage style="cursor: pointer;" library="design/imagem" name="qr-code-cellphone-icon-mini.png" onclick="$('#numInscricao').val('');load(callbackAfterQRCodeDecoded);"/>
+						<h:graphicImage id="qr-code-read" style="cursor: pointer;" library="design/imagem" name="qr-code-cellphone-icon-mini.png" onclick="$('#numInscricao').val('');load(callbackAfterQRCodeDecoded);"/>
 					</h:panelGrid>
 				</h:panelGroup>
 
@@ -101,7 +104,7 @@
 					<p:commandButton value="Limpar" immediate="true" ajax="false" action="registrarFrequencia.jsf" />
 					<p:spacer width="10" />
 					<h:panelGroup id="botoesRegistros">
-						<p:commandButton id="btnRegistrar" value="Registrar" update="listagem" action="#{frequenciaBean.registrar}" />
+						<p:commandButton id="btnRegistrar" value="Registrar" onstart="this.disabled=true;" update="listagem" oncomplete="this.disabled=false;qrCodeReadMode();" action="#{frequenciaBean.registrar}" />
 					</h:panelGroup>
 					<h:panelGroup id="botaoFinalizar">
 						<h:panelGroup rendered="#{frequenciaBean.exibirBotaoFinalizar}">
