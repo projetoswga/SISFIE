@@ -6,7 +6,7 @@ import java.util.List;
 import br.com.sisfie.entidade.Frequencia;
 import br.com.sisfie.entidade.InscricaoCurso;
 
-public interface FrequenciaDAO {
+public interface FrequenciaDAO extends BaseDAO<Frequencia> {
 
 	Frequencia recuperarUltimaFrequencia(String inscricao);
 

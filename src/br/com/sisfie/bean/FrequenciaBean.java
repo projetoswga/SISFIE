@@ -255,6 +255,19 @@ public class FrequenciaBean extends PaginableBean<Frequencia> {
 
 	public void renderizarCampoInscricaoVisualizarBotaoFinalizar() {
 		exibirInscricao = Boolean.TRUE;
+		
+		if (curso.getFlgPossuiOficina()) {
+			try {
+				if (null != getCurso() && null != getTurma() && null != getHorario()) {
+					GradeOficina go = gradeOficinaService.recupararGradeOficina(getCurso().getId(), getTurma().getId(), getHorario().getId());
+						if (null != go)
+							listaFrequencia = frequenciaService. listarFrequencias(go.getId());
+				}
+			} catch (Exception e) {
+				ExcecaoUtil.tratarExcecao(e);
+			}
+		}
+		
 		visualizaBotaoFinalizar();
 	}
 
@@ -335,27 +348,31 @@ public class FrequenciaBean extends PaginableBean<Frequencia> {
 		if (frequencia != null && frequencia.getId() != null) {
 			// Quando não registrou a saída, somente altera o registro.
 			if (frequencia.getHorarioSaida() == null) {
+				//frequencia = frequenciaService.recuperarPorId(frequencia.getId());
 				frequencia.setHorarioSaida(new Timestamp(new Date().getTime()));
 				frequenciaService.salvar((Frequencia) frequencia.clone());
 			} else {
 				// Se já foi registrado a saída é necessário criar um novo registro.
-				Frequencia frequenciaClone = (Frequencia) frequencia.clone();
-				frequenciaClone.setId(null);
-				frequenciaClone.setHorarioEntrada(new Timestamp(new Date().getTime()));
-				frequenciaClone.setHorarioSaida(null);
-				frequenciaService.salvar(frequenciaClone);
+				frequenciaService.salvar(criaNovaFrequencia());
 			}
 		} else {
-			// Caso não exita nenhum registro ainda.
-			Frequencia frequenciaNova = new Frequencia();
-			frequenciaNova.setHorarioEntrada(new Timestamp(new Date().getTime()));
-			frequenciaNova.setHorarioSaida(null);
-			frequenciaNova.setInscricaoCurso(new InscricaoCurso(inscricaoCurso.getId()));
-			if (curso.getFlgPossuiOficina()) {
-				frequenciaNova.setGradeOficina(new GradeOficina(inscricaoGrade.getGradeOficina().getId()));
-			}
-			frequenciaService.salvar(frequenciaNova);
+			// Caso não exista nenhum registro ainda.
+			frequenciaService.salvar(criaNovaFrequencia());
 		}
+	}
+
+	private Frequencia criaNovaFrequencia() {
+		Frequencia frequenciaNova = new Frequencia();
+		frequenciaNova.setHorarioEntrada(new Timestamp(new Date().getTime()));
+		frequenciaNova.setHorarioSaida(null);
+		frequenciaNova.setInscricaoCurso(new InscricaoCurso(inscricaoCurso.getId()));
+		/**
+		 * @TODO quando não houver Oficina a frequência não ficará vinculada à uma turma (grade oficina) ?
+		 */
+		if (curso.getFlgPossuiOficina()) {
+			frequenciaNova.setGradeOficina(new GradeOficina(inscricaoGrade.getGradeOficina().getId()));
+		}
+		return frequenciaNova;
 	}
 
 	public void finalizarFrequencia() {

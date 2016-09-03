@@ -167,4 +167,9 @@ public class FrequenciaServiceImpl implements FrequenciaService {
 		}
 		return true;
 	}
+
+	@Override
+	public Frequencia recuperarPorId(Integer id) {
+		return frequenciaDAO.recuperarPorId(id);
+	}
 }

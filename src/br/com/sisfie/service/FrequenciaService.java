@@ -7,7 +7,7 @@ import br.com.sisfie.entidade.Curso;
 import br.com.sisfie.entidade.Frequencia;
 import br.com.sisfie.entidade.InscricaoCurso;
 
-public interface FrequenciaService {
+public interface FrequenciaService extends BaseService<Frequencia> {
 
 	void salvarListaFrequencia(List<Frequencia> listaFrequencias) throws Exception;
 

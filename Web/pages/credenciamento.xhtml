@@ -21,7 +21,7 @@
 			
 			function callbackAfterQRCodeDecoded(QRCodeDecoded) {
 				$('#numInscricao').val(QRCodeDecoded);
-				verificarQuantidadeDigitosExecutarEnter();
+				setTimeout(verificarQuantidadeDigitosExecutarEnter,2000); 
 			}
 		</script>
 
