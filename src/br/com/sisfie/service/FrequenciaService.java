@@ -7,7 +7,7 @@ import br.com.sisfie.entidade.Curso;
 import br.com.sisfie.entidade.Frequencia;
 import br.com.sisfie.entidade.InscricaoCurso;
 
-public interface FrequenciaService {
+public interface FrequenciaService extends BaseService<Frequencia> {
 
 	void salvarListaFrequencia(List<Frequencia> listaFrequencias) throws Exception;
 
@@ -29,6 +29,6 @@ public interface FrequenciaService {
 
 	boolean carregarListas(List<InscricaoCurso> listaInscricoesAprovadas,
 			List<InscricaoCurso> listaInscricoesReprovadas, List<Curso> listaArquivosFrequencia,
-			List<InscricaoCurso> listaCandidatoConfirmados, Curso curso);
+			List<InscricaoCurso> listaCandidatoConfirmados, Curso curso) throws Exception;
 
 }

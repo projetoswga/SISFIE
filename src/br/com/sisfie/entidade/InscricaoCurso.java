@@ -74,6 +74,10 @@ public class InscricaoCurso extends Entidade<Integer> {
 	
 	@Column(name = "tp_status")
 	private String status;
+	
+	
+	
+	
 
 	@OneToMany(mappedBy = "inscricaoCurso", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	private Set<StatusInscricao> statusInscricoes = new HashSet<StatusInscricao>(0);
@@ -307,5 +311,6 @@ public class InscricaoCurso extends Entidade<Integer> {
 			return false;
 		return true;
 	}
+
 
 }

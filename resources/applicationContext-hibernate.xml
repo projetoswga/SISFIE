@@ -49,7 +49,7 @@
 				<prop key="hibernate.show_sql">false</prop>
 				<prop key="hibernate.format_sql">false</prop>
 				<prop key="hibernate.archive.autodetection">class</prop>
-				<prop key="hibernate.hbm2ddl.auto">validate</prop>
+				<prop key="hibernate.hbm2ddl.auto">update</prop>
 				<!-- Usado para não abrir muitas conexões com o BD -->
 				<prop key="hibernate.connection.release_mode">after_statement</prop>
 

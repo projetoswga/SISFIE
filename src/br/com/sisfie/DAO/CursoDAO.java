@@ -5,11 +5,13 @@ import java.util.List;
 import br.com.sisfie.dto.CursoDTO;
 import br.com.sisfie.dto.ParceirosDTO;
 import br.com.sisfie.entidade.CandidatoPreenchimento;
+import br.com.sisfie.entidade.CodigoLivroAnual;
 import br.com.sisfie.entidade.Curso;
 import br.com.sisfie.entidade.EmailCursoPrivado;
 import br.com.sisfie.entidade.EsferaCurso;
 import br.com.sisfie.entidade.HomologacaoCurso;
 import br.com.sisfie.entidade.InscricaoCurso;
+import br.com.sisfie.entidade.InscricaoCursoCertificado;
 import br.com.sisfie.entidade.ModeloDocumento;
 import br.com.sisfie.entidade.Municipio;
 import br.com.sisfie.entidade.Oficina;
@@ -92,4 +94,9 @@ public interface CursoDAO {
 	List<InscricaoCurso> carregarListaInstrutores(Curso curso);
 
 	void saveAnexo(ModeloDocumento model)throws Exception ;
+
+	InscricaoCursoCertificado carregaInscricaoCursoCertificado(
+			Integer idInscricaoCurso) throws Exception;
+
+	List<CodigoLivroAnual> carregaLivroAnual();
 }

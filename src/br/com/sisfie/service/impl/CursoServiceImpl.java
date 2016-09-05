@@ -25,6 +25,7 @@ import br.com.sisfie.dto.ParceirosDTO;
 import br.com.sisfie.entidade.AreaConhecimentoCurso;
 import br.com.sisfie.entidade.Candidato;
 import br.com.sisfie.entidade.CandidatoPreenchimento;
+import br.com.sisfie.entidade.CodigoLivroAnual;
 import br.com.sisfie.entidade.Curso;
 import br.com.sisfie.entidade.EmailCursoPrivado;
 import br.com.sisfie.entidade.EsferaCurso;
@@ -34,6 +35,7 @@ import br.com.sisfie.entidade.HomologacaoCurso;
 import br.com.sisfie.entidade.Horario;
 import br.com.sisfie.entidade.InscricaoComprovante;
 import br.com.sisfie.entidade.InscricaoCurso;
+import br.com.sisfie.entidade.InscricaoCursoCertificado;
 import br.com.sisfie.entidade.InscricaoDocumento;
 import br.com.sisfie.entidade.InscricaoInfoComplementar;
 import br.com.sisfie.entidade.Localizacao;
@@ -1228,5 +1230,17 @@ public class CursoServiceImpl implements CursoService {
 	@Override
 	public void saveAnexo(ModeloDocumento model) throws Exception {
 		cursoDAO.saveAnexo(model);
+	}
+
+	@Override
+	public InscricaoCursoCertificado carregaInscricaoCursoCertificado(Integer idInscricaoCurso)
+			throws Exception {
+		return cursoDAO.carregaInscricaoCursoCertificado(idInscricaoCurso);
+	}
+
+	@Override
+	public List<CodigoLivroAnual> carregaLivroAnual() {
+		// TODO Auto-generated method stub
+		return cursoDAO.carregaLivroAnual();
 	}
 }

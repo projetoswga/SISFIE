@@ -27,7 +27,7 @@ public class Credenciamento extends Entidade<Integer> {
 
 	@Id
 	@Column(name = "id_credenciamento", unique = true, nullable = false)
-	@SequenceGenerator(name = "credenciamento_seq", sequenceName = "credenciamento_id_credenciamento_seq", allocationSize = 1)
+	@SequenceGenerator(name = "credenciamento_seq", sequenceName = "crediciamento_id_credeciamento_seq", allocationSize = 1)
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "credenciamento_seq")
 	private Integer id;
 

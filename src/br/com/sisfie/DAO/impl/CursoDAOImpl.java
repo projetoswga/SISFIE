@@ -27,12 +27,14 @@ import br.com.sisfie.DAO.CursoDAO;
 import br.com.sisfie.dto.CursoDTO;
 import br.com.sisfie.dto.ParceirosDTO;
 import br.com.sisfie.entidade.CandidatoPreenchimento;
+import br.com.sisfie.entidade.CodigoLivroAnual;
 import br.com.sisfie.entidade.Curso;
 import br.com.sisfie.entidade.DistribuicaoSofGrade;
 import br.com.sisfie.entidade.EmailCursoPrivado;
 import br.com.sisfie.entidade.EsferaCurso;
 import br.com.sisfie.entidade.HomologacaoCurso;
 import br.com.sisfie.entidade.InscricaoCurso;
+import br.com.sisfie.entidade.InscricaoCursoCertificado;
 import br.com.sisfie.entidade.InscricaoGrade;
 import br.com.sisfie.entidade.ModeloDocumento;
 import br.com.sisfie.entidade.Municipio;
@@ -264,7 +266,8 @@ public class CursoDAOImpl extends HibernateDaoSupport implements CursoDAO {
 
 			if (lista != null && !lista.isEmpty()) {
 				for (InscricaoCurso obj : lista) {
-					if (obj.getFlgInstrutor()){
+					
+					if (obj.getFlgInstrutor()==null|| obj.getFlgInstrutor()){
 						continue;
 					}
 					for (Integer id : idsStatus) {
@@ -311,7 +314,7 @@ public class CursoDAOImpl extends HibernateDaoSupport implements CursoDAO {
 
 			if (lista != null && !lista.isEmpty()) {
 				for (InscricaoCurso obj : lista) {
-					if (obj.getFlgInstrutor()){
+					if (obj.getFlgInstrutor()==null||obj.getFlgInstrutor()){
 						continue;
 					}
 					for (Integer id : idsStatus) {
@@ -811,6 +814,21 @@ public class CursoDAOImpl extends HibernateDaoSupport implements CursoDAO {
 	@Transactional(readOnly = false, rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
 	public void saveAnexo(ModeloDocumento model) throws Exception {
 		getSession().save(model);
+	}
+
+	@Override
+	public InscricaoCursoCertificado carregaInscricaoCursoCertificado(
+			Integer idInscricaoCurso) throws Exception {
+		Criteria criteria = getSession().createCriteria(InscricaoCursoCertificado.class);
+		criteria.createAlias("inscricaoCurso", "c");
+		criteria.add(Restrictions.eq("c.id", idInscricaoCurso));
+		return (InscricaoCursoCertificado) criteria.uniqueResult();
+	}
+
+	@Override
+	public List<CodigoLivroAnual> carregaLivroAnual() {
+		
+		return getSession().createQuery("from CodigoLivroAnual c where c.id is not null order by c.id ASC").list();
 	}
 	
 }

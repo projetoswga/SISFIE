@@ -98,7 +98,7 @@ public class FrequenciaServiceImpl implements FrequenciaService {
 	@Override
 	public boolean carregarListas(List<InscricaoCurso> listaInscricoesAprovadas,
 			List<InscricaoCurso> listaInscricoesReprovadas, List<Curso> listaArquivosFrequencia,
-			List<InscricaoCurso> listaCandidatoConfirmados, Curso curso) {
+			List<InscricaoCurso> listaCandidatoConfirmados, Curso curso) throws Exception {
 		
 		if (curso.getNomeArquivoFrequencia() != null && !curso.getNomeArquivoFrequencia().isEmpty()) {
 			listaArquivosFrequencia.add(curso);
@@ -107,6 +107,9 @@ public class FrequenciaServiceImpl implements FrequenciaService {
 		int cargaHorariaCurso = 0;
 
 		if (curso.getFlgPossuiOficina()) {
+			if(curso.getCargaHoraria()==null){
+				throw new Exception("O curso Não possui carga horária definida.Preencha o campo em Gerenciar Curso.");
+			}
 			cargaHorariaCurso = curso.getCargaHoraria();
 		} else {
 			Calendar inicioCurso = Calendar.getInstance();
@@ -166,5 +169,10 @@ public class FrequenciaServiceImpl implements FrequenciaService {
 			}
 		}
 		return true;
+	}
+
+	@Override
+	public Frequencia recuperarPorId(Integer id) {
+		return frequenciaDAO.recuperarPorId(id);
 	}
 }

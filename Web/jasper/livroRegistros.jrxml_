@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.3.0.final using JasperReports Library version 6.3.0  -->
+<!-- 2016-08-02T01:23:12 -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="paginaLivroDocente" pageWidth="595" pageHeight="842" columnWidth="511" leftMargin="42" rightMargin="42" topMargin="42" bottomMargin="42" uuid="2e71c76b-4905-4e79-9919-b78df2483a15">
 	<property name="ireport.zoom" value="1.0"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="144"/>
+	<property name="ireport.y" value="0"/>
 	<field name="anoCorrente" class="java.lang.String"/>
 	<field name="docenteParticipante" class="java.lang.String"/>
 	<field name="nomeCandidato" class="java.lang.String"/>
@@ -25,7 +27,7 @@
 				<textElement textAlignment="Center" markup="none">
 					<font fontName="SansSerif" size="16" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA["REGISTRO Nº"+$F{docenteParticipante}.substring( 0, 1 ) +"-" + $F{registroAtual} + "/" + $F{anoCorrente} +"-SD"]]></textFieldExpression>
+				<textFieldExpression><![CDATA["REGISTRO Nº D-" + $F{registroAtual} + "/" + $F{anoCorrente} +"-SD"]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement positionType="Float" x="0" y="48" width="511" height="20" uuid="b5b47cc1-a5b1-4d5f-b477-6f88867887fb"/>
@@ -179,7 +181,7 @@
 				<textElement>
 					<font size="12" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{registroInicial} ]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{registroInicial} + " a " + $F{registroAtual}]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement positionType="Float" x="0" y="415" width="511" height="51" uuid="72b2ca35-94c8-4c1f-b14b-a02f40a29139"/>
