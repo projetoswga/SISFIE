@@ -108,7 +108,9 @@ public class FrequenciaServiceImpl implements FrequenciaService {
 
 		if (curso.getFlgPossuiOficina()) {
 			if(curso.getCargaHoraria()==null){
-				throw new Exception("O curso Não possui carga horária definida.Preencha o campo em Gerenciar Curso.");
+				FacesMessagesUtil.addErrorMessage("",
+						"O curso Não possui carga horária definida. Favor preencher o campo em editar Curso.");
+				return false;
 			}
 			cargaHorariaCurso = curso.getCargaHoraria();
 		} else {
@@ -118,7 +120,7 @@ public class FrequenciaServiceImpl implements FrequenciaService {
 			Calendar fimCurso = Calendar.getInstance();
 			fimCurso.setTime(curso.getDtRealizacaoFim());
 
-			int qtdDiasCurso = fimCurso.get(Calendar.DAY_OF_YEAR) - inicioCurso.get(Calendar.DAY_OF_YEAR);
+			int qtdDiasCurso = (fimCurso.get(Calendar.DAY_OF_YEAR) - inicioCurso.get(Calendar.DAY_OF_YEAR)) + 1;
 			cargaHorariaCurso = qtdDiasCurso * 8;
 
 			if (curso.getTurno() != null && curso.getTurno().getId() != null && !curso.getTurno().getId().equals(Turno.AMBOS)) {
