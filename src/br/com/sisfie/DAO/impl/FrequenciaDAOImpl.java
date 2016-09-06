@@ -1,5 +1,6 @@
 package br.com.sisfie.DAO.impl;
 
+import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
@@ -7,11 +8,14 @@ import java.util.GregorianCalendar;
 import java.util.List;
 
 import org.hibernate.Criteria;
+import org.hibernate.HibernateException;
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 import org.springframework.stereotype.Repository;
 
@@ -34,17 +38,29 @@ public class FrequenciaDAOImpl extends HibernateDaoSupport implements Frequencia
 
 	@Override
 	public Frequencia recuperarUltimaFrequencia(String inscricao) {
+		/* getHibernateTemplate() com SQL Livre
+		getHibernateTemplate().execute(new HibernateCallback<Frequencia>() {
+
+			@Override
+			public Frequencia doInHibernate(Session session)
+					throws HibernateException, SQLException {
+				session.createQuery(" ............ ").uniqueResult()
+			}
+			
+			});
+			*/
+
 		StringBuilder sql = new StringBuilder();
 		sql.append(" select max(id_frequencia) from frequencia f ");
 		sql.append(" join inscricao_curso ic on ic.id_inscricao_curso = f.id_inscricao_curso ");
 		sql.append(" where ic.num_inscricao like'" + inscricao + "' ");
 		sql.append(" group by ic.num_inscricao ");
+
+		
 		Integer idFrequencia = (Integer) getSession().createSQLQuery(sql.toString()).uniqueResult();
 
 		if (idFrequencia != null && idFrequencia > 0) {
-			Criteria criteria = getSession().createCriteria(Frequencia.class);
-			criteria.add(Restrictions.idEq(idFrequencia));
-			return (Frequencia) criteria.uniqueResult();
+			return recuperarPorId(idFrequencia);
 		} else {
 			return null;
 		}
@@ -54,6 +70,7 @@ public class FrequenciaDAOImpl extends HibernateDaoSupport implements Frequencia
 	@Override
 	public List<Frequencia> listarFrequencias(Integer idGradeOficina) throws Exception {
 		List<Frequencia> listaFrequencia = null;
+
 		StringBuilder sql = new StringBuilder();
 		sql.append(" select max(id_frequencia) from frequencia f ");
 		sql.append(" join inscricao_curso ic on ic.id_inscricao_curso = f.id_inscricao_curso ");
@@ -162,5 +179,12 @@ public class FrequenciaDAOImpl extends HibernateDaoSupport implements Frequencia
 		criteria.createAlias("ic.curso", "c");
 		criteria.add(Restrictions.like("c.id", idCurso));
 		return criteria.list();
+	}
+
+	@Override
+	public Frequencia recuperarPorId(Integer id) {
+		Criteria criteria = getHibernateTemplate().getSessionFactory().getCurrentSession().createCriteria(Frequencia.class);
+		criteria.add(Restrictions.idEq(id));
+		return (Frequencia) criteria.uniqueResult();
 	}
 }

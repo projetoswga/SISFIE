@@ -373,6 +373,7 @@ public class FrequenciaBean extends PaginableBean<Frequencia> {
 		} else {
 			// Caso não exista nenhum registro ainda.
 			frequenciaService.salvar(criaNovaFrequencia());
+
 		}
 	}
 
@@ -389,6 +390,20 @@ public class FrequenciaBean extends PaginableBean<Frequencia> {
 		}
 		return frequenciaNova;
 	}
+
+	/*private Frequencia criaNovaFrequencia() {
+		Frequencia frequenciaNova = new Frequencia();
+		frequenciaNova.setHorarioEntrada(new Timestamp(new Date().getTime()));
+		frequenciaNova.setHorarioSaida(null);
+		frequenciaNova.setInscricaoCurso(new InscricaoCurso(inscricaoCurso.getId()));
+		*//**
+		 * @TODO quando não houver Oficina a frequência não ficará vinculada à uma turma (grade oficina) ?
+		 *//*
+		if (curso.getFlgPossuiOficina()) {
+			frequenciaNova.setGradeOficina(new GradeOficina(inscricaoGrade.getGradeOficina().getId()));
+		}
+		return frequenciaNova;
+	}*/
 
 	public void finalizarFrequencia() {
 		try {

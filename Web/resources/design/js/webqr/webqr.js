@@ -10,7 +10,6 @@ var moz=false;
 var v=null;
 var streamV
 var functionCallback;
-var readed=false;
 
 var imghtml='<div id="qrfile"><canvas id="out-canvas" width="320" height="240"></canvas>'+
     '<div id="imghelp">drag and drop a QRCode here'+
@@ -20,6 +19,10 @@ var imghtml='<div id="qrfile"><canvas id="out-canvas" width="320" height="240"><
 '</div>';
 
 var vidhtml = '<video id="v" style="width:320px;height:240px;" autoplay=""></video>';
+
+function dbg(wrn) {
+	console.debug(wrn);
+}
 
 function dragenter(e) {
   e.stopPropagation();
@@ -78,23 +81,27 @@ function initCanvas(w,h)
 
 
 function captureToCanvas() {
-    if(stype!=1)
-        return;
+	dbg('captureToCanvas()');
+	document.getElementById("result").innerHTML="- escaneando -";
+	
     if(gUM)
     {
         try{
             gCtx.drawImage(v,0,0);
             try{
                 qrcode.decode();
+                dbg('OK: qrcode.decode()');
+            	document.getElementById("result").innerHTML="- lido -";
+                //debugger;
             }
-            catch(e){       
-                console.log(e);
+            catch(e){   
+                dbg(e);
                 setTimeout(captureToCanvas, 500);
             };
         }
-        catch(e){       
-                console.log(e);
-                setTimeout(captureToCanvas, 500);
+        catch(e){
+        	dbg(e);
+            setTimeout(captureToCanvas, 500);
         };
     }
 }
@@ -105,15 +112,12 @@ function htmlEntities(str) {
 
 function read(a)
 {
-	if (readed) return;
-	
-	readed=true;
     var html="<br>";
     if(a.indexOf("http://") === 0 || a.indexOf("https://") === 0)
         html+="<a target='_blank' href='"+a+"'>"+a+"</a><br>";
     html+="<b>"+htmlEntities(a)+"</b><br><br>";
-    document.getElementById("result").innerHTML='QR Decoded:' + htmlEntities(a);
-    setTimeout(functionCallback(htmlEntities(a)),2000); 
+    document.getElementById("result").innerHTML='QR Code lido:' + htmlEntities(a);
+    functionCallback(htmlEntities(a));
 }
 
 function isCanvasSupported(){
@@ -124,7 +128,7 @@ function success(stream) {
 	streamV = stream;
     v.src = window.URL.createObjectURL(stream);
     gUM=true;
-    setTimeout(captureToCanvas, 500);
+    captureToCanvas();
 }
 		
 function error(error) {
@@ -143,7 +147,6 @@ function load(callbackBeforeQRCodeDecoded)
 
 		functionCallback=callbackBeforeQRCodeDecoded;
 		//stype=0;
-		readed=false;
         setwebcam();
 	}
 	else
@@ -157,10 +160,9 @@ function load(callbackBeforeQRCodeDecoded)
 
 function setwebcam()
 {
-	document.getElementById("result").innerHTML="- scanning -";
     if(stype==1)
     {
-        setTimeout(captureToCanvas, 500);    
+        captureToCanvas();
         return;
     }
     var n=navigator;
@@ -188,7 +190,6 @@ function setwebcam()
     }
 
     stype=1;
-    setTimeout(captureToCanvas, 500);
 }
 function setimg()
 {
