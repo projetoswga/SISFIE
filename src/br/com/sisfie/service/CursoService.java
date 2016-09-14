@@ -4,9 +4,11 @@ import java.util.List;
 
 import br.com.sisfie.dto.CursoDTO;
 import br.com.sisfie.dto.ParceirosDTO;
+import br.com.sisfie.entidade.CodigoLivroAnual;
 import br.com.sisfie.entidade.Curso;
 import br.com.sisfie.entidade.EmailCursoPrivado;
 import br.com.sisfie.entidade.InscricaoCurso;
+import br.com.sisfie.entidade.InscricaoCursoCertificado;
 import br.com.sisfie.entidade.InscricaoInfoComplementar;
 import br.com.sisfie.entidade.ModeloDocumento;
 import br.com.sisfie.entidade.Municipio;
@@ -116,4 +118,8 @@ public interface CursoService {
 	List<Curso> recuperarCursosComInscricoes(Curso curso) throws Exception;
 
 	List<InscricaoCurso> carregarListaInstrutores(Curso curso);
+
+	InscricaoCursoCertificado carregaInscricaoCursoCertificado(Integer id) throws Exception;
+
+	List<CodigoLivroAnual> carregaLivroAnual();
 }

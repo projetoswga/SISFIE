@@ -70,6 +70,11 @@ public class UniversalManagerImpl implements UniversalManager {
 	public Object save(Object o) throws Exception {
 		return dao.save(o);
 	}
+	@Override
+	@Transactional(readOnly = false, rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
+	public Object update(Object o) throws Exception {
+		return dao.merge(o);
+	}
 
 	@SuppressWarnings("rawtypes")
 	@Override

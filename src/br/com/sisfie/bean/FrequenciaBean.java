@@ -11,6 +11,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
@@ -27,6 +28,7 @@ import br.com.sisfie.entidade.Frequencia;
 import br.com.sisfie.entidade.GradeOficina;
 import br.com.sisfie.entidade.Horario;
 import br.com.sisfie.entidade.InscricaoCurso;
+import br.com.sisfie.entidade.InscricaoCursoCertificado;
 import br.com.sisfie.entidade.InscricaoGrade;
 import br.com.sisfie.entidade.Turma;
 import br.com.sisfie.entidade.Turno;
@@ -67,6 +69,7 @@ public class FrequenciaBean extends PaginableBean<Frequencia> {
 	protected GradeOficinaService gradeOficinaService;
 
 	private Curso curso;
+	private Boolean homologadoSecretaria = Boolean.FALSE;
 	private Turma turma;
 	private Turno turno;
 	private Horario horario;
@@ -159,6 +162,12 @@ public class FrequenciaBean extends PaginableBean<Frequencia> {
 
 	public void reprovarInscricao(InscricaoCurso inscricaoCurso) {
 		try {
+			InscricaoCursoCertificado ic = cursoService.carregaInscricaoCursoCertificado(inscricaoCurso.getId());
+			if(ic!=null){
+				this.homologadoSecretaria = Boolean.TRUE;
+				FacesMessagesUtil.addErrorMessage("", "A Inscrição já foi homologada na Secretária, reprovação negada.");
+				return;
+			}
 			listaInscricoesAprovadas.remove(inscricaoCurso);
 			if (!inscricaoCurso.getTotalFrequencia().contains("(")){
 				inscricaoCurso.setTotalFrequencia(
@@ -205,8 +214,14 @@ public class FrequenciaBean extends PaginableBean<Frequencia> {
 		listaArquivosFrequencia = new ArrayList<>();
 		List<InscricaoCurso> listaCandidatoConfirmados = cursoService.carregarListaCandidatoConfirmadosComInstrutores(curso);
 
-		exibirConteudo = frequenciaService.carregarListas(listaInscricoesAprovadas, listaInscricoesReprovadas,
-				listaArquivosFrequencia, listaCandidatoConfirmados, curso);
+		try {
+			exibirConteudo = frequenciaService.carregarListas(listaInscricoesAprovadas, listaInscricoesReprovadas,
+					listaArquivosFrequencia, listaCandidatoConfirmados, curso);
+		} catch (Exception e) {
+			FacesMessage message = new FacesMessage(e.getMessage(), "");
+			FacesContext.getCurrentInstance().addMessage(null, message);
+			e.printStackTrace();
+		}
 	}
 
 	public List<Curso> completeCurso(String query) {
@@ -361,6 +376,7 @@ public class FrequenciaBean extends PaginableBean<Frequencia> {
 		} else {
 			// Caso não exista nenhum registro ainda.
 			frequenciaService.salvar(criaNovaFrequencia());
+
 		}
 	}
 
@@ -377,6 +393,20 @@ public class FrequenciaBean extends PaginableBean<Frequencia> {
 		}
 		return frequenciaNova;
 	}
+
+	/*private Frequencia criaNovaFrequencia() {
+		Frequencia frequenciaNova = new Frequencia();
+		frequenciaNova.setHorarioEntrada(new Timestamp(new Date().getTime()));
+		frequenciaNova.setHorarioSaida(null);
+		frequenciaNova.setInscricaoCurso(new InscricaoCurso(inscricaoCurso.getId()));
+		*//**
+		 * @TODO quando não houver Oficina a frequência não ficará vinculada à uma turma (grade oficina) ?
+		 *//*
+		if (curso.getFlgPossuiOficina()) {
+			frequenciaNova.setGradeOficina(new GradeOficina(inscricaoGrade.getGradeOficina().getId()));
+		}
+		return frequenciaNova;
+	}*/
 
 	public void finalizarFrequencia() {
 		try {
@@ -415,7 +445,6 @@ public class FrequenciaBean extends PaginableBean<Frequencia> {
 			ExcecaoUtil.tratarExcecao(e);
 		}
 	}
-
 	@SuppressWarnings("unchecked")
 	private boolean validarCredenciamento() throws Exception {
 		Credenciamento credenciamento = new Credenciamento();
@@ -745,4 +774,14 @@ public class FrequenciaBean extends PaginableBean<Frequencia> {
 	public void setPorcentagemAprovacao(Integer porcentagemAprovacao) {
 		this.porcentagemAprovacao = porcentagemAprovacao;
 	}
+
+	public Boolean getHomologadoSecretaria() {
+		return homologadoSecretaria;
+	}
+
+	public void setHomologadoSecretaria(Boolean homologadoSecretaria) {
+		this.homologadoSecretaria = homologadoSecretaria;
+	}
+
+	
 }

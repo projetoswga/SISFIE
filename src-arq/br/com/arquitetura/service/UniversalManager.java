@@ -20,6 +20,7 @@ public interface UniversalManager extends Serializable {
 	public List listBy(Object o, boolean like) throws Exception;
 
 	Object save(Object o) throws Exception;
+	Object update(Object o) throws Exception;
 
 	List listBy(Object o) throws Exception;
 	void anexarDocumento(ModeloDocumento model)throws Exception;

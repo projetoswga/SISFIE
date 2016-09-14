@@ -20,14 +20,47 @@
 
 				<p:spacer height="20" />
 
-				<h:panelGrid width="100%" id="panelConteudo">
-					<h:panelGrid rendered="#{livroRegistrosBean.exibirConteudo}" columns="2" border="0" columnClasses="coluna20,coluna80" width="100%">
-						<h:outputLabel value="Candidato/Instrutor" />
-						<p:autoComplete dropdown="true" queryDelay="500" value="#{livroRegistrosBean.candidato}" minQueryLength="2" id="candidato" size="68"
-							scrollHeight="300" completeMethod="#{livroRegistrosBean.completeCandidato}" forceSelection="true" var="listaCandidato"
-							itemLabel="#{listaCandidato.nome}" itemValue="#{listaCandidato.id}" converter="candidatoConverter" global="false">
-						</p:autoComplete>
-					</h:panelGrid>
+				<h:panelGrid width="100%" id="panelConteudo" rendered="#{livroRegistrosBean.exibirConteudo}">
+				
+						
+						<p:dataTable paginatorAlwaysVisible="false" rendered="#{livroRegistrosBean.exibirConteudo}"  paginatorPosition="bottom" var="inscricaoAprovada" id="idListaInscricoesAprovadas"
+							emptyMessage="#{livroRegistrosBean.emptyMessage}" update="idListaInscricoesAprovadas" rowsPerPageTemplate="#{livroRegistrosBean.paginacao}"
+							styleClass="coluna100" value="#{livroRegistrosBean.listaInscricoesAprovadas}" paginator="true" rows="5"
+							rowStyleClass="#{empty rowIx or rowIx mod 2 ne 0 ? 'linhaImpar' : 'linhaPar'}" rowIndexVar="rowIx">
+
+							<f:facet name="header">
+								<h:outputLabel value="Participantes com percentual de frequência atingido: #{frequenciaBean.listaInscricoesAprovadas.size()}" />
+							</f:facet>
+							<p:column headerText="Inscrição" style="width:5%;">
+								<h:outputLabel value="#{inscricaoAprovada.inscricaoCurso.inscricao}" />
+							</p:column>
+							<p:column headerText="Código Livro" style="width:5%;">
+								<h:outputLabel value="#{inscricaoAprovada.codigoLivro} / #{inscricaoAprovada.ano}" />
+							</p:column>
+							<p:column headerText="Tipo Inscrição" style="width:10%">
+								<h:outputText value="Instrutor" rendered="#{inscricaoAprovada.inscricaoCurso.flgInstrutor}"/>
+								<h:outputText value="Participante" rendered="#{!inscricaoAprovada.inscricaoCurso.flgInstrutor}"/>
+							</p:column>
+							<p:column headerText="Nome" style="width:25%;">
+								<h:outputLabel value="#{inscricaoAprovada.inscricaoCurso.candidato.nome}" />
+							</p:column>
+							<p:column headerText="Órgão" style="width:25%;">
+								<h:outputLabel value="#{inscricaoAprovada.inscricaoCurso.candidato.orgao.nomeSiglaFormat}" />
+							</p:column>
+							<p:column headerText="Total de Frequência" style="width:20%;">
+								<h:outputLabel value="#{inscricaoAprovada.inscricaoCurso.totalFrequencia}" />
+							</p:column>
+							<p:column headerText="Ações" style="width:10%;text-align:center;">
+								<h:commandButton value="Imprimir"  style="padding: .5em 1em"
+									action="#{livroRegistrosBean.gerarRelatorio(inscricaoAprovada)}" styleClass="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" 
+									   image="design/imagem/icone-imprimir.png" >
+								</h:commandButton>
+							</p:column>
+						</p:dataTable>
+
+						<p:spacer height="20" />
+						<p:separator />
+						
 				</h:panelGrid>
 
 				<p:spacer height="20" />
@@ -35,7 +68,7 @@
 				<div align="center">
 					<p:commandButton value="Limpar" immediate="true" ajax="false" action="livroRegistros.jsf" />
 					<p:spacer width="10" />
-					<h:commandButton value="Gerar" action="#{livroRegistrosBean.gerarRelatorio}" styleClass="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" style="padding: .5em 1em"/>
+					
 				</div>
 			</p:fieldset>
 		</h:form>

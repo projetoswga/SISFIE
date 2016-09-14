@@ -29,6 +29,6 @@ public interface FrequenciaService extends BaseService<Frequencia> {
 
 	boolean carregarListas(List<InscricaoCurso> listaInscricoesAprovadas,
 			List<InscricaoCurso> listaInscricoesReprovadas, List<Curso> listaArquivosFrequencia,
-			List<InscricaoCurso> listaCandidatoConfirmados, Curso curso);
+			List<InscricaoCurso> listaCandidatoConfirmados, Curso curso) throws Exception;
 
 }

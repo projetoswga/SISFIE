@@ -19,6 +19,7 @@ import br.com.arquitetura.util.StringUtil;
 import br.com.sisfie.dto.LivroRegistrosDTO;
 import br.com.sisfie.entidade.Candidato;
 import br.com.sisfie.entidade.Curso;
+import br.com.sisfie.entidade.InscricaoCurso;
 import br.com.sisfie.entidade.InscricaoCursoCertificado;
 import br.com.sisfie.entidade.ProfessorEvento;
 import br.com.sisfie.entidade.Turno;
@@ -50,7 +51,7 @@ public class LivroRegistrosBean extends PaginableBean<InscricaoCursoCertificado>
 	private Curso curso;
 	private Candidato candidato;
 	private boolean exibirConteudo;
-
+	private List<InscricaoCursoCertificado> listaInscricoesAprovadas;
 	public LivroRegistrosBean() {
 		listaInscricaoCursoCertificados = new ArrayList<>();
 		listaLivroRegistroDTO = new ArrayList<>();
@@ -79,22 +80,32 @@ public class LivroRegistrosBean extends PaginableBean<InscricaoCursoCertificado>
 		}
 		return sugestoes;
 	}
+	public void carregaListaInscritos(){
+		if(curso!=null){
+			listaInscricoesAprovadas = secretariaService.listarInscricaoCursoCertificados(curso, null);
+		}
+	}
+	
 
 	public void visualizarConteudo() {
 		exibirConteudo = false;
 		if (curso != null && curso.getId() != null) {
 			exibirConteudo = true;
+			listaInscricoesAprovadas = secretariaService.listarInscricaoCursoCertificados(curso, null);
+			if(listaInscricoesAprovadas==null){
+				listaInscricoesAprovadas = new ArrayList<>();
+			}
 		}
 	}
 
-	public void gerarRelatorio() {
+	public void gerarRelatorio(InscricaoCursoCertificado inscricaoParam) {
 		try {
 			if (curso == null || curso.getId() == null) {
 				FacesMessagesUtil.addErrorMessage("", "É necessário escolher um curso!");
 				return;
 			}
 
-			listaInscricaoCursoCertificados = secretariaService.listarInscricaoCursoCertificados(curso, candidato);
+			listaInscricaoCursoCertificados = secretariaService.listarInscricaoCursoCertificados(curso, inscricaoParam.getInscricaoCurso().getCandidato());
 
 			if (listaInscricaoCursoCertificados != null && !listaInscricaoCursoCertificados.isEmpty()) {
 
@@ -121,7 +132,12 @@ public class LivroRegistrosBean extends PaginableBean<InscricaoCursoCertificado>
 					}
 					
 					livroRegistrosDTO.setDocenteParticipante("Participante");
-					if (curso.getFlgPossuiOficina()) {
+					livroRegistrosDTO.setSiglaPartDocente("P");
+					if(inscricaoCursoCertificado.getInscricaoCurso().getFlgInstrutor()){
+						livroRegistrosDTO.setDocenteParticipante("Docente");
+						livroRegistrosDTO.setSiglaPartDocente("D");
+					}
+					/*if (curso.getFlgPossuiOficina()) {
 						ProfessorEvento docente = inscricaoCursoService.recuperarDocenteCursoComOficina(inscricaoCursoCertificado.getInscricaoCurso());
 						if (docente != null) {
 							livroRegistrosDTO.setDocenteParticipante("Docente");
@@ -130,9 +146,10 @@ public class LivroRegistrosBean extends PaginableBean<InscricaoCursoCertificado>
 						if (inscricaoCursoCertificado.getInscricaoCurso().getFlgInstrutor()) {
 							livroRegistrosDTO.setDocenteParticipante("Docente");
 						}
+					}*/
+					if(inscricaoCursoCertificado.getInscricaoCurso().getAnoHomologacao()!=null){
+						livroRegistrosDTO.setAnoCorrente(inscricaoCursoCertificado.getInscricaoCurso().getAnoHomologacao() + "");
 					}
-					
-					livroRegistrosDTO.setAnoCorrente(String.valueOf(Calendar.getInstance().get(Calendar.YEAR)));
 					livroRegistrosDTO.setDataAtualRegistro(inscricaoCursoCertificado.getInscricaoCurso().getDtCadastroFormat());
 					livroRegistrosDTO.setDiretor("Campo ainda não acrescentado no módulo Secretaria");
 					livroRegistrosDTO.setLocalizacaoCurso(
@@ -142,8 +159,12 @@ public class LivroRegistrosBean extends PaginableBean<InscricaoCursoCertificado>
 							inscricaoCursoCertificado.getInscricaoCurso().getCurso().getCodigo()));
 					livroRegistrosDTO.setPeriodoRealizacao(
 							inscricaoCursoCertificado.getInscricaoCurso().getCurso().getPeriodoRealizacaoCurso());
-					livroRegistrosDTO.setRegistroAtual("Campo ainda não definido");
-					livroRegistrosDTO.setRegistroInicial("Campo ainda não definido");
+					livroRegistrosDTO.setRegistroAtual(inscricaoCursoCertificado.getCodigoLivro() +"");
+					int totalAprovadosCurso = 0;
+					for (InscricaoCursoCertificado i : listaInscricoesAprovadas) {
+						totalAprovadosCurso += i.getCodigoLivro();
+					}
+					livroRegistrosDTO.setRegistroInicial(inscricaoCursoCertificado.getCodigoLivro() + " a " +totalAprovadosCurso);
 					livroRegistrosDTO.setTituloCurso(inscricaoCursoCertificado.getInscricaoCurso().getCurso().getTitulo());
 					livroRegistrosDTO.setUsuario(inscricaoCursoCertificado.getInscricaoCurso().getCurso().getUsuario().getNome());
 					listaLivroRegistroDTO.add(livroRegistrosDTO);
@@ -271,4 +292,16 @@ public class LivroRegistrosBean extends PaginableBean<InscricaoCursoCertificado>
 	public void setInscricaoCursoService(InscricaoCursoService inscricaoCursoService) {
 		this.inscricaoCursoService = inscricaoCursoService;
 	}
+
+	public List<InscricaoCursoCertificado> getListaInscricoesAprovadas() {
+		return listaInscricoesAprovadas;
+	}
+
+	public void setListaInscricoesAprovadas(
+			List<InscricaoCursoCertificado> listaInscricoesAprovadas) {
+		this.listaInscricoesAprovadas = listaInscricoesAprovadas;
+	}
+
+	
+	
 }

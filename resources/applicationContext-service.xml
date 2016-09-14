@@ -6,16 +6,16 @@
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
 		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
 		http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-3.0.xsd">
-
+<!--
 	<bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
 		<property name="host" value="mail-apl.serpro.gov.br" />
 		<property name="defaultEncoding" value="UTF-8" />
 		<property name="port" value="25" />
 		<property name="username" value="sisfie.esaf@fazenda.gov.br" />
-		<!-- 
+		 
 			Segundo o email não é preciso colocar a senha 
 			Não há necessidade de senha pois o servidor onde estará hospedada a aplicação já está cadastrado para enviar e-mails.
-		 -->
+		
 		<property name="password" value="" /> 
 
 		<property name="javaMailProperties">
@@ -24,9 +24,9 @@
 				<prop key="mail.smtp.starttls.enable">true</prop>
 			</props>
 		</property>
-	</bean>
+	</bean>  -->
 
-	<!-- Externo ao serpro 
+	<!-- Externo ao serpro --> 
 	<bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
 		<property name="host" value="smtp.gmail.com" />
 		<property name="defaultEncoding" value="UTF-8" />
@@ -40,7 +40,7 @@
 			</props>
 		</property>
 	</bean>
-	-->
+	
 	
 	<!-- Jobs -->
 	<task:annotation-driven scheduler="inscricaoScheduler"/>

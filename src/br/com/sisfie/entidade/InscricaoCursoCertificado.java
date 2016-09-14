@@ -53,10 +53,14 @@ public class InscricaoCursoCertificado extends Entidade<Integer> {
 
 	@Column(name = "cont_programatico_participante", columnDefinition = "text")
 	private String conteudoProgramaticoParticipante;
+	@Column(name = "diretor", columnDefinition = "text")
+	private String diretor;
 
 	@Temporal(TemporalType.DATE)
 	@Column(name = "dt_publ_livro", length = 13)
 	private Date dataPublicacaoLivro;
+	@Column(name = "ano")
+	private Integer ano;
 
 	public InscricaoCursoCertificado() {
 	}
@@ -136,4 +140,23 @@ public class InscricaoCursoCertificado extends Entidade<Integer> {
 	public void setDataPublicacaoLivro(Date dataPublicacaoLivro) {
 		this.dataPublicacaoLivro = dataPublicacaoLivro;
 	}
+
+	public String getDiretor() {
+		return diretor;
+	}
+
+	public void setDiretor(String diretor) {
+		this.diretor = diretor;
+	}
+
+	public Integer getAno() {
+		return ano;
+	}
+
+	public void setAno(Integer ano) {
+		this.ano = ano;
+	}
+	
+	
+	
 }

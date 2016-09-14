@@ -18,6 +18,7 @@ public class LivroRegistrosDTO {
 	private String conteudoProgramaticoDocente;
 	private String conteudoProgramaticoParticipante;
 	private String cargaHoraria;
+	private String siglaPartDocente;
 
 	public String getNumeroRegistro() {
 		return numeroRegistro;
@@ -146,4 +147,13 @@ public class LivroRegistrosDTO {
 	public void setDocenteParticipante(String docenteParticipante) {
 		this.docenteParticipante = docenteParticipante;
 	}
+
+	public String getSiglaPartDocente() {
+		return siglaPartDocente;
+	}
+
+	public void setSiglaPartDocente(String siglaPartDocente) {
+		this.siglaPartDocente = siglaPartDocente;
+	}
+	
 }

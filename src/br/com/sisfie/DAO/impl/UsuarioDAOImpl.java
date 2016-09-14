@@ -31,7 +31,9 @@ public class UsuarioDAOImpl extends HibernateDaoSupport implements UsuarioDAO {
 	@Override
 	public List<Usuario> completeUsuarioAtivo(Usuario a) throws Exception {
 		Criteria c = getSession().createCriteria(Usuario.class);
-		c.add(Restrictions.ilike("nome", a.getNome(), MatchMode.ANYWHERE));
+		if(a.getNome()!=null){
+			c.add(Restrictions.ilike("nome", a.getNome(), MatchMode.ANYWHERE));
+		}
 		c.add(Restrictions.eq("flgAtivo", true));
 		return c.list();
 	}
