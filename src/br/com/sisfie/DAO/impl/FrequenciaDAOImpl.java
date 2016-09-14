@@ -112,15 +112,10 @@ public class FrequenciaDAOImpl extends HibernateDaoSupport implements Frequencia
 	public List<Frequencia> listarFrequenciasSemOficina(List<InscricaoCurso> listaInscricaoCurso) {
 		List<Frequencia> listaFrequencia = null;
 		StringBuilder sql = new StringBuilder();
+		
 		sql.append(" select max(id_frequencia) from frequencia f ");
 		sql.append(" join inscricao_curso ic on ic.id_inscricao_curso = f.id_inscricao_curso ");
-		sql.append(" join curso c on c.id_curso = ic.id_curso ");
-		StringBuffer ids = new StringBuffer();;
-		for (InscricaoCurso inscricaoCurso : listaInscricaoCurso) {
-			ids.append(",");
-			ids.append(inscricaoCurso.getId());
-		}
-		sql.append(" where ic.id_inscricao_curso in (" + ids.substring(1, ids.length()) + ") ");
+		sql.append(" where ic.id_curso = " + listaInscricaoCurso.get(0).getCurso().getId());
 		sql.append(" group by ic.num_inscricao ");
 		List<Integer> idsFrequencia = getSession().createSQLQuery(sql.toString()).list();
 
