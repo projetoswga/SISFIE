@@ -91,6 +91,10 @@ public class FrequenciaBean extends PaginableBean<Frequencia> {
 	private boolean exibirBotaoFinalizar;
 	private boolean exibirConteudo;
 	private Integer porcentagemAprovacao;
+	private String justificativaReprovacao;
+	private String justificativaAprovacao;
+	private InscricaoCurso inscricaoAprovada;
+	private InscricaoCurso inscricaoReprovada;
 
 	public FrequenciaBean() {
 		curso = new Curso();
@@ -108,6 +112,8 @@ public class FrequenciaBean extends PaginableBean<Frequencia> {
 		listaArquivosFrequencia = new ArrayList<>();
 		frequencia = new Frequencia();
 		frequencias = new ArrayList<>();
+		inscricaoAprovada = new InscricaoCurso();
+		inscricaoReprovada = new InscricaoCurso();
 		getModel().setInscricaoCurso(new InscricaoCurso());
 	}
 
@@ -160,39 +166,52 @@ public class FrequenciaBean extends PaginableBean<Frequencia> {
 		}
 	}
 
-	public void reprovarInscricao(InscricaoCurso inscricaoCurso) {
+	public void reprovarInscricao() {
 		try {
-			InscricaoCursoCertificado ic = cursoService.carregaInscricaoCursoCertificado(inscricaoCurso.getId());
+			if (justificativaReprovacao == null || justificativaReprovacao.isEmpty()) {
+				FacesMessagesUtil.addErrorMessage("", "A Justificativa é campo obrigatório.");
+				return;
+			}
+			InscricaoCursoCertificado ic = cursoService.carregaInscricaoCursoCertificado(inscricaoReprovada.getId());
 			if(ic!=null){
 				this.homologadoSecretaria = Boolean.TRUE;
 				FacesMessagesUtil.addErrorMessage("", "A Inscrição já foi homologada na Secretária, reprovação negada.");
+				justificativaReprovacao = "";
 				return;
 			}
-			listaInscricoesAprovadas.remove(inscricaoCurso);
-			if (!inscricaoCurso.getTotalFrequencia().contains("(")){
-				inscricaoCurso.setTotalFrequencia(
-						String.format("%s (%s)", inscricaoCurso.getTotalFrequencia(), "Alterado pelo gestor"));
+			inscricaoReprovada.setJustificativaAprovacaoReprovacao(justificativaReprovacao);
+			listaInscricoesAprovadas.remove(inscricaoReprovada);
+			if (!inscricaoReprovada.getTotalFrequencia().contains("(")){
+				inscricaoReprovada.setTotalFrequencia(
+						String.format("%s (%s)", inscricaoReprovada.getTotalFrequencia(), "Alterado pelo gestor"));
 			}
-			listaInscricoesReprovadas.add(inscricaoCurso);
-			inscricaoCurso.setStatus(Frequencia.REPROVADO);
-			universalManager.save(inscricaoCurso);
+			listaInscricoesReprovadas.add(inscricaoReprovada);
+			inscricaoReprovada.setStatus(Frequencia.REPROVADO);
+			universalManager.save(inscricaoReprovada);
 			FacesMessagesUtil.addInfoMessage("", "Inscrição reprovada.");
+			justificativaReprovacao = "";
 		} catch (Exception e) {
 			ExcecaoUtil.tratarExcecao(e);
 		}
 	}
 
-	public void aprovarInscricao(InscricaoCurso inscricaoCurso) {
+	public void aprovarInscricao() {
 		try {
-			listaInscricoesReprovadas.remove(inscricaoCurso);
-			if (!inscricaoCurso.getTotalFrequencia().contains("(")){
-				inscricaoCurso.setTotalFrequencia(
-						String.format("%s (%s)", inscricaoCurso.getTotalFrequencia(), "Alterado pelo gestor"));
+			if (justificativaAprovacao == null || justificativaAprovacao.isEmpty()) {
+				FacesMessagesUtil.addErrorMessage("", "A Justificativa é campo obrigatório.");
+				return;
 			}
-			listaInscricoesAprovadas.add(inscricaoCurso);
-			inscricaoCurso.setStatus(Frequencia.APROVADO);
-			universalManager.save(inscricaoCurso);
+			inscricaoAprovada.setJustificativaAprovacaoReprovacao(justificativaAprovacao);
+			listaInscricoesReprovadas.remove(inscricaoAprovada);
+			if (!inscricaoAprovada.getTotalFrequencia().contains("(")){
+				inscricaoAprovada.setTotalFrequencia(
+						String.format("%s (%s)", inscricaoAprovada.getTotalFrequencia(), "Alterado pelo gestor"));
+			}
+			listaInscricoesAprovadas.add(inscricaoAprovada);
+			inscricaoAprovada.setStatus(Frequencia.APROVADO);
+			universalManager.save(inscricaoAprovada);
 			FacesMessagesUtil.addInfoMessage("", "Inscrição aprovada.");
+			justificativaAprovacao = "";
 		} catch (Exception e) {
 			ExcecaoUtil.tratarExcecao(e);
 		}
@@ -778,6 +797,38 @@ public class FrequenciaBean extends PaginableBean<Frequencia> {
 
 	public void setHomologadoSecretaria(Boolean homologadoSecretaria) {
 		this.homologadoSecretaria = homologadoSecretaria;
+	}
+
+	public String getJustificativaReprovacao() {
+		return justificativaReprovacao;
+	}
+
+	public void setJustificativaReprovacao(String justificativaReprovacao) {
+		this.justificativaReprovacao = justificativaReprovacao;
+	}
+
+	public String getJustificativaAprovacao() {
+		return justificativaAprovacao;
+	}
+
+	public void setJustificativaAprovacao(String justificativaAprovacao) {
+		this.justificativaAprovacao = justificativaAprovacao;
+	}
+
+	public InscricaoCurso getInscricaoAprovada() {
+		return inscricaoAprovada;
+	}
+
+	public void setInscricaoAprovada(InscricaoCurso inscricaoAprovada) {
+		this.inscricaoAprovada = inscricaoAprovada;
+	}
+
+	public InscricaoCurso getInscricaoReprovada() {
+		return inscricaoReprovada;
+	}
+
+	public void setInscricaoReprovada(InscricaoCurso inscricaoReprovada) {
+		this.inscricaoReprovada = inscricaoReprovada;
 	}
 
 	

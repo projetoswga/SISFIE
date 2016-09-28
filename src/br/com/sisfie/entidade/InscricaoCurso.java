@@ -75,10 +75,9 @@ public class InscricaoCurso extends Entidade<Integer> {
 	@Column(name = "tp_status")
 	private String status;
 	
+	@Column(name = "justificativa_aprov_reprov")
+	private String justificativaAprovacaoReprovacao;
 	
-	
-	
-
 	@OneToMany(mappedBy = "inscricaoCurso", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	private Set<StatusInscricao> statusInscricoes = new HashSet<StatusInscricao>(0);
 
@@ -310,6 +309,14 @@ public class InscricaoCurso extends Entidade<Integer> {
 		} else if (!inscricao.equals(other.inscricao))
 			return false;
 		return true;
+	}
+
+	public String getJustificativaAprovacaoReprovacao() {
+		return justificativaAprovacaoReprovacao;
+	}
+
+	public void setJustificativaAprovacaoReprovacao(String justificativaAprovacaoReprovacao) {
+		this.justificativaAprovacaoReprovacao = justificativaAprovacaoReprovacao;
 	}
 
 
