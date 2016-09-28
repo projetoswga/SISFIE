@@ -15,7 +15,6 @@
 			function verificarQuantidadeDigitosExecutarEnter(){
 				if ($('#numInscricao').val().length == 14){
 					$('#btnPesquisar').click();
-					$('#btnConfirmar').focus();
 				}
 			}
 			
@@ -63,7 +62,7 @@
 				<div align="center">
 					<p:commandButton value="Limpar" immediate="true" ajax="false" action="credenciamento.jsf" />
 					<p:spacer width="10" />
-					<p:commandButton id="btnPesquisar" value="Pesquisar" oncomplete="qrCodeReadMode()" process="@this, panelInscricao" update="grupoInformacoesConfirmacoes"
+					<p:commandButton id="btnPesquisar" value="Pesquisar" onstart="this.disabled=true;" oncomplete="this.disabled=false;qrCodeReadMode();" process="@this, panelInscricao" update="grupoInformacoesConfirmacoes"
 						action="#{credenciamentoBean.pesquisar}" />
 				</div>
 				<br />

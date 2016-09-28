@@ -290,6 +290,9 @@ public class FrequenciaBean extends PaginableBean<Frequencia> {
 	public void renderizarCampoInscricaoVisualizarBotaoFinalizar() {
 		exibirInscricao = Boolean.TRUE;
 		
+		/**
+		 * @TODO e quando não tiver Oficina?
+		 */
 		if (curso.getFlgPossuiOficina()) {
 			try {
 				if (null != getCurso() && null != getTurma() && null != getHorario()) {
