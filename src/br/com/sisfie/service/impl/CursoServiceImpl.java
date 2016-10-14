@@ -442,7 +442,7 @@ public class CursoServiceImpl implements CursoService {
 		textoEmail.append("Seu e-mail foi adicionado para a inscri&ccedil;&atilde;o como <b>Docente</b> para um Curso na ESAF. Para confirmar sua <b>colabora&ccedil;&atilde;o</b>:");
 		textoEmail.append("<br/>");
 		textoEmail.append("<ul>");
-		textoEmail.append("<li><b>Se j&aacute; tem cadastro no SISFIE</b>, por gentileza, entre no seu cadastro e selecione o curso em que foi escolhido como docente na aba 'Inscri&ccedil;&otilde;es Abertas' e inscreva-se no curso.</li>");
+		textoEmail.append("<li><b>Se j&aacute; tem cadastro no SISFIE</b>, por gentileza, entre no seu cadastro e selecione o curso em que foi escolhido como docente na aba 'Inscri&ccedil;&otilde;es Abertas' para realizar sua inscrição no curso.</li>");
 		textoEmail.append("<li><b>Se ainda n&atilde;o &eacute; cadastrado</b>, fa&ccedil;a seu cadastro no link " + linkServidor + "</li>");
 		textoEmail.append("</ul>");
 		textoEmail.append("Ao concluir o cadastro, o sistema enviar&aacute; a senha para seu e-mail. Retorne ao sistema e fa&ccedil;a o login utilizando o seu e-mail completo e a senha enviada.");
