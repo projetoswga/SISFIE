@@ -303,7 +303,7 @@ public class RelatorioFrequenciaBean extends PaginableBean<Frequencia> {
 				if (frequencia.getPresenca() == null || frequencia.getPresenca().isEmpty()) {
 					continue;
 				}
-				if (frequencia.getPresenca().equalsIgnoreCase("F")) {
+				if (frequencia.getPresenca().equalsIgnoreCase("F") || "0".equals(frequencia.getPresenca())) {
 					totalFaltas++;
 				}
 				alunoDTO.setTotalFaltas(totalFaltas.toString());

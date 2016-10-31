@@ -132,7 +132,7 @@
 
 					<br />
 					<div align="center">
-						<p:commandButton id="btnConfirmar" value="Confirmar" process="@form" update="@form" action="#{credenciamentoBean.save}"
+						<p:commandButton id="btnConfirmar" value="Confirmar" update="@this grupoInformacoesConfirmacoes grupoInformacoesTurma" action="#{credenciamentoBean.save}"
 							rendered="#{credenciamentoBean.inscricaoCurso != null and credenciamentoBean.inscricaoCurso.id != null}" />
 					</div>
 					<br />
