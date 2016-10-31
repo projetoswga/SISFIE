@@ -66,23 +66,26 @@
 								<h:outputText value="Instrutor" rendered="#{inscricaoAprovada.flgInstrutor}"/>
 								<h:outputText value="Participante" rendered="#{!inscricaoAprovada.flgInstrutor}"/>
 							</p:column>
-							<p:column headerText="Nome" style="width:25%;">
+							<p:column headerText="Nome" style="width:20%;">
 								<h:outputLabel value="#{inscricaoAprovada.candidato.nome}" />
 							</p:column>
-							<p:column headerText="Órgão" style="width:25%;">
+							<p:column headerText="Órgão" style="width:20%;">
 								<h:outputLabel value="#{inscricaoAprovada.candidato.orgao.nomeSiglaFormat}" />
 							</p:column>
-							<p:column headerText="Total de Frequência" style="width:20%;">
+							<p:column headerText="Total de Frequência" style="width:15%;">
 								<h:outputLabel value="#{inscricaoAprovada.totalFrequencia}" />
+							</p:column>
+							<p:column headerText="Justificativa" style="width:15%;">
+								<h:outputLabel value="#{inscricaoAprovada.justificativaAprovacaoReprovacao}" />
 							</p:column>
 							<p:column headerText="Ações" style="width:10%;text-align:center;">
 								<p:commandLink title="Visualizar Frequência" onclick="visualizarFrequenciaPopup.show();" process="@this,:formId:panelDialog"
 									action="#{frequenciaBean.visualizarFrequencia(inscricaoAprovada)}" update=":formId:panelDialog">
 									<h:graphicImage library="design/imagem" name="icone-visualizar.png" />
 								</p:commandLink>
-								<p:commandLink title="Reprovar Inscrição" process="@this" update="@form" 
-									action="#{frequenciaBean.reprovarInscricao(inscricaoAprovada)}">
+								<p:commandLink title="Reprovar Inscrição" oncomplete="justificativaReprovacaoPopup.show();">
 									<h:graphicImage library="design/imagem" name="icone-negativo.png" />
+									<f:setPropertyActionListener target="#{frequenciaBean.inscricaoReprovada}" value="#{inscricaoAprovada}" />
 								</p:commandLink>
 							</p:column>
 						</p:dataTable>
@@ -106,23 +109,26 @@
 								<h:outputText value="Instrutor" rendered="#{inscricaoReprovada.flgInstrutor}"/>
 								<h:outputText value="Participante" rendered="#{!inscricaoReprovada.flgInstrutor}"/>
 							</p:column>
-							<p:column headerText="Nome" style="width:25%;">
+							<p:column headerText="Nome" style="width:20%;">
 								<h:outputLabel value="#{inscricaoReprovada.candidato.nome}" />
 							</p:column>
-							<p:column headerText="Órgão" style="width:25%;">
+							<p:column headerText="Órgão" style="width:20%;">
 								<h:outputLabel value="#{inscricaoReprovada.candidato.orgao.nomeSiglaFormat}" />
 							</p:column>
-							<p:column headerText="Total de Frequência" style="width:20%;">
+							<p:column headerText="Total de Frequência" style="width:15%;">
 								<h:outputLabel value="#{inscricaoReprovada.totalFrequencia}" />
+							</p:column>
+							<p:column headerText="Justificativa" style="width:15%;">
+								<h:outputLabel value="#{inscricaoReprovada.justificativaAprovacaoReprovacao}" />
 							</p:column>
 							<p:column headerText="Ações" style="width:10%;text-align:center;">
 								<p:commandLink title="Visualizar Frequência" onclick="visualizarFrequenciaPopup.show();" process="@this,:formId:panelDialog"
 									action="#{frequenciaBean.visualizarFrequencia(inscricaoReprovada)}" update=":formId:panelDialog">
 									<h:graphicImage library="design/imagem" name="icone-visualizar.png" />
 								</p:commandLink>
-								<p:commandLink title="Aprovar Inscrição" process="@this" update="@form"
-									action="#{frequenciaBean.aprovarInscricao(inscricaoReprovada)}">
+								<p:commandLink title="Aprovar Inscrição" oncomplete="justificativaAprovacaoPopup.show();">
 									<h:graphicImage library="design/imagem" name="icone-positivo.png" />
+									<f:setPropertyActionListener target="#{frequenciaBean.inscricaoAprovada}" value="#{inscricaoReprovada}" />
 								</p:commandLink>
 							</p:column>
 						</p:dataTable>
@@ -151,6 +157,40 @@
 						</p:column>
 					</p:dataTable>
 				</h:panelGroup>
+			</p:dialog>
+			
+			<p:dialog appendToBody="false" header="Justificativa para reprovação" widgetVar="justificativaReprovacaoPopup" width="400" showEffect="slide"
+				hideEffect="slide" id="popupJustificativaReprovacao">
+				<h:panelGrid id="panelJustificativaReprovacao" columns="2" border="0" columnClasses="coluna20,coluna80" width="100%">
+					<h:outputLabel value="Justificativa:" styleClass="icoObrigatorio" />
+					<p:inputTextarea value="#{frequenciaBean.justificativaReprovacao}" maxlength="255" rows="5" style="width: 100%;"/>
+				</h:panelGrid>
+				<br />
+				<br />
+				<div style="text-align: center">
+					<p:commandButton value="Reprovar" process="@this,panelJustificativaReprovacao" update="@form" action="#{frequenciaBean.reprovarInscricao()}"
+						oncomplete="justificativaReprovacaoPopup.hide();" />
+					<p:commandButton value="Cancelar" oncomplete="justificativaReprovacaoPopup.hide();" />
+				</div>
+				<br />
+				<br />
+			</p:dialog>
+			
+			<p:dialog appendToBody="false" header="Justificativa para aprovação" widgetVar="justificativaAprovacaoPopup" width="400" showEffect="slide"
+				hideEffect="slide" id="popupJustificativaAprovacao">
+				<h:panelGrid id="panelJustificativaAprovacao" columns="2" border="0" columnClasses="coluna20,coluna80" width="100%">
+					<h:outputLabel value="Justificativa:" styleClass="icoObrigatorio" />
+					<p:inputTextarea value="#{frequenciaBean.justificativaAprovacao}" maxlength="255" rows="5" style="width: 100%;"/>
+				</h:panelGrid>
+				<br />
+				<br />
+				<div style="text-align: center">
+					<p:commandButton value="Aprovar" process="@this,panelJustificativaAprovacao" update="@form" action="#{frequenciaBean.aprovarInscricao()}"
+						oncomplete="justificativaAprovacaoPopup.hide();" />
+					<p:commandButton value="Cancelar" oncomplete="justificativaAprovacaoPopup.hide();" />
+				</div>
+				<br />
+				<br />
 			</p:dialog>
 		</h:form>
 	</ui:define>
