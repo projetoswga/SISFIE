@@ -2,6 +2,7 @@ package br.com.sisfie.bean;
 
 import java.io.File;
 import java.text.DateFormat;
+import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -193,15 +194,18 @@ public class RelatorioFrequenciaBean extends PaginableBean<Frequencia> {
 								tarde = FREQUENCIA.AUSENTE;
 							} else {
 
+								int diffInMin = 0;
 								for (Frequencia fre : frequencias) {
 									if (fre.getHorarioEntrada().before(datHorFreqMANHA_FIM.getTime())) { // até 12 e 30
 										/* Manhã */
-										int diffInMin = (int) ((fre.getHorarioSaida().getTime()
+										if (null != fre.getHorarioSaida())
+										  diffInMin = (int) ((fre.getHorarioSaida().getTime()
 												- fre.getHorarioEntrada().getTime()) / (1000 * 60));
 										minutosFrequenciaManha += diffInMin;
 									} else {
 										/* Tarde */
-										int diffInMin = (int) ((fre.getHorarioSaida().getTime()
+										if (null != fre.getHorarioSaida())
+										  diffInMin = (int) ((fre.getHorarioSaida().getTime()
 												- fre.getHorarioEntrada().getTime()) / (1000 * 60));
 										minutosFrequenciaTarde += diffInMin;
 									}
@@ -297,7 +301,9 @@ public class RelatorioFrequenciaBean extends PaginableBean<Frequencia> {
 	}
 
 	private void calcularTotalFaltas(List<AlunoDTO> listaFrequencia) {
+		NumberFormat format = NumberFormat.getNumberInstance();
 		for (AlunoDTO alunoDTO : listaFrequencia) {
+			Integer totalFrequencia = alunoDTO.getMapaFrequencia().size();
 			Integer totalFaltas = 0;
 			for (MapaFrequencia frequencia : alunoDTO.getMapaFrequencia()) {
 				if (frequencia.getPresenca() == null || frequencia.getPresenca().isEmpty()) {
@@ -306,8 +312,8 @@ public class RelatorioFrequenciaBean extends PaginableBean<Frequencia> {
 				if (frequencia.getPresenca().equalsIgnoreCase("F") || "0".equals(frequencia.getPresenca())) {
 					totalFaltas++;
 				}
-				alunoDTO.setTotalFaltas(totalFaltas.toString());
 			}
+			alunoDTO.setTotalFaltas(totalFaltas.toString() + " / " + format.format((totalFaltas / totalFrequencia) * 100) + "%" );
 		}
 	}
 

@@ -1,21 +1,17 @@
 package br.com.sisfie.DAO.impl;
 
-import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.GregorianCalendar;
 import java.util.List;
 
 import org.hibernate.Criteria;
-import org.hibernate.HibernateException;
-import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 import org.springframework.stereotype.Repository;
 
@@ -40,7 +36,7 @@ public class FrequenciaDAOImpl extends HibernateDaoSupport implements Frequencia
 	public Frequencia recuperarUltimaFrequencia(String inscricao) {
 		/* getHibernateTemplate() com SQL Livre
 		getHibernateTemplate().execute(new HibernateCallback<Frequencia>() {
-
+	
 			@Override
 			public Frequencia doInHibernate(Session session)
 					throws HibernateException, SQLException {
@@ -152,19 +148,30 @@ public class FrequenciaDAOImpl extends HibernateDaoSupport implements Frequencia
 	@Override
 	public List<Frequencia> pesquisarFrequenciasData(String inscricao, Calendar datFrequencia) {
 
-		Calendar dataEntradaInicio = new GregorianCalendar(datFrequencia.get(Calendar.YEAR), datFrequencia.get(Calendar.MONTH),
-				datFrequencia.get(Calendar.DAY_OF_MONTH), 0, 0);
-		Calendar dataEntradaFim = new GregorianCalendar(datFrequencia.get(Calendar.YEAR), datFrequencia.get(Calendar.MONTH),
-				datFrequencia.get(Calendar.DAY_OF_MONTH), 23, 59);
+	    Calendar dataEntradaInicio = Calendar.getInstance();
+	    dataEntradaInicio.setTime(datFrequencia.getTime());
+	    dataEntradaInicio.set(Calendar.HOUR_OF_DAY, 0);
+	    dataEntradaInicio.set(Calendar.MINUTE, 0);
+	    dataEntradaInicio.set(Calendar.SECOND, 0);
+	    dataEntradaInicio.set(Calendar.MILLISECOND, 0);
 
+	    Calendar dataEntradaFim = Calendar.getInstance();
+	    dataEntradaFim.setTime(dataEntradaInicio.getTime());
+	    dataEntradaFim.set(Calendar.HOUR_OF_DAY, 0);
+	    dataEntradaFim.set(Calendar.MINUTE, 0);
+	    dataEntradaFim.set(Calendar.SECOND, 0);
+	    dataEntradaFim.set(Calendar.MILLISECOND, 0);
+	    dataEntradaFim.add(Calendar.DAY_OF_MONTH, 1);
+	    
 		Criteria criteria = getSession().createCriteria(Frequencia.class);
 		criteria.createAlias("inscricaoCurso", "ic");
-		criteria.add(Restrictions.like("ic.inscricao", inscricao));
-		criteria.add(Restrictions.eq("horarioEntrada", dataEntradaInicio.getTime()));
-		criteria.add(Restrictions.eq("horarioSaida", dataEntradaFim.getTime()));
+		criteria.add(Restrictions.eq("ic.inscricao", inscricao));
+		//criteria.add(Restrictions.between("horarioEntrada", new Timestamp(dataEntradaInicio.getTime().getTime()), new Timestamp(dataEntradaFim.getTime().getTime())));
+		//criteria.add(Restrictions.lt("horarioSaida", dataEntradaFim.getTime()));
 		criteria.addOrder(Order.asc("horarioEntrada"));
 		return criteria.list();
 	}
+	
 
 	@SuppressWarnings("unchecked")
 	@Override

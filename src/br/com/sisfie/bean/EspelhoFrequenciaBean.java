@@ -93,6 +93,7 @@ public class EspelhoFrequenciaBean extends PaginableBean<Frequencia> {
 						datFrequencia.get(Calendar.MONTH), datFrequencia.get(Calendar.DAY_OF_MONTH), 18, 00);
 
 				Integer minutosFrequenciaTurno = 0;
+				String descTurmaCurso;
 				if (datHorFreqMANHA_INI.before(datCorrente)) {
 
 					sb.append(df.format(datFrequencia.getTime()) + "\n");
@@ -108,7 +109,9 @@ public class EspelhoFrequenciaBean extends PaginableBean<Frequencia> {
 						sb.append("\tMANHÃ\n");
 						boolean manha = true;
 						for (Frequencia fre : frequencias) {
-							int diffInMin = (int) ((fre.getHorarioSaida().getTime() - fre.getHorarioEntrada().getTime())
+							int diffInMin = 0;
+							if (null != fre.getHorarioSaida() && null != fre.getHorarioEntrada())
+							  diffInMin = (int) ((fre.getHorarioSaida().getTime() - fre.getHorarioEntrada().getTime())
 									/ (1000 * 60));
 
 							if (manha && !fre.getHorarioEntrada().before(datHorFreqMANHA_FIM.getTime())) {
@@ -129,10 +132,16 @@ public class EspelhoFrequenciaBean extends PaginableBean<Frequencia> {
 								sb.append("\tTARDE\n");
 								// FIM MANHÃ
 							}
-							sb.append(String.format("\t\t%-30s: %8s a %8s (%s)\n",
-									fre.getGradeOficina().getTurma().getDescricao().substring(0,
-											Math.min(30, fre.getGradeOficina().getTurma().getDescricao().length())),
-									hf.format(fre.getHorarioEntrada().getTime()), hf.format(fre.getHorarioSaida().getTime()),
+							if (null != fre.getGradeOficina()) 
+								descTurmaCurso = fre.getGradeOficina().getTurma().getDescricao();
+							else if (null != inscricaoCurso.getTurma())
+								descTurmaCurso = inscricaoCurso.getTurma().getDescricao();
+							else
+								descTurmaCurso = "";
+							sb.append(String.format("\t\t%-30s: %8s a %8s (%s)\n",descTurmaCurso
+									.substring(0,
+											Math.min(30, descTurmaCurso.length())),
+									hf.format(fre.getHorarioEntrada().getTime()), fre.getHorarioSaida() != null ? hf.format(fre.getHorarioSaida().getTime()) : "??:??:??",
 									getMinutosEmHora(diffInMin)));
 							minutosFrequenciaTurno += diffInMin;
 						}
