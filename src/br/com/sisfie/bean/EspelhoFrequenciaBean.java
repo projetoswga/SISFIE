@@ -98,7 +98,9 @@ public class EspelhoFrequenciaBean extends PaginableBean<Frequencia> {
 
 					sb.append(df.format(datFrequencia.getTime()) + "\n");
 
-					List<Frequencia> frequencias = new ArrayList<Frequencia>(inscricaoCurso.getFrequencias());
+					List<Frequencia> frequencias = frequenciaService
+							.pesquisarFrequenciasData(inscricaoCurso.getInscricao(), datFrequencia);
+
 					if (null == frequencias || frequencias.isEmpty()) {
 						sb.append("\tMANHÃ\n\tAUSENTE\n");
 						sb.append("\tTARDE\n\tAUSENTE\n");
@@ -137,7 +139,7 @@ public class EspelhoFrequenciaBean extends PaginableBean<Frequencia> {
 							else if (null != inscricaoCurso.getTurma())
 								descTurmaCurso = inscricaoCurso.getTurma().getDescricao();
 							else
-								descTurmaCurso = "";
+								descTurmaCurso = inscricaoCurso.getCurso().getTitulo();
 							sb.append(String.format("\t\t%-30s: %8s a %8s (%s)\n",descTurmaCurso
 									.substring(0,
 											Math.min(30, descTurmaCurso.length())),

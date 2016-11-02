@@ -4,6 +4,7 @@ import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 
 import org.hibernate.Criteria;
@@ -148,25 +149,24 @@ public class FrequenciaDAOImpl extends HibernateDaoSupport implements Frequencia
 	@Override
 	public List<Frequencia> pesquisarFrequenciasData(String inscricao, Calendar datFrequencia) {
 
-	    Calendar dataEntradaInicio = Calendar.getInstance();
-	    dataEntradaInicio.setTime(datFrequencia.getTime());
-	    dataEntradaInicio.set(Calendar.HOUR_OF_DAY, 0);
-	    dataEntradaInicio.set(Calendar.MINUTE, 0);
-	    dataEntradaInicio.set(Calendar.SECOND, 0);
-	    dataEntradaInicio.set(Calendar.MILLISECOND, 0);
-
-	    Calendar dataEntradaFim = Calendar.getInstance();
-	    dataEntradaFim.setTime(dataEntradaInicio.getTime());
-	    dataEntradaFim.set(Calendar.HOUR_OF_DAY, 0);
-	    dataEntradaFim.set(Calendar.MINUTE, 0);
-	    dataEntradaFim.set(Calendar.SECOND, 0);
-	    dataEntradaFim.set(Calendar.MILLISECOND, 0);
-	    dataEntradaFim.add(Calendar.DAY_OF_MONTH, 1);
-	    
+		Calendar dataFreqEntrada = Calendar.getInstance(); // locale-specific
+		dataFreqEntrada.setTime(datFrequencia.getTime());
+		dataFreqEntrada.set(Calendar.HOUR_OF_DAY, 0);
+		dataFreqEntrada.set(Calendar.MINUTE, 0);
+		dataFreqEntrada.set(Calendar.SECOND, 0);
+		dataFreqEntrada.set(Calendar.MILLISECOND, 0);
+		Date fromDate = dataFreqEntrada.getTime();
+		
+		dataFreqEntrada.set(Calendar.HOUR_OF_DAY, 23);
+		dataFreqEntrada.set(Calendar.MINUTE, 59);
+		dataFreqEntrada.set(Calendar.SECOND, 59);
+		dataFreqEntrada.set(Calendar.MILLISECOND, 999);
+		Date toDate = dataFreqEntrada.getTime();
+		
 		Criteria criteria = getSession().createCriteria(Frequencia.class);
 		criteria.createAlias("inscricaoCurso", "ic");
 		criteria.add(Restrictions.eq("ic.inscricao", inscricao));
-		//criteria.add(Restrictions.between("horarioEntrada", new Timestamp(dataEntradaInicio.getTime().getTime()), new Timestamp(dataEntradaFim.getTime().getTime())));
+		criteria.add(Restrictions.between("horarioEntrada", new Timestamp(fromDate.getTime()), new Timestamp(toDate.getTime())));
 		//criteria.add(Restrictions.lt("horarioSaida", dataEntradaFim.getTime()));
 		criteria.addOrder(Order.asc("horarioEntrada"));
 		return criteria.list();

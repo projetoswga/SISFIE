@@ -294,7 +294,7 @@ public class RelatorioFrequenciaBean extends PaginableBean<Frequencia> {
 				// atributos da frequencia
 				listaRetorno.add(new CrossTab(new Header(frequencia.getData(), posicao++), cont, frequencia.getPresenca()));
 			}
-			listaRetorno.add(new CrossTab(new Header("Total Faltas", posicao++), cont, list.getTotalFaltas()));
+			listaRetorno.add(new CrossTab(new Header("Total Faltas / %", posicao++), cont, list.getTotalFaltas()));
 			cont++;
 		}
 		return listaRetorno;
@@ -302,6 +302,7 @@ public class RelatorioFrequenciaBean extends PaginableBean<Frequencia> {
 
 	private void calcularTotalFaltas(List<AlunoDTO> listaFrequencia) {
 		NumberFormat format = NumberFormat.getNumberInstance();
+		format.setMaximumFractionDigits(2);
 		for (AlunoDTO alunoDTO : listaFrequencia) {
 			Integer totalFrequencia = alunoDTO.getMapaFrequencia().size();
 			Integer totalFaltas = 0;
@@ -313,7 +314,7 @@ public class RelatorioFrequenciaBean extends PaginableBean<Frequencia> {
 					totalFaltas++;
 				}
 			}
-			alunoDTO.setTotalFaltas(totalFaltas.toString() + " / " + format.format((totalFaltas / totalFrequencia) * 100) + "%" );
+			alunoDTO.setTotalFaltas(totalFaltas.toString() + " / " + format.format(((double)totalFaltas / (double)totalFrequencia) * 100) + "%" );
 		}
 	}
 
