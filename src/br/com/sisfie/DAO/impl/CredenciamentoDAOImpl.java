@@ -46,7 +46,7 @@ public class CredenciamentoDAOImpl extends HibernateDaoSupport implements Creden
 		Criteria criteria = getSession().createCriteria(Credenciamento.class);
 		criteria.add(Restrictions.eq("numInscricao", inscricao));
 		List<Credenciamento> results = criteria.list();
-		if (null != results) {
+		if (null != results && !results.isEmpty()) {
 			return results.get(0);
 		} else {
 			return null;

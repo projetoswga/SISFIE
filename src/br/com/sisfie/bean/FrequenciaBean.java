@@ -531,6 +531,10 @@ public class FrequenciaBean extends PaginableBean<Frequencia> {
 			if (curso.getTurmas() != null && !curso.getTurmas().isEmpty()) {
 				inscricaoCurso = inscricaoCursoService.recupararInscricaoSemOficina(getModel().getInscricaoCurso().getInscricao(),
 						curso.getId(), turma.getId(), turno.getId());
+				if (null == inscricaoCurso) {
+					inscricaoCurso = inscricaoCursoService.recupararInscricaoSemOficina(getModel().getInscricaoCurso().getInscricao(),
+							curso.getId(), null, null);
+				}
 			} else {
 				inscricaoCurso = inscricaoCursoService.recupararInscricaoSemOficina(getModel().getInscricaoCurso().getInscricao(),
 						curso.getId(), null, null);

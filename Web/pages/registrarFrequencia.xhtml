@@ -8,7 +8,9 @@
 		<script type="text/javascript">
 			$ = jQuery;
 			function qrCodeReadMode() {
-				$('#qr-code-read').click();
+				if (qr_code_loaded) {
+					$('#qr-code-read').click();
+				}
 			}
 			
 			function verificarQuantidadeDigitosExecutarEnter(){
@@ -16,6 +18,7 @@
 					$('#btnRegistrar').click();
 				}
 			}
+
 			function callbackAfterQRCodeDecoded(QRCodeDecoded) {
 				$('#numInscricao').val(QRCodeDecoded);
 				setTimeout(verificarQuantidadeDigitosExecutarEnter,2000);

@@ -10,6 +10,7 @@ var moz=false;
 var v=null;
 var streamV
 var functionCallback;
+var qr_code_loaded=false;
 
 var imghtml='<div id="qrfile"><canvas id="out-canvas" width="320" height="240"></canvas>'+
     '<div id="imghelp">drag and drop a QRCode here'+
@@ -146,6 +147,7 @@ function load(callbackBeforeQRCodeDecoded)
 		document.getElementById("outdiv").style.display='block';
 
 		functionCallback=callbackBeforeQRCodeDecoded;
+		qr_code_loaded=true;
 		//stype=0;
         setwebcam();
 	}
