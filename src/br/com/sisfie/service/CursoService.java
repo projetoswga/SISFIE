@@ -122,4 +122,6 @@ public interface CursoService {
 	InscricaoCursoCertificado carregaInscricaoCursoCertificado(Integer id) throws Exception;
 
 	List<CodigoLivroAnual> carregaLivroAnual();
+
+	ModeloDocumento carregaModeloCurso(Integer integer) throws Exception;
 }

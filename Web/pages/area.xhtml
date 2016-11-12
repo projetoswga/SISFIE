@@ -13,17 +13,17 @@
 				<h:panelGrid columns="4" id="panelCadastro" border="1" columnClasses="coluna15,coluna30,coluna20,coluna45"
 					width="100%">
 					<h:outputLabel value="Sigla:" styleClass="icoObrigatorio" />
-					<p:inputText value="#{areaBean.model.sigla}" requiredMessage="#{areaBean.requiredMessage}" required="true"
+					<p:inputText value="#{areaBean.model.sigla}" requiredMessage="#{areaBean.requiredMessage}" required="false"
 						id="descricao" size="50" maxlength="255" />
 					<p:message for="descricao" />
 					<h:outputText value=" " />
-
+					
 					<h:outputText value=" " />
 					<h:outputText value=" " />
 				</h:panelGrid>
 				<h:panelGrid>
 					 <p:fileUpload value="#{areaBean.file}" mode="advanced" skinSimple="true" fileUploadListener ="#{areaBean.anexarArquivo}"
-					 dragDropSupport="false"  sizeLimit="100000" fileLimit="1" allowTypes="/(\.|\/)(doc|docx)$/"/>
+					 dragDropSupport="false"  sizeLimit="10000000" fileLimit="1" allowTypes="/(\.|\/)(doc|docx)$/"/>
  
 				</h:panelGrid>
 				<br />
@@ -66,6 +66,10 @@
 							<h:graphicImage library="design/imagem" name="#{lista.imageAtivo}" />
 							
 						</p:commandLink>
+    					<h:commandLink title="Certificado" target="_blank"
+										action="#{areaBean.gerarCertificado(lista.id)}"  >
+										<h:graphicImage library="design/imagem" title="Selecionar" name="icone-documento.png" />
+	    				</h:commandLink>	
 					</p:column>
 				</p:dataTable>
 			</p:fieldset>

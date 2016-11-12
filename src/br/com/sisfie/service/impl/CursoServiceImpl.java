@@ -1243,4 +1243,10 @@ public class CursoServiceImpl implements CursoService {
 		// TODO Auto-generated method stub
 		return cursoDAO.carregaLivroAnual();
 	}
+
+	@Override
+	public ModeloDocumento carregaModeloCurso(Integer integer) throws Exception {
+		// TODO Auto-generated method stub
+		return (ModeloDocumento) dao.get(ModeloDocumento.class, integer);
+	}
 }

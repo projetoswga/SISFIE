@@ -6,6 +6,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 
 import org.primefaces.component.galleria.Galleria;
 
@@ -65,6 +66,27 @@ public class DateUtil {
 		calendar.setTime(date);
 		return calendar.get(Calendar.HOUR_OF_DAY);
 	}
+	 public static String getDataFormatada(){
+	        DateFormat formatador = DateFormat.getDateInstance(DateFormat.FULL, new Locale("pt", "BR"));        
+
+	        // DATA ATUAL DO SISTEMA : new Date(System.currentTimeMillis())
+	        String dataExtenso = formatador.format(new Date(System.currentTimeMillis()));
+	        int index  = dataExtenso.indexOf(",") + 2;
+	        int lenght = dataExtenso.length();
+	        return dataExtenso.substring(index, lenght).toLowerCase();
+	    }
+
+
+	    // ESSE MÉTODO AQUI VC PASSA UMA DATA PARA ELE 
+	    // E ELE TE DEVOLVE ELA FORMATADA !!
+	    public static String formataData(Date data){
+	        DateFormat formatador = DateFormat.getDateInstance(DateFormat.FULL, new Locale("pt", "BR"));        
+	        String dataExtenso = formatador.format(data);
+	        int index  = dataExtenso.indexOf(",") + 2;
+	        int lenght = dataExtenso.length();
+	        return dataExtenso.substring(index, lenght).toLowerCase();
+	    }
+	    
 	
 //	public static void main(String[] args) {
 //		try {

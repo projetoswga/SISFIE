@@ -9,6 +9,7 @@ import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
+import javax.faces.context.FacesContext;
 
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.model.UploadedFile;
@@ -66,7 +67,21 @@ public class AreaBean extends PaginableBean<ModeloDocumento> {
 			ExcecaoUtil.tratarExcecao(e);
 		}
 	}
-
+	
+	public void gerarCertificado(Integer id){
+		try {
+			
+			
+			
+			String url = recuperarUrl() + "/loadImagemBD?id=" + id+ "&tipo=" + "certificado_teste";
+			FacesContext.getCurrentInstance().getExternalContext().redirect(url);
+		} catch (Exception e) {
+			ExcecaoUtil.tratarExcecao(e);
+		}
+	}
+	private String recuperarUrl() {
+		return Constantes.URL_COMPROVANTE;
+	}
 	
 	public void saveModel(){
 		try{
