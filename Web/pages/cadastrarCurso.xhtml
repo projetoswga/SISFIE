@@ -44,6 +44,8 @@
 					<p:inputText value="#{CadastrarCursoBean.model.titulo}" id="tit" size="58" maxlength="255"
 						requiredMessage="#{CadastrarCursoBean.requiredMessage}" required="true" />
 					<p:message for="tit" />
+					
+					
 
 					<h:outputLabel value="Área de Interesse:" />
 					<p:selectOneMenu id="area" style="width:300px;" value="#{CadastrarCursoBean.idArea}">
@@ -74,6 +76,12 @@
 					</p:selectOneMenu>
 					<h:outputText value=" " />
 
+				</h:panelGrid>
+				<h:panelGrid columns="3" columnClasses="coluna20,coluna70,coluna10">
+					<h:outputLabel value="Contéudo Programático:" styleClass="icoObrigatorio" />
+					<p:inputTextarea value="#{CadastrarCursoBean.model.conteudoProgramatico}" id="conteudo" rows="7" cols="20"
+						requiredMessage="#{CadastrarCursoBean.requiredMessage}" required="true" />
+					<p:message for="conteudo" />
 				</h:panelGrid>
 
 				<h:panelGrid id="panelVagas" columns="2" columnClasses="coluna20,coluna80" border="0" width="100%">

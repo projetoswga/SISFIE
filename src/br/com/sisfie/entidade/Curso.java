@@ -68,6 +68,11 @@ public class Curso extends Entidade<Integer> {
 
 	@Column(name = "titulo", nullable = false)
 	private String titulo;
+	@Column(name = "conteudo_programatico", nullable = true)
+	private String conteudoProgramatico;
+	
+	@Column(name = "diretor", nullable = true)
+	private String diretor;
 
 	@Column(name = "cod_curso", nullable = false)
 	private String codigo;
@@ -238,6 +243,22 @@ public class Curso extends Entidade<Integer> {
 
 	public Localizacao getLocalizacao() {
 		return localizacao;
+	}
+
+	public String getConteudoProgramatico() {
+		return conteudoProgramatico;
+	}
+
+	public void setConteudoProgramatico(String conteudoProgramatico) {
+		this.conteudoProgramatico = conteudoProgramatico;
+	}
+
+	public String getDiretor() {
+		return diretor;
+	}
+
+	public void setDiretor(String diretor) {
+		this.diretor = diretor;
 	}
 
 	public void setLocalizacao(Localizacao localizacao) {

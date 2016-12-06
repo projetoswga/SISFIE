@@ -73,7 +73,7 @@ public class AreaBean extends PaginableBean<ModeloDocumento> {
 			
 			
 			
-			String url = recuperarUrl() + "/loadImagemBD?id=" + id+ "&tipo=" + "certificado_teste";
+			String url = recuperarUrl() + "loadImagemBD?id=" + id+ "&tipo=" + "certificado_teste";
 			FacesContext.getCurrentInstance().getExternalContext().redirect(url);
 		} catch (Exception e) {
 			ExcecaoUtil.tratarExcecao(e);
